@@ -38,24 +38,50 @@
 
     diagram.linkTemplate = linkTempl;
 
-    // TODO: get from $.getJSON or ajax call instead.
-    var nodeDataArray = [
-        { key: "Products",
-            items: [ { name: "ProductID", iskey: true},
-                { name: "ProductName", iskey: false},
-                { name: "SupplierID", iskey: false},
-                { name: "CategoryID", iskey: false} ] },
-        { key: "Suppliers",
-            items: [ { name: "SupplierID", iskey: true},
-                { name: "CompanyName", iskey: false},
-                { name: "ContactName", iskey: false},
-                { name: "Address", iskey: false} ] }
+    // What we will have: the result of a pair of SQL queries
+    // Representation
+    var query1 = [
+        { table_name: "students", column_name: "student_id", column_key: "PRI" },
+        { table_name: "students", column_name: "first_name", column_key: "" },
+        { table_name: "students", column_name: "last_name", column_key: "" },
+        { table_name: "students", column_name: "program_id", column_key: "MUL" },
+        { table_name: "students", column_name: "school_id", column_key: "MUL" },
+        { table_name: "programs", column_name: "program_id", column_key: "PRI" },
+        { table_name: "programs", column_name: "program_name", column_key: "" },
+        { table_name: "schools", column_name: "school_id", column_key: "PRI" },
+        { table_name: "schools", column_name: "school_name", column_key: ""	}
     ];
 
-    // TODO: get form $.getJSON or ajax call instead.
-    var linkDataArray = [
-        { from: "Products", to: "Suppliers", fromText: "0..N", toText: "1" },
+    // convert to node data array
+    var nodeDataArray = [];
+
+    for (var i = 0; i < query1.length; i++) {
+        var tbl_name = query1[i].table_name;
+        var existing_tbl = _.where(nodeDataArray, {key: tbl_name});
+
+        if (existing_tbl && existing_tbl.length > 0) {
+            existing_tbl[0].items.push({name: query1[i].column_name, isKey: (query1[i].column_key == "PRI")});
+        } else {
+            var new_tbl = {key: tbl_name, items: [ {name: query1[i].column_name, isKey: (query1[i].column_key == "PRI")}]};
+            nodeDataArray.push(new_tbl);
+        }
+    }
+
+    var query2 = [
+        { constraint_name: "Program", table_name: "students", column_name: "program_id",
+            referenced_table_name: "programs", referenced_column_name: "program_id" },
+        { constraint_name: "School", table_name: "students", column_name: "school_id",
+            referenced_table_name: "schools", referenced_column_name: "school_id"}
     ];
+
+    var linkDataArray = [
+        //{ from: "students", to: "schools", fromText: "0..N", toText: "1" },
+    ];
+
+    for (var j = 0; j < query2.length; j++) {
+        linkDataArray.push({from: query2[j].table_name, to: query2[j].referenced_table_name,
+            fromText: query2[j].constraint_name, toText: "blah"});
+    }
 
     diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
 }());

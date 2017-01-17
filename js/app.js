@@ -1,4 +1,4 @@
-angular.module('dbVizApp', [])
+angular.module('dbVizApp', ['ngMaterial', 'ngMessages', 'material.svgAssetsCache'])
 
 .controller('projectController', function($scope){
 

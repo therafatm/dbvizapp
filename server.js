@@ -5,8 +5,9 @@ var port = 8080 || process.env.PORT;
 var path = require('path');
 var app = express();
 
-app.use('/js', express.static(__dirname + '/js'));
 app.use('/views', express.static(__dirname + '/views'));
+app.use('/css', express.static(__dirname + '/css'));
+app.use('/js', express.static(__dirname + '/js'));
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());

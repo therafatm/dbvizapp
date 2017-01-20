@@ -1,0 +1,36 @@
+.body{
+	margin: 0 !important;
+}
+#addProject{
+	width: 40%;
+	padding-left: 4.5%;
+	margin-right: 0;
+	float: left;
+}
+
+.form-group{
+	font-size: 18px !important;
+}
+
+#projectManager{
+	margin: 0 0 0 3%;
+	width: 57%;
+	height: 602.5px;
+	float: left;
+}
+
+.pikachu{
+	width: 80%;
+
+}
+.container{
+	padding-top: 3%;
+}
+
+.form-group{
+	font-size: 15px;
+}
+
+#buttons{
+	margin-left: 30%;
+}

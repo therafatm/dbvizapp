@@ -4,6 +4,7 @@ var morgan = require('morgan');
 var port = process.env.PORT || 8080;
 var path = require('path');
 var app = express();
+var projectAPI = require('./projectAPI')
 
 app.use('/views', express.static(__dirname + '/views'));
 app.use('/css', express.static(__dirname + '/css'));
@@ -26,6 +27,9 @@ app.use(morgan('dev'));
 app.get('/', function(req, res){
 	res.sendFile(path.join(__dirname + '/views/index.html'));
 })
+
+// set up the project REST endpoint
+app.use('/project', projectAPI)
 
 app.listen(port, function(){
 	console.log("Server listening on port" + port + " !");

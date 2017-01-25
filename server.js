@@ -32,5 +32,5 @@ app.get('/', function(req, res){
 app.use('/project', projectAPI)
 
 app.listen(port, function(){
-	console.log("Server listening on port" + port + " !");
+	console.log("Server listening on port " + port + " !");
 })

@@ -29,7 +29,7 @@ app.get('/', function(req, res){
 })
 
 // set up the project REST endpoint
-app.use('/project', projectAPI)
+app.use('/api/project', projectAPI)
 
 app.listen(port, function(){
 	console.log("Server listening on port " + port + " !");

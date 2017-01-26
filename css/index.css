@@ -1,6 +1,8 @@
 .body{
 	margin: 0 !important;
+	height: 100% !important;
 }
+
 #addProject{
 	width: 40%;
 	padding-left: 4.5%;
@@ -15,14 +17,13 @@
 #projectManager{
 	margin: 0 0 0 3%;
 	width: 57%;
-	height: 602.5px;
 	float: left;
 }
 
 .pikachu{
 	width: 80%;
-
 }
+
 .container{
 	padding-top: 3%;
 }
@@ -33,4 +34,8 @@
 
 #buttons{
 	margin-left: 30%;
+}
+
+#projectList{
+	float: left;
 }

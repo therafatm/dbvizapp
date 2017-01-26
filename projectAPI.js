@@ -1,36 +1,96 @@
-var express = require('express')
-var router = express.Router()
+var express = require('express');
+var router = express.Router();
+var pg = require('pg');
+const connectionString = 'postgres://localhost:5432/test';
+const client = new pg.Client(connectionString);
+client.connect();
 
 // middleware that is specific to this router
 router.use(function timeLog (req, res, next) {
   console.log('Time: ', Date.now())
   next()
 })
-// define the home page route
+
+//GET all projects
 router.route('/')
   .get(function (req, res) {
-    if(!!req.query.id){
-      res.send(`returning project with id ${req.query.id}`)
-    } else {
-      res.send('returning all projects')
+    const results = [];
+    // Get a Postgres client from the connection pool
+    pg.connect(connectionString, (err, client, done) => {
+      // Handle connection errors
+      if(err) {
+        done();
+        console.log(err);
+        return res.status(500).json({success: false, data: err});
+      }
+      // SQL Query > Select Data
+      const query = client.query('SELECT * FROM projects ORDER BY id ASC;');
+      // Stream results back one row at a time
+      query.on('row', (row) => {
+        results.push(row);
+      });
+      // After all data is returned, close connection and return results
+      query.on('end', () => {
+        done();
+        return res.json(results);
+      });
+    });
+  })
+
+  //Add project to DB
+  .post(function(req, res, next){
+  const results = [];
+  // Grab data from http request
+  // Get a Postgres client from the connection pool
+  pg.connect(connectionString, (err, client, done) => {
+      // Handle connection errors
+      if(err) {
+        done();
+        console.log(err);
+        return res.status(500).json({success: false, data: err});
+      }
+      // SQL Query > Insert Data
+      client.query('INSERT INTO projects VALUES($1, $2)', [req.body.id, req.body.name]);
+      // SQL Query > Select Data
+      const query = client.query('SELECT * FROM projects ORDER BY id ASC');
+      // Stream results back one row at a time
+      query.on('row', (row) => {
+        results.push(row);
+      });
+      // After all data is returned, close connection and return results
+      query.on('end', () => {
+        done();
+        return res.json(results);
+      });
+    });
+});
+
+router.delete('/:id', (req, res, next) => {
+
+  const results = [];
+  // Grab data from the URL parameters
+  const id = req.params.id;
+  // Get a Postgres client from the connection pool
+  pg.connect(connectionString, (err, client, done) => {
+    // Handle connection errors
+    if(err) {
+      done();
+      console.log(err);
+      return res.status(500).json({success: false, data: err});
     }
-  })
-  .post(function (req,res) {
-    res.send(`created project with id ${null}`)
-  })
-  .put(function (req,res){
-    if(!!req.query.id){
-      res.send(`updated project with id ${null}`)
-    } else {
-      res.status(400).send(`Must provide project id to update a project`)
-    }
-  })
-  .delete(function (req,res) {
-    if(!!req.query.id){
-      res.send(`deleted project with id ${null}`)
-    } else {
-      res.status(400).send(`Must provide project id to delete a project`)
-    }
-  })
+    // SQL Query > Delete Data
+    client.query('DELETE FROM projects WHERE id=' + id);
+    var query = client.query('SELECT * FROM projects ORDER BY id ASC');
+    // Stream results back one row at a time
+    query.on('row', (row) => {
+      results.push(row);
+    });
+    // After all data is returned, close connection and return results
+    query.on('end', () => {
+      done();
+      return res.json(results);
+    });
+  });
+});
 
 module.exports = router

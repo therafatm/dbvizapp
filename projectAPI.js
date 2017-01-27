@@ -1,10 +1,20 @@
 var express = require('express');
 var router = express.Router();
 var pg = require('pg');
+
+var config = {
+  user: 'ymaswrfichcpnv', //env var: PGUSER
+  database: 'deitvncfhkbq6e', //env var: PGDATABASE
+  password: '2c09436d0c70aeba07699fd3829051d21320b766362add25b0b4a5b3b72b8f19', //env var: PGPASSWORD
+  host: 'ec2-107-20-141-145.compute-1.amazonaws.com', // Server hosting the postgres database
+  port: 5432, //env var: PGPORT
+  max: 10, // max number of clients in the pool
+  ssl: true
+};
+
 //const connectionString = 'postgres://localhost:5432/test';
-const connectionString = "postgres://ymaswrfichcpnv:2c09436d0c70aeba07699fd3829051d21320b766362add25b0b4a5b3b72b8f19@ec2-107-20-141-145.compute-1.amazonaws.com:5432/deitvncfhkbq6e";
 //const client = new pg.Client(connectionString);
-const client = new pg.Client(connectionString);
+const client = new pg.Client(config);
 client.connect();
 
 // middleware that is specific to this router
@@ -18,7 +28,7 @@ router.route('/')
   .get(function (req, res) {
     const results = [];
     // Get a Postgres client from the connection pool
-    pg.connect(connectionString, (err, client, done) => {
+    pg.connect(config, (err, client, done) => {
       // Handle connection errors
       if(err) {
         done();
@@ -44,7 +54,7 @@ router.route('/')
   const results = [];
   // Grab data from http request
   // Get a Postgres client from the connection pool
-  pg.connect(connectionString, (err, client, done) => {
+  pg.connect(config, (err, client, done) => {
       // Handle connection errors
       if(err) {
         done();
@@ -73,7 +83,7 @@ router.delete('/:id', (req, res, next) => {
   // Grab data from the URL parameters
   const id = req.params.id;
   // Get a Postgres client from the connection pool
-  pg.connect(connectionString, (err, client, done) => {
+  pg.connect(config, (err, client, done) => {
     // Handle connection errors
     if(err) {
       done();

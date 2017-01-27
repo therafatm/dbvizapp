@@ -9,8 +9,8 @@ app.controller('projectController', ['$scope', '$http', function($scope, $http){
 	$scope.deleteProject = function(id){
 		$http.delete('/api/project/' + id)
 		.success( (data) => {
-			alert("Project has been deleted succesfully!");
-			$scope.currentProjects = data
+				alert("Project has been deleted succesfully!");
+				$scope.currentProjects = data
 			}
 		)
 		.error((error) => {

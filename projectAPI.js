@@ -1,7 +1,9 @@
 var express = require('express');
 var router = express.Router();
 var pg = require('pg');
-const connectionString = 'postgres://localhost:5432/test';
+//const connectionString = 'postgres://localhost:5432/test';
+const connectionString = "postgres://ymaswrfichcpnv:2c09436d0c70aeba07699fd3829051d21320b766362add25b0b4a5b3b72b8f19@ec2-107-20-141-145.compute-1.amazonaws.com:5432/deitvncfhkbq6e";
+//const client = new pg.Client(connectionString);
 const client = new pg.Client(connectionString);
 client.connect();
 
@@ -93,4 +95,4 @@ router.delete('/:id', (req, res, next) => {
   });
 });
 
-module.exports = router
+module.exports = router;

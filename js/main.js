@@ -39,7 +39,8 @@
     diagram.linkTemplate = linkTempl;
 
     // What we will have: the result of a pair of SQL queries
-    // Representation
+    // query: SELECT table_name, column_name, column_key, data_type FROM information_schema.columns WHERE table_schema="test_db";
+
     var query1 = [
         { table_name: "students", column_name: "student_id", column_key: "PRI" },
         { table_name: "students", column_name: "first_name", column_key: "" },
@@ -55,17 +56,37 @@
     // convert to node data array
     var nodeDataArray = [];
 
-    for (var i = 0; i < query1.length; i++) {
-        var tbl_name = query1[i].table_name;
-        var existing_tbl = _.where(nodeDataArray, {key: tbl_name});
+    // Use ajax instead
+    $.ajax({url: "/sql_query_cols", success: function(result){
 
-        if (existing_tbl && existing_tbl.length > 0) {
-            existing_tbl[0].items.push({name: query1[i].column_name, isKey: (query1[i].column_key == "PRI")});
-        } else {
-            var new_tbl = {key: tbl_name, items: [ {name: query1[i].column_name, isKey: (query1[i].column_key == "PRI")}]};
-            nodeDataArray.push(new_tbl);
+        var nodeDataArr = [];
+        for (var i = 0; i < result.length; i++) {
+            var tbl_name = result[i].table_name;
+            var existing_tbl = _.where(nodeDataArr, {key: tbl_name});
+
+            if (existing_tbl && existing_tbl.length > 0) {
+                existing_tbl[0].items.push({name: result[i].column_name, isKey: (result[i].column_key == "PRI")});
+            } else {
+                var new_tbl = {key: tbl_name, items: [ {name: result[i].column_name, isKey: (result[i].column_key == "PRI")}]};
+                nodeDataArr.push(new_tbl);
+            }
         }
-    }
+
+        diagram.model = new go.GraphLinksModel(nodeDataArr, linkDataArray);
+        nodeDataArray = nodeDataArr;
+    }});
+
+    // for (var i = 0; i < query1.length; i++) {
+    //     var tbl_name = query1[i].table_name;
+    //     var existing_tbl = _.where(nodeDataArray, {key: tbl_name});
+    //
+    //     if (existing_tbl && existing_tbl.length > 0) {
+    //         existing_tbl[0].items.push({name: query1[i].column_name, isKey: (query1[i].column_key == "PRI")});
+    //     } else {
+    //         var new_tbl = {key: tbl_name, items: [ {name: query1[i].column_name, isKey: (query1[i].column_key == "PRI")}]};
+    //         nodeDataArray.push(new_tbl);
+    //     }
+    // }
 
     var query2 = [
         { constraint_name: "Program", table_name: "students", column_name: "program_id",
@@ -78,10 +99,27 @@
         //{ from: "students", to: "schools", fromText: "0..N", toText: "1" },
     ];
 
-    for (var j = 0; j < query2.length; j++) {
-        linkDataArray.push({from: query2[j].table_name, to: query2[j].referenced_table_name,
-            fromText: query2[j].constraint_name, toText: "blah"});
-    }
+    // for (var j = 0; j < query2.length; j++) {
+    //     linkDataArray.push({from: query2[j].table_name, to: query2[j].referenced_table_name,
+    //         fromText: query2[j].constraint_name, toText: "blah"});
+    // }
+
+    // Use ajax instead
+    $.ajax({url: "/sql_query_keys", success: function(result) {
+
+        var linkDataArr = [];
+        for (var j = 0; j < result.length; j++) {
+            if (result[j].referenced_table_name) {
+                linkDataArr.push({from: result[j].table_name, to: result[j].referenced_table_name,
+                    fromText: result[j].constraint_name, toText: "blah"});
+            } else {
+                // make bold?
+            }
+        }
+
+        diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArr);
+        linkDataArray = linkDataArr;
+    }});
 
     diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
 }());

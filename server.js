@@ -25,17 +25,19 @@ app.use(morgan('dev'));
 
 app.get('/', function(req, res){
 	res.sendFile(path.join(__dirname + '/views/index.html'));
-})
+});
 
-app.listen(port, function(){
-	console.log("Server listening on port" + port + " !");
-})
+app.get('/diagram', function(req, res) {
+	res.sendFile(path.join(__dirname + '/godiagram.html'));
+});
 
+// Mysql stuff
 var schema_name = 'test_db';
-
 var columns_query = 'SELECT table_name, column_name, column_key, data_type FROM information_schema.columns WHERE table_schema="' + schema_name + '";';
-
 var keys_query = 'SELECT table_name, column_name, referenced_table_name, referenced_column_name FROM information_schema.key_column_usage WHERE table_schema="' + schema_name + '";';
+
+// Can do this
+// var connection = mysql.createConnection('mysql://user:pass@host/wordpress');
 
 var mysql = require('mysql');
 
@@ -47,13 +49,32 @@ var connection = mysql.createConnection({
     database: 'information_schema'
 });
 
-connection.connect();
-
-connection.query(columns_query, function(err, rows, fields) {
-    if (!err)
-	console.log('query result: ', rows);
-    else
-	console.log('error: ', err);
+connection.connect(function(err) {
+	if (err) {
+		console.log("Error connecting to mysql.");
+	}
 });
 
-connection.end();
+app.get('/sql_query_cols', function(req, res) {
+    connection.query(columns_query, function(err, rows, fields) {
+        if (!err) {
+            res.json(rows);
+        } else {
+            console.log('error: ', err);
+        }
+    });
+});
+
+app.get('/sql_query_keys', function(req, res) {
+    connection.query(keys_query, function(err, rows, fields) {
+        if (!err) {
+            res.json(rows);
+        } else {
+            console.log('error: ', err);
+        }
+    });
+});
+
+app.listen(port, function(){
+	console.log("Server listening on port" + port + " !");
+})

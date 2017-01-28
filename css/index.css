@@ -1,41 +1,7 @@
-.body{
-	margin: 0 !important;
-	height: 100% !important;
-}
-
-#addProject{
-	width: 40%;
-	padding-left: 4.5%;
-	margin-right: 0;
-	float: left;
-}
-
-.form-group{
-	font-size: 18px !important;
-}
-
-#projectManager{
-	margin: 0 0 0 3%;
-	width: 57%;
-	float: left;
+.buffer{
+	margin-left: 4%;
 }
 
 .pikachu{
 	width: 80%;
-}
-
-.container{
-	padding-top: 3%;
-}
-
-.form-group{
-	font-size: 15px;
-}
-
-#buttons{
-	margin-left: 30%;
-}
-
-#projectList{
-	float: left;
 }

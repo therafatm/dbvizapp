@@ -26,16 +26,16 @@
 
 		<!-- Custom Stylesheets -->
 		<link rel="stylesheet" type="text/css" href="/css/index.css">
-
+		<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/flexboxgrid/6.3.1/flexboxgrid.min.css" type="text/css">
 	</head>
-	<body class="container">
-
+	<body>
 			<!-- HEADER AND NAVBAR -->
-			<header>
-				<nav class="navbar navbar-inverse">
+			<header class="row">
+				<div class="buffer"></div>
+				<nav class="navbar navbar-inverse col-sm-11">
 				<div class="navbar-header">
 					<a class="navbar-brand" href="/">SENG371 - Database Schema Visualization App</a>
-				</div>	
+				</div>
 			</header>
 			<!-- MAIN CONTENT AND INJECTED VIEWS -->
 			<div ng-app="dbVizApp" ng-controller="projectController">

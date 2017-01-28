@@ -1,4 +1,4 @@
-app.controller('projectController', ['$scope', '$http', function($scope, $http){
+app.controller('projectController', ['$scope', '$http', 'goService', function($scope, $http, goService){
 
 	$scope.projectToAdd = {};
 
@@ -37,6 +37,7 @@ app.controller('projectController', ['$scope', '$http', function($scope, $http){
 
 		$scope.projectToAdd = {};
 	}
-
+ 	
+ 	$scope.gojs = goService.drawSchema;
 	$scope.msg = "Pikachu!!";
 }]);

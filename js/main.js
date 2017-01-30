@@ -1,4 +1,4 @@
-(function() {
+var gojs = function() {
     var GO = go.GraphObject.make;
     var diagram =
         GO(go.Diagram, "databaseDiagram",
@@ -122,4 +122,4 @@
     }});
 
     diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
-}());
+};

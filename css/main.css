@@ -1,6 +1,8 @@
 .main-center {
     align-items: center;
     justify-content: center;
+    background-image: url(http://www.pixelstalk.net/wp-content/uploads/2016/11/HD-Flat-Design-Photos.jpg);
+    background-size: 100% 100%;
 }
 
 .page-content {

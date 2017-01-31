@@ -1,43 +1,43 @@
-app.controller('projectController', ['$scope', '$http', 'goService', function($scope, $http, goService){
+app.controller('projectController', ['$scope', 'goService', 'projectApiService', function($scope, goService, projectApiService){
 
-	$scope.projectToAdd = {};
-
-	$http.get('/api/project/')
-	.success((data) => { $scope.currentProjects = data; })
-	.error((error) => { console.log('Error: ' + error); });
-
-	$scope.deleteProject = function(id){
-		$http.delete('/api/project/' + id)
-		.success( (data) => {
-				alert("Project has been deleted succesfully!");
-				$scope.currentProjects = data
-			}
-		)
-		.error((error) => {
-			alert('Error: ' + error);
-		});
-	}
-
-	$scope.addProject = function(project){
-
-		if(parseInt(project.id) > 0 && (typeof(project.name) == 'string') && project.name.length > 0){
-			$http.post('/api/project/', $scope.projectToAdd)
-			.success( (data) => {
-				$scope.currentProjects = data;
-				alert("New project has been added!");
-			})
-			.error((error) => {
-				alert("Error - " + error);
-			});
-		} else{
-			console.log(project);
-			alert("Invalid form information!");
-			$scope.projectToAdd = {};
-		}
-
-		$scope.projectToAdd = {};
-	}
- 	
+	$scope.currentProjects = {}
+	$scope.projectToAdd = {}
  	$scope.gojs = goService.drawSchema;
 	$scope.msg = "Pikachu!!";
+
+	$scope.init = function(){
+		projectApiService.getAllProjects()
+			.then(
+				function(projects){
+					$scope.currentProjects = projects;
+				}, function(error){
+					alert(error.error);
+				}
+		);
+	}
+
+	$scope.deleteProjectFromDB = function(id){
+		projectApiService.deleteProject(id)
+			.then(
+				function(projects){
+					alert("Project has been deleted succesfully!");
+					$scope.currentProjects = projects;
+				}, function(error){
+					alert(error.error);
+				}
+			);
+	}
+
+	$scope.addProjectToDB = function(project){
+		projectApiService.addProject(project)
+			.then(
+				function(projects){
+					$scope.currentProjects = projects;
+					$scope.projectToAdd = {}
+				}, function(error){
+					alert(error.error);
+				}
+			);
+	}
+
 }]);

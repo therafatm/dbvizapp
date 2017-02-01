@@ -1,4 +1,4 @@
-app.service('goService', function() {
+app.service('goService', function(projectData) {
 
 	this.drawSchema = function(){
 	    var GO = go.GraphObject.make;
@@ -61,10 +61,10 @@ app.service('goService', function() {
 	        var tbl_name = query1[i].table_name;
 	        var existing_tbl = _.where(nodeDataArray, {key: tbl_name});
 
-	        if (existing_tbl && existing_tbl.length > 0) {
-	            existing_tbl[0].items.push({name: query1[i].column_name, isKey: (query1[i].column_key == "PRI")});
+	        if (existing_tbl && existing_tbl.length > 0 && projectData.query1) {
+	            existing_tbl[0].items.push({name: projectData.query1[i].column_name, isKey: (projectData.query1[i].column_key == "PRI")});
 	        } else {
-	            var new_tbl = {key: tbl_name, items: [ {name: query1[i].column_name, isKey: (query1[i].column_key == "PRI")}]};
+	            var new_tbl = {key: tbl_name, items: [ {name: projectData.query1[i].column_name, isKey: (projectData.query1[i].column_key == "PRI")}]};
 	            nodeDataArray.push(new_tbl);
 	        }
 	    }
@@ -81,7 +81,7 @@ app.service('goService', function() {
 	    ];
 
 	    for (var j = 0; j < query2.length; j++) {
-	        linkDataArray.push({from: query2[j].table_name, to: query2[j].referenced_table_name,
+	        linkDataArray.push({from: projectData.query2[j].table_name, to: projectData.query2[j].referenced_table_name,
 	            fromText: query2[j].constraint_name, toText: "blah"});
 	    }
 

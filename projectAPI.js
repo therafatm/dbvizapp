@@ -1,6 +1,14 @@
 var express = require('express');
 var router = express.Router();
 var pg = require('pg');
+var mysql = require('mysql');
+
+// current project id
+var project_id = 1;
+
+// save connection parameters
+// should be done in the db, this is temporary hack.
+var connectionParams = [];
 
 var config = {
   user: 'ymaswrfichcpnv', //env var: PGUSER
@@ -52,6 +60,9 @@ router.route('/')
   //Add project to DB
   .post(function(req, res, next){
   const results = [];
+
+  connectionParams.push({id: project_id, host: req.host, user: req.user, password: req.password });
+
   // Grab data from http request
   // Get a Postgres client from the connection pool
   pg.connect(config, (err, client, done) => {
@@ -62,7 +73,11 @@ router.route('/')
         return res.status(500).json({success: false, data: err});
       }
       // SQL Query > Insert Data
-      client.query('INSERT INTO projects VALUES($1, $2)', [req.body.id, req.body.name]);
+      client.query('INSERT INTO projects VALUES($1, $2)', [project_id, req.body.name]);
+
+      // incr. project_id (hack)
+      project_id++;
+
       // SQL Query > Select Data
       const query = client.query('SELECT * FROM projects ORDER BY id ASC');
       // Stream results back one row at a time
@@ -75,6 +90,22 @@ router.route('/')
         return res.json(results);
       });
     });
+});
+
+router.get('/:id', (req, res, next) => {
+  const results = [];
+  const id = req.params.id;
+
+  // Get connection parameters associated with the id
+  var conn = _.findWhere(connectionParams, {id: id});
+
+  var connection = mysql.createConnection({
+      host: conn.host,
+      user: conn.user,
+      password: conn.password,
+      database: 'information_schema'
+  });
+
 });
 
 router.delete('/:id', (req, res, next) => {

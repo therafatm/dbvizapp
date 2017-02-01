@@ -7,7 +7,8 @@ app.config(function($routeProvider){
 		templateUrl: '/views/partials/main.html'
 	})
 	.when('/schema',{
-		templateUrl: '/views/partials/schema.html'
+		templateUrl: '/views/partials/schema.html',
+
 	});
 });
 

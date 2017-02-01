@@ -4,7 +4,7 @@ var morgan = require('morgan');
 var port = process.env.PORT || 8080;
 var path = require('path');
 var app = express();
-var projectAPI = require('./projectAPI')
+var projectAPI = require('./projectAPI');
 
 app.use('/views', express.static(__dirname + '/views'));
 app.use('/css', express.static(__dirname + '/css'));
@@ -41,7 +41,6 @@ var keys_query = 'SELECT table_name, column_name, referenced_table_name, referen
 // var connection = mysql.createConnection('mysql://user:pass@host/wordpress');
 
 var mysql = require('mysql');
-
 // These are the connection parameters that will be configurable.
 var connection = mysql.createConnection({
     host: 'localhost',

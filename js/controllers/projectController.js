@@ -1,16 +1,17 @@
-app.controller('projectController', ['$scope', '$http', 'goService', function($scope, $http, goService){
+app.controller('projectController', ['$scope', '$http', '$location','projectService', function($scope, $http, $location, projectService){
 
 	$scope.projectToAdd = {};
 
 	$http.get('/api/project/')
-	.success((data) => { $scope.currentProjects = data; })
+	.success((data) => { $scope.currentProjects = data; projectService.setProjects(data); })
 	.error((error) => { console.log('Error: ' + error); });
 
 	$scope.deleteProject = function(id){
 		$http.delete('/api/project/' + id)
 		.success( (data) => {
 				alert("Project has been deleted succesfully!");
-				$scope.currentProjects = data
+				$scope.currentProjects = data;
+				projectService.setProjects(data);
 			}
 		)
 		.error((error) => {
@@ -20,24 +21,54 @@ app.controller('projectController', ['$scope', '$http', 'goService', function($s
 
 	$scope.addProject = function(project){
 
-		if(parseInt(project.id) > 0 && (typeof(project.name) == 'string') && project.name.length > 0){
+		// Modifying to use url for mysql instead.
+		if(typeof(project.name) == 'string' && project.name.length > 0 &&
+		   typeof(project.host) == 'string' && project.host.length > 0 &&
+		   typeof(project.username) == 'string' && project.username.length > 0 &&
+		   typeof(project.password) == 'string' && project.password.length > 0) {
 			$http.post('/api/project/', $scope.projectToAdd)
-			.success( (data) => {
+				.success((data) => {
 				$scope.currentProjects = data;
-				alert("New project has been added!");
+				projectService.setProjects(data);
+				alert("New project has been added.");
 			})
 			.error((error) => {
 				alert("Error - " + error);
 			});
-		} else{
-			console.log(project);
-			alert("Invalid form information!");
-			$scope.projectToAdd = {};
-		}
+		} else {
+            console.log(project);
+            alert("Invalid form information.");
+            $scope.projectToAdd = {};
+        }
+
+		// if(parseInt(project.id) > 0 && (typeof(project.name) == 'string') && project.name.length > 0){
+		// 	$http.post('/api/project/', $scope.projectToAdd)
+		// 	.success( (data) => {
+		// 		$scope.currentProjects = data;
+		// 		alert("New project has been added!");
+		// 	})
+		// 	.error((error) => {
+		// 		alert("Error - " + error);
+		// 	});
+		// } else{
+		// 	console.log(project);
+		// 	alert("Invalid form information!");
+		// 	$scope.projectToAdd = {};
+		// }
 
 		$scope.projectToAdd = {};
-	}
- 	
- 	$scope.gojs = goService.drawSchema;
+	};
+
+	$scope.showProject = function(id) {
+		let project = _.findWhere(projectService.getProjects(), {id: id});
+		if (project) {
+            projectService.setCurrentProject(project);
+            // Switch to schema.
+			$location.path("/schema");
+		} else {
+			alert("Error: project doesn't exist.");
+		}
+	};
+
 	$scope.msg = "Pikachu!!";
 }]);

@@ -1,6 +1,31 @@
-<div class="row" id="schemaManager">
-	<div class="buffer"></div>
-	<div class="jumbotron col-sm-3" align="left"> Project List</div>
-	<div style="margin-right:0.4%"></div>
-	<div ng-init="gojs(currentProject)" class="jumbotron col-sm-8" align="left" id="databaseDiagram" style="width: 800px; height: 800px; background-color: lightsteelblue"></div>
+<div class="page-content mdl-grid">
+
+	<!-- Control Panel Starts-->
+	<div class="mdl-card mdl-shadow--2dp mdl-cell mdl-cell--3-col mdl-cell--stretch panel">
+		<!-- Layouts Card Starts-->
+		<div class="mdl-card__actions layout-title mdl-shadow--2dp">
+			<h5>Layouts</h5>
+		</div>
+		<div class="mdl-card layout-card">
+			<div class="mdl-card__actions layout-button layout-button-toggled">
+				<i class="material-icons">view_module</i>
+			</div>
+			<div class="mdl-card__actions layout-button border-left">
+				<i class="material-icons">swap_horiz</i>
+			</div>
+			<div class="mdl-card__actions layout-button border-top">
+				<i class="material-icons">toll</i>
+			</div>
+			<div class="mdl-card__actions layout-button border-top-left">
+				<i class="material-icons">view_headline</i>
+			</div>
+		</div>
+		<!-- Layouts Card Ends-->
+	</div>
+	<!-- Layouts Card Ends-->
+
+	<!-- Main Content Starts-->
+	<div class="">
+		<div ng-init="gojs()" class="er-content" id="databaseDiagram"></div>
+	</div>
 </div>

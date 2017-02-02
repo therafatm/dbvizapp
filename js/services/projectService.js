@@ -1,6 +1,6 @@
 app.service('projectService', function() {
     var projectList = [];
-    var currentProject = {};
+    var currentProject;
 
     var addProject = function(project) {
         projectList.push(project);
@@ -22,12 +22,17 @@ app.service('projectService', function() {
         return currentProject;
     };
 
+    var getProjectById = function(id) {
+        return _.findWhere(projectList, {id: id});
+    }
+
     return {
         addProject: addProject,
         setProjects: setProjects,
         getProjects: getProjects,
         setCurrentProject: setCurrentProject,
-        getCurrentProject: getCurrentProject
+        getCurrentProject: getCurrentProject,
+        getProjectById: getProjectById
     };
 
 });

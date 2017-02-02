@@ -5,6 +5,7 @@ var port = process.env.PORT || 8080;
 var path = require('path');
 var app = express();
 var projectAPI = require('./projectAPI');
+var schemaAPI = require('./schemaAPI');
 
 app.use('/views', express.static(__dirname + '/views'));
 app.use('/css', express.static(__dirname + '/css'));
@@ -28,55 +29,9 @@ app.get('/', function(req, res){
 	res.sendFile(path.join(__dirname + '/views/index.html'));
 });
 
-app.get('/diagram', function(req, res) {
-	res.sendFile(path.join(__dirname + '/godiagram.html'));
-});
-
-// Mysql stuff
-var schema_name = 'test_db';
-var columns_query = 'SELECT table_name, column_name, column_key, data_type FROM information_schema.columns WHERE table_schema="' + schema_name + '";';
-var keys_query = 'SELECT table_name, column_name, referenced_table_name, referenced_column_name FROM information_schema.key_column_usage WHERE table_schema="' + schema_name + '";';
-
-// Can do this
-// var connection = mysql.createConnection('mysql://user:pass@host/wordpress');
-
-var mysql = require('mysql');
-// These are the connection parameters that will be configurable.
-var connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'root',
-    database: 'information_schema'
-});
-
-connection.connect(function(err) {
-	if (err) {
-		console.log("Error connecting to mysql.");
-	}
-});
-
-app.get('/sql_query_cols', function(req, res) {
-    connection.query(columns_query, function(err, rows, fields) {
-        if (!err) {
-            res.json(rows);
-        } else {
-            console.log('error: ', err);
-        }
-    });
-});
-
-app.get('/sql_query_keys', function(req, res) {
-    connection.query(keys_query, function(err, rows, fields) {
-        if (!err) {
-            res.json(rows);
-        } else {
-            console.log('error: ', err);
-        }
-    });
-});
-
 // set up the project REST endpoint
-app.use('/api/project', projectAPI)
+app.use('/api/project', projectAPI);
+app.use('/api/schema', schemaAPI);
 
 app.listen(port, function(){
 	console.log("Server listening on port " + port + " !");

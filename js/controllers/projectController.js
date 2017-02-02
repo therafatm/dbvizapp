@@ -1,15 +1,21 @@
-app.controller('projectController', ['$scope', 'goService', 'projectApiService', function($scope, goService, projectApiService){
+app.controller('projectController', ['$scope', '$location', 'goService', 'projectApiService', 'projectService', function($scope, $location, goService, projectApiService, projectService){
 
 	$scope.currentProjects = {}
 	$scope.projectToAdd = {}
  	$scope.gojs = goService.drawSchema;
 	$scope.msg = "Pikachu!!";
 
+	$scope.updateCurrentProjects = function(projects) {
+	    $scope.currentProjects = projects;
+	    projectService.setProjects(projects);
+    }
+
 	$scope.init = function(){
 		projectApiService.getAllProjects()
 			.then(
 				function(projects){
 					$scope.currentProjects = projects;
+                    projectService.setProjects(projects);
 				}, function(error){
 					alert(error.error);
 				}
@@ -21,7 +27,7 @@ app.controller('projectController', ['$scope', 'goService', 'projectApiService',
 			.then(
 				function(projects){
 					alert("Project has been deleted succesfully!");
-					$scope.currentProjects = projects;
+					$scope.updateCurrentProjects(projects);
 				}, function(error){
 					alert(error.error);
 				}
@@ -32,12 +38,23 @@ app.controller('projectController', ['$scope', 'goService', 'projectApiService',
 		projectApiService.addProject(project)
 			.then(
 				function(projects){
-					$scope.currentProjects = projects;
-					$scope.projectToAdd = {}
+					$scope.updateCurrentProjects(projects);
+					$scope.projectToAdd = {};
 				}, function(error){
 					alert(error.error);
 				}
 			);
 	}
+
+    $scope.showProject = function(id) {
+        let project = projectService.getProjectById(id);
+        if (project) {
+            projectService.setCurrentProject(project);
+            // Switch to schema.
+            $location.path("/schema/" + project.id);
+        } else {
+            alert("Error: project doesn't exist.");
+        }
+    }
 
 }]);

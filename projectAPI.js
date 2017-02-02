@@ -52,6 +52,9 @@ router.route('/')
   //Add project to DB
   .post(function(req, res, next){
   const results = [];
+
+  console.log(req.body);
+
   // Grab data from http request
   // Get a Postgres client from the connection pool
   pg.connect(config, (err, client, done) => {
@@ -62,7 +65,9 @@ router.route('/')
         return res.status(500).json({success: false, data: err});
       }
       // SQL Query > Insert Data
-      client.query('INSERT INTO projects VALUES($1, $2)', [req.body.id, req.body.name]);
+      client.query('INSERT INTO projects (id, name, database, host, port, "user", password) VALUES ($1, $2, $3, $4, $5, $6, $7)',
+          [req.body.id, req.body.name, req.body.name, req.body.host, req.body.port, req.body.username, req.body.password]);
+
       // SQL Query > Select Data
       const query = client.query('SELECT * FROM projects ORDER BY id ASC');
       // Stream results back one row at a time

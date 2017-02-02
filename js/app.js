@@ -6,7 +6,7 @@ app.config(function($routeProvider) {
         .when('/', {
             templateUrl: '/views/partials/main.html'
         })
-        .when('/schema', {
+        .when('/schema/:id', {
             templateUrl: '/views/partials/schema.html'
         })
         .when('/material-main', {

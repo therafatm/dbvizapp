@@ -1,4 +1,4 @@
-app.controller('projectController', ['$scope', '$location', 'goService', 'projectApiService', 'projectService', function($scope, $location, goService, projectApiService, projectService){
+app.controller('projectController', ['$scope', '$location', 'goService', 'projectApiService', 'projectService', '$modal', function($scope, $location, goService, projectApiService, projectService, $modal){
 
 	$scope.currentProjects = {}
 	$scope.projectToAdd = {}
@@ -32,6 +32,22 @@ app.controller('projectController', ['$scope', '$location', 'goService', 'projec
 					alert(error.error);
 				}
 			);
+	}
+
+	var ModalInstanceCtrl = function ($scope, $modalInstance) {
+	  $scope.submitEditRequest = function () {
+	    $modalInstance.close("ok");
+	  };
+	  $scope.cancelEditRequest = function () {
+	    $modalInstance.dismiss("cancel");
+	  };
+	};
+
+	$scope.editProjectInDB = function(){
+	    var modalInstance = $modal.open({
+	      templateUrl: '/views/partials/editModal.html',
+	      controller: ModalInstanceCtrl
+	    });
 	}
 
 	$scope.addProjectToDB = function(project){

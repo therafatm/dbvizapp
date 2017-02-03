@@ -57,7 +57,8 @@ app.service('goService', function() {
             GO(go.TextBlock,
                 { stroke: "#333333",
                     font: "bold 14px sans-serif" },
-                new go.Binding("text", "name"))
+                new go.Binding("text", "name")),
+            new go.Binding("portId", "name")
 		);
 
 	    var tableTempl = GO(go.Node, "Auto",

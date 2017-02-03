@@ -4,7 +4,7 @@ var mysql = require('mysql');
 
 // Mysql stuff
 var columnsQuery = 'SELECT table_name, column_name, column_key, data_type FROM information_schema.columns WHERE table_schema=?;';
-var keysQuery = 'SELECT table_name, column_name, referenced_table_name, referenced_column_name FROM information_schema.key_column_usage WHERE table_schema=?;';
+var keysQuery = 'SELECT table_name, column_name, referenced_table_name, referenced_column_name, constraint_name FROM information_schema.key_column_usage WHERE table_schema=?;';
 
 // Can do this
 // var connection = mysql.createConnection('mysql://user:pass@host/wordpress');
@@ -32,7 +32,9 @@ router.route('/').get(function (req, res, next) {
 
     connection.connect(function(err) {
         if(err) {
-            console.log("Error connecting to mysql.");
+            // handle connection errors.
+            console.log("Error connecting to mysql", err);
+            res.status(500).json({success: false, data: err, message: "Error connecting to MySQL server. Check your connection parameters."});
         } else {
             console.log("Successfully connected.");
             connection.query(columnsQuery, [req.query.database], function(err, rows, fields) {
@@ -41,16 +43,12 @@ router.route('/').get(function (req, res, next) {
                     connection.end();
                 } else {
                     results.tablesAndCols = rows;
-                    console.log("first query");
-                    console.log(rows);
                     connection.query(keysQuery, [req.query.database], function(err, rows, fields) {
                         if (err) {
                             console.log('error: ' + err);
                             connection.end();
                         } else {
                             results.foreignKeys = rows;
-                            console.log("second query");
-                            console.log(rows);
                             connection.end();
                             return res.json(results);
                         }

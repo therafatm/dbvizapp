@@ -32,8 +32,7 @@ app.service('projectApiService', ['$http', '$q', function($http, $q){
             typeof(project.host) == 'string' && project.host.length > 0 &&
             typeof(project.username) == 'string' && project.username.length > 0 &&
             typeof(project.password) == 'string' && project.password.length > 0 &&
-            typeof(project.port) == 'string' && project.port.length > 0 ||
-            typeof(project.port) == 'number') {
+            (isNaN(parseInt(project.port)) == false)){
             $http.put('/api/project/', project)
                 .success((data) => {
                     return deferred.resolve(data);
@@ -57,8 +56,7 @@ app.service('projectApiService', ['$http', '$q', function($http, $q){
             typeof(project.host) == 'string' && project.host.length > 0 &&
             typeof(project.username) == 'string' && project.username.length > 0 &&
             typeof(project.password) == 'string' && project.password.length > 0 &&
-            typeof(project.port) == 'string' && project.port.length > 0 ||
-            typeof(project.port) == 'number') {
+            (isNaN(parseInt(project.port)) == false)){
             $http.post('/api/project/', project)
                 .success((data) => {
                     return deferred.resolve(data);

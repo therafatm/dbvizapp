@@ -2,24 +2,15 @@ var express = require('express');
 var router = express.Router();
 var pg = require('pg');
 
-// var config = {
-//   user: 'ymaswrfichcpnv', //env var: PGUSER
-//   database: 'deitvncfhkbq6e', //env var: PGDATABASE
-//   password: '2c09436d0c70aeba07699fd3829051d21320b766362add25b0b4a5b3b72b8f19', //env var: PGPASSWORD
-//   host: 'ec2-107-20-141-145.compute-1.amazonaws.com', // Server hosting the postgres database
-//   port: 5432, //env var: PGPORT
-//   max: 10, // max number of clients in the pool
-//   ssl: true
-// };
-
 var config = {
-  user: 'rafatmahmud', //env var: PGUSER
-  database: 'test', //env var: PGDATABASE
-  password: 'chudirbhai', //env var: PGPASSWORD
-  host: 'localhost', // Server hosting the postgres database
+  user: 'ymaswrfichcpnv', //env var: PGUSER
+  database: 'deitvncfhkbq6e', //env var: PGDATABASE
+  password: '2c09436d0c70aeba07699fd3829051d21320b766362add25b0b4a5b3b72b8f19', //env var: PGPASSWORD
+  host: 'ec2-107-20-141-145.compute-1.amazonaws.com', // Server hosting the postgres database
   port: 5432, //env var: PGPORT
+  max: 10, // max number of clients in the pool
+  ssl: true
 };
-
 
 //const connectionString = 'postgres://localhost:5432/test';
 //const client = new pg.Client(connectionString);

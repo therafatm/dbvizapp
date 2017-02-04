@@ -1,7 +1,8 @@
 app.controller('projectController', ['$scope', '$location', 'goService', 'projectApiService', 'projectService', '$modal', function($scope, $location, goService, projectApiService, projectService, $modal){
 
-	$scope.currentProjects = {}
-	$scope.projectToAdd = {}
+	$scope.currentProjects = {};
+	$scope.projectToAdd = {};
+	$scope.projectToEdit = {};
  	$scope.gojs = goService.drawSchema;
 	$scope.msg = "Pikachu!!";
 
@@ -27,34 +28,59 @@ app.controller('projectController', ['$scope', '$location', 'goService', 'projec
 			.then(
 				function(projects){
 					alert("Project has been deleted succesfully!");
-					$scope.updateCurrentProjects(projects);
+					projectService.setProjects(projects);
+					$scope.currentProjects = projects;					
 				}, function(error){
 					alert(error.error);
 				}
-			);
-	}
+			)
+;	}
 
 	var ModalInstanceCtrl = function ($scope, $modalInstance) {
-	  $scope.submitEditRequest = function () {
-	    $modalInstance.close("ok");
+	  $scope.submitEditRequest = function (id) {
+	  	$scope.editProjectInDB(id, $modalInstance);
+		$modalInstance.close("ok");
 	  };
 	  $scope.cancelEditRequest = function () {
 	    $modalInstance.dismiss("cancel");
 	  };
 	};
 
-	$scope.editProjectInDB = function(){
+	$scope.openEditModal = function(projectId){
+		$scope.projectToEdit = projectService.getProjectById(projectId);		
 	    var modalInstance = $modal.open({
 	      templateUrl: '/views/partials/editModal.html',
-	      controller: ModalInstanceCtrl
-	    });
+	      controller: ModalInstanceCtrl,
+	      scope: $scope
+	    });		
+	}
+
+	$scope.editProjectInDB = function(id, $modalInstance){
+		projectApiService.updateProject(id)
+			.then(
+				function(projects){
+					projectService.setProjects(projects);
+					$scope.currentProjects = projects; 
+					alert("This project has been successfully updated!");
+
+				},
+				function(error){
+					alert(error.error);
+				}
+			)
+	}
+
+	$scope.cancelEditRequest = function(){
+		$scope.projectToEdit = {};
+		return;		
 	}
 
 	$scope.addProjectToDB = function(project){
 		projectApiService.addProject(project)
 			.then(
 				function(projects){
-					$scope.updateCurrentProjects(projects);
+					projectService.setProjects(projects);
+					$scope.currentProjects = projects;
 					$scope.projectToAdd = {};
 				}, function(error){
 					alert(error.error);

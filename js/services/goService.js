@@ -267,8 +267,8 @@ app.service('goService', ['$rootScope', function($rootScope) {
 	    }
 
       // actually pulling data from DB
-	    // diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
-	    this.diagram.model = new go.GraphLinksModel(this.fakeData.nodeDataArray, this.fakeData.linkDataArray);
+	    this.diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+	    // this.diagram.model = new go.GraphLinksModel(this.fakeData.nodeDataArray, this.fakeData.linkDataArray);
 
 
 	};

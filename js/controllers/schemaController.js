@@ -58,7 +58,7 @@ app.controller('schemaController', ['$scope', '$http', '$routeParams', 'goServic
 
     $scope.toggleAttributeVisibility = function() {
 
-        goService.toggleAttributeVisibility();
+        goService.toggleAllAttributeVisibility();
 
     }
 
@@ -69,8 +69,6 @@ app.controller('schemaController', ['$scope', '$http', '$routeParams', 'goServic
                 arr.splice(index,1);
             }
         })
-
-        $scope.apply();
     }
 
 

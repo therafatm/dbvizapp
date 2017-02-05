@@ -42,12 +42,23 @@ app.service('goService', ['$rootScope', function($rootScope) {
   }
 
   this.showEntity = (entityName) => {
-     this.diagram.nodes.each( (node) => {
-          var table = node.findObject("TABLENAME");
-          if( table.text == entityName ){
-            table.panel.panel.visible = true;
+    this.diagram.startTransaction("Collapse/Expand Entity");
+    this.diagram.nodes.each( (node) => {
+        var table = node.findObject("TABLENAME");
+        var entity = table.panel.panel;
+        if( table.text == entityName ){
+          entity.visible = true;
+
+          var linksIter = entity.findLinksConnected().iterator;
+          while(linksIter.next()){
+            linksIter.value;
+            if( linksIter.value.toNode.visible ){
+              linksIter.value.visible = true;
+            }
           }
-      })
+        }
+    })
+    this.diagram.commitTransaction("Collapse/Expand Entity");
   }
 
   go.GraphObject.defineBuilder("ToggleEntityVisibilityButton", function(args) {
@@ -73,7 +84,6 @@ app.service('goService', ['$rootScope', function($rootScope) {
       var entity = button.panel.panel;
       var linksIter = entity.findLinksConnected().iterator;
       while(linksIter.next()){
-        console.log(linksIter.value);
         linksIter.value.visible = false;
       }
       entity.visible = false;

@@ -4,6 +4,8 @@ app.controller('schemaController', ['$scope', '$http', '$routeParams', 'goServic
     $scope.currentProject = projectService.getCurrentProject();
     $scope.schema = {};
 
+    $scope.hiddenEntities = ['aksjdhaskjd'];
+
     $scope.updateCurrentProject = function(project) {
         $scope.currentProject = project;
         projectService.setCurrentProject(project);
@@ -12,6 +14,11 @@ app.controller('schemaController', ['$scope', '$http', '$routeParams', 'goServic
     var projectId = $routeParams.id;
 
     $scope.gojs = goService.drawSchema;
+
+    goService.subscribe("hide-entity", $scope, (name,entityName) => {
+        $scope.hiddenEntities.push(entityName);
+        $scope.$apply();
+    })
 
     $scope.displayCurrentProject = function(){
         // Get schema information from database.
@@ -77,4 +84,6 @@ app.controller('schemaController', ['$scope', '$http', '$routeParams', 'goServic
 
         diagram.commitTransaction("Collapse/Expand all panels");
     }
+
+
 }]);

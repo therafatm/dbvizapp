@@ -1,4 +1,4 @@
-app.service('goService', function() {
+app.service('goService', ['$rootScope', function($rootScope) {
 	
   var GO = go.GraphObject.make;
 
@@ -31,6 +31,7 @@ app.service('goService', function() {
         linksIter.value.visible = false;
       }
       entity.visible = false;
+      $rootScope.$emit('hide-entity', entity.findObject("TABLENAME").text);
       diagram.commitTransaction("Collapse/Expand Entity");
     }
 
@@ -80,6 +81,7 @@ app.service('goService', function() {
         // the table header
         GO(go.TextBlock,
           {
+            name: "TABLENAME",
             row: 0, alignment: go.Spot.Center,
             margin: new go.Margin(0, 14, 0, 2),  // leave room for Button
             font: "bold 16px sans-serif"
@@ -203,4 +205,10 @@ app.service('goService', function() {
     { from: "Products", to: "Categories" },
     { from: "Order Details", to: "Products" }
   ];
-});
+
+  this.subscribe = function(event, scope, callback) {
+      var handler = $rootScope.$on(event, callback);
+      scope.$on('$destroy', handler);
+  }
+
+}]);

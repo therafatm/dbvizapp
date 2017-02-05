@@ -132,10 +132,20 @@
    ========================================================================== */
 
 .er-content {
-    width: 600px;
+    width: 800px;
     height: 700px;
 }
 
+
+
+#databaseActions, #databaseDiagram {
+    float:left;
+}
+
+#databaseActions button {
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
 
 /* ==========================================================================
     Footer

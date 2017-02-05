@@ -48,4 +48,33 @@ app.controller('schemaController', ['$scope', '$http', '$routeParams', 'goServic
             $scope.displayCurrentProject();
         }
     }
+
+    $scope.toggleAttributeVisibility = function() {
+
+        var diagram = goService.diagram;
+        if (diagram === null) return;
+        if (diagram.isReadOnly) return;
+
+        diagram.startTransaction("Collapse/Expand all panels");
+
+        var isExpanded = false;
+        diagram.nodes.each( (node) => {
+            var list = node.findObject("ATTRIBUTES");
+            if( list !== null && list.visible == true) isExpanded = true;
+        })
+
+        if( isExpanded ){
+            diagram.nodes.each( (node) => {
+                var list = node.findObject("ATTRIBUTES");
+                if( list !== null) list.visible = false;
+            })
+        } else {
+            diagram.nodes.each( (node) => {
+                var list = node.findObject("ATTRIBUTES");
+                if( list !== null) list.visible = true;
+            })
+        }
+
+        diagram.commitTransaction("Collapse/Expand all panels");
+    }
 }]);

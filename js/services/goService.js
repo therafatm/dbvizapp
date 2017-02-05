@@ -1,7 +1,42 @@
 app.service('goService', function() {
+	
+  var GO = go.GraphObject.make;
 
-<<<<<<< HEAD
-	var GO = go.GraphObject.make;
+  this.diagram = null;
+
+  go.GraphObject.defineBuilder("ToggleAllAttributes", function(args) {
+    var eltname = /** @type {string} */ (go.GraphObject.takeBuilderArgument(args, "COLLAPSIBLE"));
+
+    var button = /** @type {Panel} */ (
+      GO("Button",
+        GO(go.Shape, "TriangleUp",
+                            { desiredSize: new go.Size(6, 4) },
+                            new go.Binding("figure", "visible",
+                                          function(vis) { return vis ? "TriangleUp" : "TriangleDown"; })
+                                .ofObject(eltname)))
+    );
+
+    var border = button.findObject("ButtonBorder");
+    if (border instanceof go.Shape) {
+      border.stroke = null;
+      border.fill = "transparent";
+    }
+
+    button.click = function(e, button) {
+      var diagram = button.diagram;
+      if (diagram === null) return;
+      if (diagram.isReadOnly) return;
+      diagram.startTransaction("Collapse/Expand all panels");
+      diagram.nodes.each( (node) => {
+        var list = node.findObject("ATTRIBUTES");
+        if( list !== null) list.visible = false;
+      })
+      diagram.commitTransaction("Collapse/Expand all panels");
+    }
+
+    return button;
+});
+
 
 	 // define several shared Brushes for drawing go elements
   var bluegrad = GO(go.Brush, "Linear", { 0: "rgb(150, 150, 250)", 0.5: "rgb(86, 86, 186)", 1: "rgb(86, 86, 186)" });
@@ -49,12 +84,12 @@ app.service('goService', function() {
           },
           new go.Binding("text", "key")),
         // the collapse/expand button
-        GO("PanelExpanderButton", "LIST",  // the name of the element whose visibility this button toggles
+        GO("PanelExpanderButton", "ATTRIBUTES",  // the name of the element whose visibility this button toggles
           { row: 0, alignment: go.Spot.TopRight }),
         // the list of Panels, each showing an attribute
         GO(go.Panel, "Vertical",
           {
-            name: "LIST",
+            name: "ATTRIBUTES",
             row: 1,
             padding: 3,
             alignment: go.Spot.TopLeft,
@@ -68,6 +103,7 @@ app.service('goService', function() {
 
   // define the Link template, representing a relationship
   var relationshipTemplate =
+
 		  GO(go.Link,  // the whole link panel
 			{
 				selectionAdorned: true,
@@ -82,7 +118,7 @@ app.service('goService', function() {
 		);
 
 	this.drawSchema = (projectData) => {
-	    var diagram =
+	    this.diagram =
 	        GO(go.Diagram, "databaseDiagram",
 	            {
 	                initialContentAlignment: go.Spot.Center, // center Diagram contents
@@ -92,8 +128,8 @@ app.service('goService', function() {
 	                layout: GO(go.ForceDirectedLayout)
 	            });
 
-      diagram.nodeTemplate = tableTemplate
-      diagram.linkTemplate = relationshipTemplate
+      this.diagram.nodeTemplate = tableTemplate
+      this.diagram.linkTemplate = relationshipTemplate
 
 	    // convert to node data array
 	    var nodeDataArray = [];
@@ -122,7 +158,11 @@ app.service('goService', function() {
 			}
 	    }
 
-	    diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+      // actually pulling data from DB
+	    // diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+	    this.diagram.model = new go.GraphLinksModel(this.fakeData.nodeDataArray, this.fakeData.linkDataArray);
+
+
 	};
 
   // FAKE DATA

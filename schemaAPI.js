@@ -24,7 +24,7 @@ router.route('/').get(function (req, res, next) {
 
     var connection = mysql.createConnection({
         host: req.query.host,
-        user: req.query.user,
+        user: req.query.username,
         password: req.query.password,
         database: 'information_schema',
         port: req.query.port
@@ -32,7 +32,8 @@ router.route('/').get(function (req, res, next) {
 
     connection.connect(function(err) {
         if(err) {
-            console.log("Error connecting to mysql.");
+            console.error("Error connecting to mysql.");
+            console.error(err);
         } else {
             console.log("Successfully connected.");
             connection.query(columnsQuery, [req.query.database], function(err, rows, fields) {

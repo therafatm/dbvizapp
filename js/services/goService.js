@@ -4,7 +4,7 @@ app.service('goService', function() {
 
   this.diagram = null;
 
-  go.GraphObject.defineBuilder("ToggleAllAttributes", function(args) {
+  go.GraphObject.defineBuilder("ToggleEntityVisibilityButton", function(args) {
     var eltname = /** @type {string} */ (go.GraphObject.takeBuilderArgument(args, "COLLAPSIBLE"));
 
     var button = /** @type {Panel} */ (
@@ -24,14 +24,15 @@ app.service('goService', function() {
 
     button.click = function(e, button) {
       var diagram = button.diagram;
-      if (diagram === null) return;
-      if (diagram.isReadOnly) return;
-      diagram.startTransaction("Collapse/Expand all panels");
-      diagram.nodes.each( (node) => {
-        var list = node.findObject("ATTRIBUTES");
-        if( list !== null) list.visible = false;
-      })
-      diagram.commitTransaction("Collapse/Expand all panels");
+      diagram.startTransaction("Collapse/Expand Entity");
+      var entity = button.panel.panel;
+      var linksIter = entity.findLinksConnected().iterator;
+      while(linksIter.next()){
+        console.log(linksIter.value);
+        linksIter.value.visible = false;
+      }
+      entity.visible = false;
+      diagram.commitTransaction("Collapse/Expand Entity");
     }
 
     return button;
@@ -61,7 +62,9 @@ app.service('goService', function() {
   // define the Node template, representing an entity
   var tableTemplate =
     GO(go.Node, "Auto",  // the whole node panel
-      { selectionAdorned: true,
+      {
+        name: "ENTITY", 
+        selectionAdorned: true,
         resizable: true,
         layoutConditions: go.Part.LayoutStandard & ~go.Part.LayoutNodeSized,
         fromSpot: go.Spot.AllSides,
@@ -86,6 +89,8 @@ app.service('goService', function() {
         // the collapse/expand button
         GO("PanelExpanderButton", "ATTRIBUTES",  // the name of the element whose visibility this button toggles
           { row: 0, alignment: go.Spot.TopRight }),
+        GO("ToggleEntityVisibilityButton", "ENTITY",  // the name of the element whose visibility this button toggles
+          { row: 0, alignment: go.Spot.TopLeft }),
         // the list of Panels, each showing an attribute
         GO(go.Panel, "Vertical",
           {
@@ -190,6 +195,9 @@ app.service('goService', function() {
         { name: "UnitPrice", iskey: false, figure: "MagneticData", color: greengrad },
         { name: "Quantity", iskey: false, figure: "MagneticData", color: greengrad },
         { name: "Discount", iskey: false, figure: "MagneticData", color: greengrad } ] },
+  { key: "Lone Wolf",
+    items: [ { name: "FUCK", iskey: true, figure: "Decision", color: yellowgrad },
+        { name: "THIS", iskey: false, figure: "MagneticData", color: greengrad } ] }
   ];
   this.fakeData.linkDataArray = [
     { from: "Products", to: "Suppliers" },

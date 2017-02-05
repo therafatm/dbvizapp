@@ -1,4 +1,4 @@
-var app = angular.module('dbVizApp', ['ngRoute']);
+var app = angular.module('dbVizApp', ['ngRoute', 'ui.bootstrap']);
 
 app.config(function($routeProvider) {
 
@@ -6,7 +6,7 @@ app.config(function($routeProvider) {
         .when('/', {
             templateUrl: '/views/partials/main.html'
         })
-        .when('/schema', {
+        .when('/schema/:id', {
             templateUrl: '/views/partials/schema.html'
         })
         .when('/material-main', {

@@ -1,5 +1,6 @@
 app.service('goService', function() {
 
+<<<<<<< HEAD
 	var GO = go.GraphObject.make;
 
 	 // define several shared Brushes for drawing go elements
@@ -80,7 +81,7 @@ app.service('goService', function() {
 				{ stroke: "#303B45", strokeWidth: 2.5 })
 		);
 
-	this.drawSchema = () => {
+	this.drawSchema = (projectData) => {
 	    var diagram =
 	        GO(go.Diagram, "databaseDiagram",
 	            {
@@ -91,10 +92,37 @@ app.service('goService', function() {
 	                layout: GO(go.ForceDirectedLayout)
 	            });
 
-    diagram.nodeTemplate = tableTemplate
-		diagram.linkTemplate = relationshipTemplate
+      diagram.nodeTemplate = tableTemplate
+      diagram.linkTemplate = relationshipTemplate
 
-		diagram.model = new go.GraphLinksModel(this.fakeData.nodeDataArray, this.fakeData.linkDataArray);
+	    // convert to node data array
+	    var nodeDataArray = [];
+
+	    for (var i = 0; i < projectData.tablesAndCols.length; i++) {
+	        var tbl_name = projectData.tablesAndCols[i].table_name;
+	        var existing_tbl = _.where(nodeDataArray, {key: tbl_name});
+
+	        if (existing_tbl && existing_tbl.length > 0 && projectData.query1) {
+	            existing_tbl[0].items.push({name: projectData.tablesAndCols[i].column_name,
+					isKey: (projectData.tablesAndCols[i].column_key == "PRI")});
+	        } else {
+	            var new_tbl = {key: tbl_name, items: [ {name: projectData.tablesAndCols[i].column_name,
+					isKey: (projectData.tablesAndCols[i].column_key == "PRI")}]};
+	            nodeDataArray.push(new_tbl);
+	        }
+	    }
+
+	    var linkDataArray = [];
+
+	    for (let j = 0; j < projectData.tablesAndCols.length; j++) {
+	    	if (projectData.tablesAndCols[j].referenced_table_name) {
+                linkDataArray.push({from: projectData.tablesAndCols[j].table_name,
+                    to: projectData.tablesAndCols[j].referenced_table_name,
+                    fromText: projectData.tablesAndCols[j].constraint_name, toText: "blah"});
+			}
+	    }
+
+	    diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
 	};
 
   // FAKE DATA

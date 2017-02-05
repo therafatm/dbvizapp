@@ -1,43 +1,102 @@
-app.controller('projectController', ['$scope', '$http', 'goService', function($scope, $http, goService){
+app.controller('projectController', ['$scope', '$location', 'goService', 'projectApiService', 'projectService', '$modal', function($scope, $location, goService, projectApiService, projectService, $modal){
 
+	$scope.currentProjects = {};
 	$scope.projectToAdd = {};
-
-	$http.get('/api/project/')
-	.success((data) => { $scope.currentProjects = data; })
-	.error((error) => { console.log('Error: ' + error); });
-
-	$scope.deleteProject = function(id){
-		$http.delete('/api/project/' + id)
-		.success( (data) => {
-				alert("Project has been deleted succesfully!");
-				$scope.currentProjects = data
-			}
-		)
-		.error((error) => {
-			alert('Error: ' + error);
-		});
-	}
-
-	$scope.addProject = function(project){
-
-		if(parseInt(project.id) > 0 && (typeof(project.name) == 'string') && project.name.length > 0){
-			$http.post('/api/project/', $scope.projectToAdd)
-			.success( (data) => {
-				$scope.currentProjects = data;
-				alert("New project has been added!");
-			})
-			.error((error) => {
-				alert("Error - " + error);
-			});
-		} else{
-			console.log(project);
-			alert("Invalid form information!");
-			$scope.projectToAdd = {};
-		}
-
-		$scope.projectToAdd = {};
-	}
- 	
+	$scope.projectToEdit = {};
  	$scope.gojs = goService.drawSchema;
 	$scope.msg = "Pikachu!!";
+
+	$scope.updateCurrentProjects = function(projects) {
+	    $scope.currentProjects = projects;
+	    projectService.setProjects(projects);
+    }
+
+	$scope.init = function(){
+		projectApiService.getAllProjects()
+			.then(
+				function(projects){
+					$scope.currentProjects = projects;
+                    projectService.setProjects(projects);
+				}, function(error){
+					alert(error.error);
+				}
+		);
+	}
+
+	$scope.deleteProjectFromDB = function(id){
+		projectApiService.deleteProject(id)
+			.then(
+				function(projects){
+					alert("Project has been deleted succesfully!");
+					projectService.setProjects(projects);
+					$scope.currentProjects = projects;					
+				}, function(error){
+					alert(error.error);
+				}
+			)
+;	}
+
+	var ModalInstanceCtrl = function ($scope, $modalInstance) {
+	  $scope.submitEditRequest = function (id) {
+	  	$scope.editProjectInDB(id, $modalInstance);
+		$modalInstance.close("ok");
+	  };
+	  $scope.cancelEditRequest = function () {
+	    $modalInstance.dismiss("cancel");
+	  };
+	};
+
+	$scope.openEditModal = function(projectId){
+		$scope.projectToEdit = projectService.getProjectById(projectId);		
+	    var modalInstance = $modal.open({
+	      templateUrl: '/views/partials/editModal.html',
+	      controller: ModalInstanceCtrl,
+	      scope: $scope
+	    });		
+	}
+
+	$scope.editProjectInDB = function(id, $modalInstance){
+		projectApiService.updateProject(id)
+			.then(
+				function(projects){
+					projectService.setProjects(projects);
+					$scope.currentProjects = projects; 
+					alert("This project has been successfully updated!");
+
+				},
+				function(error){
+					alert(error.error);
+				}
+			)
+	}
+
+	$scope.cancelEditRequest = function(){
+		$scope.projectToEdit = {};
+		return;		
+	}
+
+	$scope.addProjectToDB = function(project){
+		projectApiService.addProject(project)
+			.then(
+				function(projects){
+					projectService.setProjects(projects);
+					$scope.currentProjects = projects;
+					$scope.projectToAdd = {};
+				}, function(error){
+					alert(error.error);
+				}
+			);
+	}
+
+    $scope.showProject = function(id) {
+        let project = projectService.getProjectById(id);
+        if (project) {
+            projectService.setCurrentProject(project);
+            // Switch to schema.
+            $location.path("/schema/" + project.id);
+        } else {
+            alert("Error: project doesn't exist.");
+        }
+    }
+
 }]);

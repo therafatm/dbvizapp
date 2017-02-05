@@ -9,11 +9,10 @@ app.service('goService', function() {
 
     var button = /** @type {Panel} */ (
       GO("Button",
-        GO(go.Shape, "TriangleUp",
-                            { desiredSize: new go.Size(6, 4) },
-                            new go.Binding("figure", "visible",
-                                          function(vis) { return vis ? "TriangleUp" : "TriangleDown"; })
-                                .ofObject(eltname)))
+        GO(go.Shape, "IrritationHazard",
+                            { desiredSize: new go.Size(10, 10) }
+        )
+      )
     );
 
     var border = button.findObject("ButtonBorder");

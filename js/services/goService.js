@@ -52,9 +52,18 @@ app.service('goService', ['$rootScope', function($rootScope) {
           var linksIter = entity.findLinksConnected().iterator;
           while(linksIter.next()){
             linksIter.value;
-            if( linksIter.value.toNode.visible ){
-              linksIter.value.visible = true;
+            
+            // deal with the cases of to and from links
+            if(linksIter.value.toNode.findObject("TABLENAME").text == table.text){
+              if( linksIter.value.fromNode.visible ){
+                linksIter.value.visible = true;
+              }
+            } else if( linksIter.value.fromNode.findObject("TABLENAME").text == table.text){
+              if( linksIter.value.toNode.visible ){
+                linksIter.value.visible = true;
+              }
             }
+
           }
         }
     })
@@ -94,6 +103,48 @@ app.service('goService', ['$rootScope', function($rootScope) {
     return button;
   });
 
+  go.GraphObject.defineBuilder("ExpandEntityButton", function(args) {
+    var eltname = /** @type {string} */ (go.GraphObject.takeBuilderArgument(args, "COLLAPSIBLE"));
+
+    var button = /** @type {Panel} */ (
+      GO("Button",
+        GO(go.Shape, "NinePointedBurst",
+                            { desiredSize: new go.Size(10, 10),
+                              margin: new go.Margin(5)}
+        )
+      )
+    );
+
+    var border = button.findObject("ButtonBorder");
+    if (border instanceof go.Shape) {
+      border.stroke = null;
+      border.fill = "transparent";
+    }
+
+    button.click = function(e, button) {
+      var diagram = button.diagram;
+      diagram.startTransaction("Expand Diagram based on Entity");
+      var entity = button.panel;
+      var entityName = entity.findObject("TABLENAME").text;
+      var linksIter = entity.findLinksConnected().iterator;
+      while(linksIter.next()){
+                    // deal with the cases of to and from links
+          if(linksIter.value.toNode.findObject("TABLENAME").text == entityName){
+            if( !linksIter.value.fromNode.visible ){
+              $rootScope.$emit('show-entity', linksIter.value.fromNode.findObject("TABLENAME").text);
+            }
+          } else if( linksIter.value.fromNode.findObject("TABLENAME").text == entityName){
+            if( !linksIter.value.toNode.visible ){
+              $rootScope.$emit('show-entity', linksIter.value.toNode.findObject("TABLENAME").text);
+            }
+          }
+      }
+      diagram.commitTransaction("Expand Diagram based on Entity");
+    }
+
+    return button;
+  });
+
 	// the template for each attribute in a node's array of item data
   var attributeTemplate =
     GO(go.Panel, "Horizontal",
@@ -114,6 +165,7 @@ app.service('goService', ['$rootScope', function($rootScope) {
         name: "ENTITY", 
         selectionAdorned: true,
         resizable: true,
+        minSize: new go.Size(150,50),
         layoutConditions: go.Part.LayoutStandard & ~go.Part.LayoutNodeSized,
         fromSpot: go.Spot.AllSides,
         toSpot: go.Spot.AllSides,
@@ -131,7 +183,7 @@ app.service('goService', ['$rootScope', function($rootScope) {
           {
             name: "TABLENAME",
             row: 0, alignment: go.Spot.Center,
-            margin: new go.Margin(0, 14, 0, 2),  // leave room for Button
+            margin: new go.Margin(0, 14, 0, 14),  // leave room for Button
             font: "bold 16px sans-serif"
           },
           new go.Binding("text", "key")),
@@ -140,7 +192,6 @@ app.service('goService', ['$rootScope', function($rootScope) {
           { row: 0, alignment: go.Spot.TopRight }),
         GO("ToggleEntityVisibilityButton", "ENTITY",  // the name of the element whose visibility this button toggles
           { row: 0, alignment: go.Spot.TopLeft }),
-        // the list of Panels, each showing an attribute
         GO(go.Panel, "Vertical",
           {
             name: "ATTRIBUTES",
@@ -152,7 +203,10 @@ app.service('goService', ['$rootScope', function($rootScope) {
             itemTemplate: attributeTemplate
           },
           new go.Binding("itemArray", "items"))
-      )  // end Table Panel
+      ),  // end Table Panel
+      GO("ExpandEntityButton", "ENTITY",  // the name of the element whose visibility this button toggles
+        { row: 0, alignment: go.Spot.BottomRight })
+      // the list of Panels, each showing an attribute
     );  // end Node
 
   // define the Link template, representing a relationship

@@ -7,6 +7,11 @@
 			<div class="mdl-card__actions layout-title mdl-shadow--2dp">
 				<h5>Hidden Entities</h5>
 			</div>
+		<div id="databaseActions">
+			<button type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off" ng-click="toggleAttributeVisibility($event)">
+					Show / Hide All Attributes
+			</button>
+		</div>
 			<table class="table table-striped table-hover ">
 				<tbody>
 					<tr ng-repeat="item in hiddenEntities">
@@ -42,10 +47,6 @@
 	<!-- Main Content Starts-->
 	<div class="">
 		<div class="er-content" id="databaseDiagram"></div>
-		<div id="databaseActions">
-			<button type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off" ng-click="toggleAttributeVisibility($event)">
-				  Show / Hide All Attributes
-			</button>
-		</div>
+	
 	</div>
 </div>

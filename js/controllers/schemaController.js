@@ -1,4 +1,4 @@
-app.controller('schemaController', ['$scope', '$http', '$routeParams', 'goService', 'projectService', function($scope, $http, $routeParams, goService, projectService) {
+app.controller('schemaController', ['$scope', '$http', '$timeout', '$routeParams', 'goService', 'projectService', function($scope, $http, $timeout, $routeParams, goService, projectService) {
 
     $scope.allProjects = projectService.getProjects();
     $scope.currentProject = projectService.getCurrentProject();
@@ -15,10 +15,6 @@ app.controller('schemaController', ['$scope', '$http', '$routeParams', 'goServic
 
     $scope.gojs = goService.drawSchema;
 
-    goService.subscribe("hide-entity", $scope, (name,entityName) => {
-        $scope.hiddenEntities.push(entityName);
-        $scope.$apply();
-    })
 
     $scope.displayCurrentProject = function(){
         // Get schema information from database.
@@ -62,11 +58,22 @@ app.controller('schemaController', ['$scope', '$http', '$routeParams', 'goServic
 
     }
 
+    goService.subscribe("hide-entity", $scope, (name,entityName) => {
+        $scope.hiddenEntities.push(entityName);
+        $scope.$apply();
+    })
+
+    goService.subscribe("show-entity", $scope, (name,entityName) => {
+        $scope.showEntity(entityName);
+    })
+
     $scope.showEntity = function(entityName) {
         goService.showEntity(entityName);
         $scope.hiddenEntities.forEach( (val, index, arr) => {
             if( val == entityName){
-                arr.splice(index,1);
+                $timeout(function() {
+                    arr.splice(index,1);
+                }, 0);
             }
         })
     }

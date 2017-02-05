@@ -4,6 +4,52 @@ app.service('goService', ['$rootScope', function($rootScope) {
 
   this.diagram = null;
 
+
+
+	 // define several shared Brushes for drawing go elements
+  var bluegrad = GO(go.Brush, "Linear", { 0: "rgb(150, 150, 250)", 0.5: "rgb(86, 86, 186)", 1: "rgb(86, 86, 186)" });
+  var greengrad = GO(go.Brush, "Linear", { 0: "rgb(158, 209, 159)", 1: "rgb(67, 101, 56)" });
+  var redgrad = GO(go.Brush, "Linear", { 0: "rgb(206, 106, 100)", 1: "rgb(180, 56, 50)" });
+  var yellowgrad = GO(go.Brush, "Linear", { 0: "rgb(254, 221, 50)", 1: "rgb(254, 182, 50)" });
+  var lightgrad = GO(go.Brush, "Linear", { 1: "#E6E6FA", 0: "#FFFAF0" });
+
+    this.toggleAllAttributeVisibility = () => {
+    
+        if (this.diagram === null) return;
+        if (this.diagram.isReadOnly) return;
+
+        this.diagram.startTransaction("Collapse/Expand all panels");
+
+        var isExpanded = false;
+        this.diagram.nodes.each( (node) => {
+            var list = node.findObject("ATTRIBUTES");
+            if( list !== null && list.visible == true) isExpanded = true;
+        })
+
+        if( isExpanded ){
+            this.diagram.nodes.each( (node) => {
+                var list = node.findObject("ATTRIBUTES");
+                if( list !== null) list.visible = false;
+            })
+        } else {
+            this.diagram.nodes.each( (node) => {
+                var list = node.findObject("ATTRIBUTES");
+                if( list !== null) list.visible = true;
+            })
+        }
+
+        diagram.commitTransaction("Collapse/Expand all panels");
+  }
+
+  this.showEntity = (entityName) => {
+     this.diagram.nodes.each( (node) => {
+          var table = node.findObject("TABLENAME");
+          if( table.text == entityName ){
+            table.panel.panel.visible = true;
+          }
+      })
+  }
+
   go.GraphObject.defineBuilder("ToggleEntityVisibilityButton", function(args) {
     var eltname = /** @type {string} */ (go.GraphObject.takeBuilderArgument(args, "COLLAPSIBLE"));
 
@@ -36,15 +82,7 @@ app.service('goService', ['$rootScope', function($rootScope) {
     }
 
     return button;
-});
-
-
-	 // define several shared Brushes for drawing go elements
-  var bluegrad = GO(go.Brush, "Linear", { 0: "rgb(150, 150, 250)", 0.5: "rgb(86, 86, 186)", 1: "rgb(86, 86, 186)" });
-  var greengrad = GO(go.Brush, "Linear", { 0: "rgb(158, 209, 159)", 1: "rgb(67, 101, 56)" });
-  var redgrad = GO(go.Brush, "Linear", { 0: "rgb(206, 106, 100)", 1: "rgb(180, 56, 50)" });
-  var yellowgrad = GO(go.Brush, "Linear", { 0: "rgb(254, 221, 50)", 1: "rgb(254, 182, 50)" });
-  var lightgrad = GO(go.Brush, "Linear", { 1: "#E6E6FA", 0: "#FFFAF0" });
+  });
 
 	// the template for each attribute in a node's array of item data
   var attributeTemplate =
@@ -210,5 +248,7 @@ app.service('goService', ['$rootScope', function($rootScope) {
       var handler = $rootScope.$on(event, callback);
       scope.$on('$destroy', handler);
   }
+
+
 
 }]);

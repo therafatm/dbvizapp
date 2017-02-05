@@ -4,7 +4,7 @@ app.controller('schemaController', ['$scope', '$http', '$routeParams', 'goServic
     $scope.currentProject = projectService.getCurrentProject();
     $scope.schema = {};
 
-    $scope.hiddenEntities = ['aksjdhaskjd'];
+    $scope.hiddenEntities = [];
 
     $scope.updateCurrentProject = function(project) {
         $scope.currentProject = project;
@@ -58,31 +58,19 @@ app.controller('schemaController', ['$scope', '$http', '$routeParams', 'goServic
 
     $scope.toggleAttributeVisibility = function() {
 
-        var diagram = goService.diagram;
-        if (diagram === null) return;
-        if (diagram.isReadOnly) return;
+        goService.toggleAttributeVisibility();
 
-        diagram.startTransaction("Collapse/Expand all panels");
+    }
 
-        var isExpanded = false;
-        diagram.nodes.each( (node) => {
-            var list = node.findObject("ATTRIBUTES");
-            if( list !== null && list.visible == true) isExpanded = true;
+    $scope.showEntity = function(entityName) {
+        goService.showEntity(entityName);
+        $scope.hiddenEntities.forEach( (val, index, arr) => {
+            if( val == entityName){
+                arr.splice(index,1);
+            }
         })
 
-        if( isExpanded ){
-            diagram.nodes.each( (node) => {
-                var list = node.findObject("ATTRIBUTES");
-                if( list !== null) list.visible = false;
-            })
-        } else {
-            diagram.nodes.each( (node) => {
-                var list = node.findObject("ATTRIBUTES");
-                if( list !== null) list.visible = true;
-            })
-        }
-
-        diagram.commitTransaction("Collapse/Expand all panels");
+        $scope.apply();
     }
 
 

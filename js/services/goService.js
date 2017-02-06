@@ -157,16 +157,15 @@ app.service('goService', ['$rootScope', function($rootScope) {
 	// the template for each attribute in a node's array of item data
   var attributeTemplate =
     GO(go.Panel, "Horizontal",
+        {fromSpot: go.Spot.LeftRightSides, toSpot: go.Spot.LeftRightSides},
       GO(go.Shape,
         { desiredSize: new go.Size(10, 10), margin: 3 },
         new go.Binding("figure", "figure"),
         new go.Binding("fill", "color")),
       GO(go.TextBlock,
         { stroke: "#333333",
-          font: "bold 14px sans-serif",
-            fromSpot: go.Spot.LeftRightSides, toSpot: go.Spot.LeftRightSides,},
-          new go.Binding("text", "name"),
-          new go.Binding("portId", "name"))
+          font: "bold 14px sans-serif"},
+          new go.Binding("text", "name")), new go.Binding("portId", "name")
     );
 
   // define the Node template, representing an entity

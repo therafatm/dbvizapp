@@ -15,8 +15,7 @@ app.controller('projectController', ['$scope', '$location', 'goService', 'projec
 		projectApiService.getAllProjects()
 			.then(
 				function(projects){
-					$scope.currentProjects = projects;
-                    projectService.setProjects(projects);
+					$scope.updateCurrentProjects(projects);
 				}, function(error){
 					alert(error.error);
 				}

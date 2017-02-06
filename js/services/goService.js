@@ -68,6 +68,17 @@ app.service('goService', ['$rootScope', function($rootScope) {
     this.diagram.commitTransaction("Collapse/Expand Entity");
   }
 
+  // Exporting image of diagram.
+    this.getImageBase64 = function() {
+        // Creates an image that is the same size as the viewport.
+        if (this.diagram) {
+            // Returns the image data in the form "data:image/png,<base64 image data>"
+            return this.diagram.makeImageData();
+        } else {
+            return "#"; // returns to homepage currently, but would be good to display error feedback.
+        }
+    }
+
   go.GraphObject.defineBuilder("ToggleEntityVisibilityButton", function(args) {
     var eltname = /** @type {string} */ (go.GraphObject.takeBuilderArgument(args, "COLLAPSIBLE"));
 

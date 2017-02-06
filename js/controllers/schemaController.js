@@ -78,6 +78,13 @@ app.controller('schemaController', ['$scope', '$http', '$routeParams', '$locatio
 
     }
 
+    $scope.getDiagramImage = function() {
+        let img = goService.getImageBase64();
+        // Change leading data:image/png to data:application/octet
+        // window.location.href = img;
+        $scope.diagramImage = img;
+    }
+
     goService.subscribe("hide-entity", $scope, (name,entityName) => {
         $scope.hiddenEntities.push(entityName);
         $scope.$apply();

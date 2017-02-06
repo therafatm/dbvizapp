@@ -5,20 +5,36 @@
     background-size: 100% 100%;
 }
 
+.main-card {
+    background-color: #3F51B5;
+}
+
 .page-content {
     height: 700px;
 }
 
 .add-project-container {
     height: 300px;
-    margin: 20px;
+    margin: 10px;
 }
 
 .add-project-button {
     left: 75%;
     margin-top: 20px;
+    background-color: #3F51B5;
+    color: white;
+}
+
+.existing-project-container {
+    height: 400px;
+    margin: 10px;
 }
 
 input {
     height: 30px;
+}
+
+body {
+    background-image: url(http://www.pixelstalk.net/wp-content/uploads/2016/11/HD-Flat-Design-Photos.jpg);
+    background-size: 100% 100%;
 }

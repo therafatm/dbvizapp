@@ -65,8 +65,8 @@ router.route('/')
         return res.status(500).json({success: false, data: err});
       }
       // SQL Query > Insert Data
-      client.query('INSERT INTO projects (id, name, database, host, port, "user", password) VALUES ($1, $2, $3, $4, $5, $6, $7)',
-          [req.body.id, req.body.name, req.body.name, req.body.host, req.body.port, req.body.username, req.body.password]);
+      client.query('INSERT INTO projects (name, database, host, port, username, password) VALUES ($1, $2, $3, $4, $5, $6)',
+          [req.body.name, req.body.name, req.body.host, req.body.port, req.body.username, req.body.password]);
 
       // SQL Query > Select Data
       const query = client.query('SELECT * FROM projects ORDER BY id ASC');
@@ -80,14 +80,15 @@ router.route('/')
         return res.json(results);
       });
     });
-});
+  })
 
-router.delete('/:id', (req, res, next) => {
+router.put('/', (req, res, next) => {
 
   const results = [];
   // Grab data from the URL parameters
-  const id = req.params.id;
+
   // Get a Postgres client from the connection pool
+  //console.log("HERE")
   pg.connect(config, (err, client, done) => {
     // Handle connection errors
     if(err) {
@@ -95,8 +96,40 @@ router.delete('/:id', (req, res, next) => {
       console.log(err);
       return res.status(500).json({success: false, data: err});
     }
+    // SQL Query > Update Data
+    //console.log("I am here now");
+    client.query('UPDATE projects SET name = $1, database = $1, host = $2, port = $3, username = $4, password = $5 WHERE id=$6',
+    [req.body.name, req.body.host, req.body.port, req.body.username, req.body.password, req.body.id]);
+    var query = client.query('SELECT * FROM projects ORDER BY id ASC');
+    // Stream results back one row at a time
+    query.on('row', (row) => {
+      results.push(row);
+    });
+    // After all data is returned, close connection and return results
+    query.on('end', () => {
+      done();
+      return res.json(results);
+    });
+  });
+})
+
+router.delete('/:id', (req, res, next) => {
+
+  const results = [];
+  // Grab data from the URL parameters
+  const id = req.params.id;
+  // Get a Postgres client from the connection pool
+  console.log(id);
+  pg.connect(config, (err, client, done) => {
+    // Handle connection errors
+    if(err) {
+      done();
+      console.log(err);
+      return res.status(500).json({success: false, data: err});
+    }
+    console.log("Connected to db");
     // SQL Query > Delete Data
-    client.query('DELETE FROM projects WHERE id=' + id);
+    client.query('DELETE FROM projects WHERE id = ' + id);
     var query = client.query('SELECT * FROM projects ORDER BY id ASC');
     // Stream results back one row at a time
     query.on('row', (row) => {

@@ -51,11 +51,11 @@
 }
 
 .top-header {
-    background-color: white;
+    background-color: #eaeaea;
 }
 
 .mdl-navigation__link {
-    color: #2196f3 !important;
+    color: #303f9f !important;
 }
 
 
@@ -65,7 +65,7 @@
 
 .panel-header {
     position: fixed;
-    background-color: #2196f3;
+    background-color: #303f9f;
 }
 
 .panel {
@@ -131,8 +131,14 @@
     ER Diagram container css
    ========================================================================== */
 
+.er-container {
+    position: absolute;
+    width: 100%;
+    margin-left: calc(25% - 16px);
+}
+
 .er-content {
-    width: 600px;
+    width: 100%;
     height: 700px;
 }
 

@@ -1,8 +1,8 @@
-app.controller('schemaController', ['$scope', '$http', '$timeout', '$routeParams', 'goService', 'projectService', function($scope, $http, $timeout, $routeParams, goService, projectService) {
+app.controller('schemaController', ['$scope', '$http', '$routeParams', '$location', '$timeout', 'goService', 'projectService', 'projectApiService',
+    function($scope, $http, $routeParams, $location, $timeout, goService, projectService, projectApiService) {
 
-    $scope.allProjects = projectService.getProjects();
+    $scope.projectList = projectService.getProjects();
     $scope.currentProject = projectService.getCurrentProject();
-    $scope.schema = {};
 
     $scope.hiddenEntities = [];
 
@@ -11,35 +11,55 @@ app.controller('schemaController', ['$scope', '$http', '$timeout', '$routeParams
         projectService.setCurrentProject(project);
     }
 
-    var projectId = $routeParams.id;
+    $scope.updateProjectList = function(projects) {
+        $scope.projectList = projects;
+        projectService.setProjects(projects);
+    }
 
-    $scope.gojs = goService.drawSchema;
+    var projectId = parseInt($routeParams.id);
 
-
-    $scope.displayCurrentProject = function(){
+    // This is called by init() and when we switch projects.
+    $scope.displayCurrentProject = function() {
         // Get schema information from database.
         $http.get('/api/schema/', {params: $scope.currentProject})
-            .success((data) => {
-                $scope.schema = data;
+            .success((schemaInfo) => {
+                $scope.schema = schemaInfo;
                 // Hacky
-                $scope.gojs(data);
+                goService.drawSchema(schemaInfo);
             })
             .error((error) => {
-                alert("Error - " + error);
+                alert("Error - " + error.data);
             });
     };
 
+    // Called when we first navigate to /schema/:id
     $scope.init = function() {
-        if ($scope.currentProject) {
+        if ($scope.currentProject && $scope.currentProject.id == projectId) {
             $scope.displayCurrentProject();
         } else {
-            // maybe linked here, try using project id.
-            var project = projectService.getProjectById(projectId);
-            if (project) {
-                $scope.updateCurrentProject(project);
+            // Maybe linked here, try using project id (from url).
+            let currentProject = projectService.getProjectById(projectId);
+            if (currentProject) {
+                $scope.updateCurrentProject(currentProject);
                 $scope.displayCurrentProject();
             } else {
-                alert("No such project!");
+                // Not found, update projects.
+                projectApiService.getAllProjects()
+                    .then(
+                        function(projects){
+                            $scope.updateProjectList(projects);
+                            var currentProject = projectService.getProjectById(projectId);
+                            if (currentProject) {
+                                $scope.updateCurrentProject(currentProject);
+                                $scope.displayCurrentProject();
+                            } else {
+                                alert("No such project!");
+                                $location.path('/');
+                            }
+                        }, function(error){
+                            alert(error.error);
+                        }
+                    );
             }
         }
     }
@@ -47,8 +67,8 @@ app.controller('schemaController', ['$scope', '$http', '$timeout', '$routeParams
     $scope.changeProject = function(id) {
         let project = projectService.getProjectById(id);
         if (project) {
-            $scope.updateCurrentProject(project);
-            $scope.displayCurrentProject();
+            projectService.setCurrentProject(project);
+            $location.path('/schema/' + id)
         }
     }
 
@@ -77,6 +97,4 @@ app.controller('schemaController', ['$scope', '$http', '$timeout', '$routeParams
             }
         })
     }
-
-
 }]);

@@ -4,8 +4,6 @@ app.service('goService', ['$rootScope', function($rootScope) {
 
   this.diagram = null;
 
-
-
 	 // define several shared Brushes for drawing go elements
   var bluegrad = GO(go.Brush, "Linear", { 0: "rgb(150, 150, 250)", 0.5: "rgb(86, 86, 186)", 1: "rgb(86, 86, 186)" });
   var greengrad = GO(go.Brush, "Linear", { 0: "rgb(158, 209, 159)", 1: "rgb(67, 101, 56)" });
@@ -38,7 +36,7 @@ app.service('goService', ['$rootScope', function($rootScope) {
             })
         }
 
-        diagram.commitTransaction("Collapse/Expand all panels");
+        this.diagram.commitTransaction("Collapse/Expand all panels");
   }
 
   this.showEntity = (entityName) => {
@@ -149,13 +147,15 @@ app.service('goService', ['$rootScope', function($rootScope) {
   var attributeTemplate =
     GO(go.Panel, "Horizontal",
       GO(go.Shape,
-        { desiredSize: new go.Size(10, 10) },
+        { desiredSize: new go.Size(10, 10), margin: 3 },
         new go.Binding("figure", "figure"),
         new go.Binding("fill", "color")),
       GO(go.TextBlock,
         { stroke: "#333333",
-          font: "bold 14px sans-serif" },
-        new go.Binding("text", "name"))
+          font: "bold 14px sans-serif",
+            fromSpot: go.Spot.LeftRightSides, toSpot: go.Spot.LeftRightSides,},
+          new go.Binding("text", "name"),
+          new go.Binding("portId", "name"))
     );
 
   // define the Node template, representing an entity
@@ -164,7 +164,7 @@ app.service('goService', ['$rootScope', function($rootScope) {
       {
         name: "ENTITY", 
         selectionAdorned: true,
-        resizable: true,
+        resizable: false,
         minSize: new go.Size(150,50),
         layoutConditions: go.Part.LayoutStandard & ~go.Part.LayoutNodeSized,
         fromSpot: go.Spot.AllSides,
@@ -176,10 +176,10 @@ app.service('goService', ['$rootScope', function($rootScope) {
       GO(go.Shape, "Rectangle",
         { fill: lightgrad, stroke: "#756875", strokeWidth: 3 }),
       GO(go.Panel, "Table",
-        { margin: 8, stretch: go.GraphObject.Fill },
-        GO(go.RowColumnDefinition, { row: 0, sizing: go.RowColumnDefinition.None }),
-        // the table header
-        GO(go.TextBlock,
+          { margin: 8, stretch: go.GraphObject.Fill },
+          GO(go.RowColumnDefinition, { row: 0, background: "#1199ff", sizing: go.RowColumnDefinition.None}),
+          // the table header
+          GO(go.TextBlock,
           {
             name: "TABLENAME",
             row: 0, alignment: go.Spot.Center,
@@ -196,17 +196,14 @@ app.service('goService', ['$rootScope', function($rootScope) {
           {
             name: "ATTRIBUTES",
             row: 1,
-            padding: 3,
+            padding: 0,
             alignment: go.Spot.TopLeft,
             defaultAlignment: go.Spot.Left,
             stretch: go.GraphObject.Horizontal,
             itemTemplate: attributeTemplate
           },
           new go.Binding("itemArray", "items"))
-      ),  // end Table Panel
-      GO("ExpandEntityButton", "ENTITY",  // the name of the element whose visibility this button toggles
-        { row: 0, alignment: go.Spot.BottomRight })
-      // the list of Panels, each showing an attribute
+      )  // end Table Panel
     );  // end Node
 
   // define the Link template, representing a relationship
@@ -236,83 +233,94 @@ app.service('goService', ['$rootScope', function($rootScope) {
 	                layout: GO(go.ForceDirectedLayout)
 	            });
 
-      this.diagram.nodeTemplate = tableTemplate
-      this.diagram.linkTemplate = relationshipTemplate
+      this.diagram.nodeTemplate = tableTemplate;
+      this.diagram.linkTemplate = relationshipTemplate;
 
+	    // Visualize a database; based on http://gojs.net/latest/samples/entityRelationship.html
+
+		// Maps SQL data types to shapes for columns.
+		var dataTypeMapping = {
+			numerical: {
+				shape: "Square",
+				color: "blue"
+			},
+			string: {
+				shape: "Circle",
+				color: "purple"
+			},
+			date: {
+				shape: "TriangleUp",
+				color: "green"
+			},
+			enumeration: {
+				shape: "Pentagon",
+				color: "yellow"
+			}
+		};
+
+		var getDataTypeMapping = function(type) {
+			if (type.includes("char") || type.includes("varchar") || type.includes("text")) {
+				return dataTypeMapping.string;
+			} else if (type.includes("int") || type.includes("float") || type.includes("double") || type.includes("decimal")) {
+				return dataTypeMapping.numerical;
+			} else if (type.includes("date") || type.includes("time")) {
+				return dataTypeMapping.date;
+			} else if (type.includes("enum") || type.includes("set")) {
+				return dataTypeMapping.enumeration;
+			} else {
+				return {shape: "ThinX", color: "red"}
+			}
+		}
+
+	    //diagram.nodeTemplate = tableTempl;
 	    // convert to node data array
 	    var nodeDataArray = [];
 
-	    for (var i = 0; i < projectData.tablesAndCols.length; i++) {
+	    for (let i = 0; i < projectData.tablesAndCols.length; i++) {
 	        var tbl_name = projectData.tablesAndCols[i].table_name;
 	        var existing_tbl = _.where(nodeDataArray, {key: tbl_name});
 
-	        if (existing_tbl && existing_tbl.length > 0 && projectData.query1) {
+            let shapeData = getDataTypeMapping(projectData.tablesAndCols[i].data_type);
+
+	        if (existing_tbl && existing_tbl.length > 0 && projectData.tablesAndCols[i]) {
 	            existing_tbl[0].items.push({name: projectData.tablesAndCols[i].column_name,
-					isKey: (projectData.tablesAndCols[i].column_key == "PRI")});
+					isKey: (projectData.tablesAndCols[i].column_key == "PRI"),
+					color: shapeData.color,
+					figure: shapeData.shape
+	            });
 	        } else {
 	            var new_tbl = {key: tbl_name, items: [ {name: projectData.tablesAndCols[i].column_name,
-					isKey: (projectData.tablesAndCols[i].column_key == "PRI")}]};
+					isKey: (projectData.tablesAndCols[i].column_key == "PRI"),
+                    color: shapeData.color,
+                    figure: shapeData.shape
+	            }]};
 	            nodeDataArray.push(new_tbl);
 	        }
 	    }
 
 	    var linkDataArray = [];
 
-	    for (let j = 0; j < projectData.tablesAndCols.length; j++) {
-	    	if (projectData.tablesAndCols[j].referenced_table_name) {
-                linkDataArray.push({from: projectData.tablesAndCols[j].table_name,
-                    to: projectData.tablesAndCols[j].referenced_table_name,
-                    fromText: projectData.tablesAndCols[j].constraint_name, toText: "blah"});
+	    for (let j = 0; j < projectData.foreignKeys.length; j++) {
+	    	if (projectData.foreignKeys[j].referenced_table_name) {
+                linkDataArray.push({
+                	from: projectData.foreignKeys[j].table_name,
+					fromPort: projectData.foreignKeys[j].column_name,
+                    to: projectData.foreignKeys[j].referenced_table_name,
+                    toPort: projectData.foreignKeys[j].referenced_column_name,
+                    toText: projectData.foreignKeys[j].constraint_name
+
+                });
 			}
 	    }
 
-      // actually pulling data from DB
 	    this.diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
-	    // this.diagram.model = new go.GraphLinksModel(this.fakeData.nodeDataArray, this.fakeData.linkDataArray);
 
-
+        this.diagram.model.linkFromPortIdProperty = "fromPort";  // necessary to remember portIds
+        this.diagram.model.linkToPortIdProperty = "toPort";		// Allows linking from specific columns
 	};
-
-  // FAKE DATA
-  this.fakeData = {};
-    // create the model for the E-R diagram
-  this.fakeData.nodeDataArray = [
-  { key: "Products",
-    items: [ { name: "ProductID", iskey: true, figure: "Decision", color: yellowgrad },
-        { name: "ProductName", iskey: false, figure: "Cube1", color: bluegrad },
-        { name: "SupplierID", iskey: false, figure: "Decision", color: "purple" },
-        { name: "CategoryID", iskey: false, figure: "Decision", color: "purple" } ] },
-  { key: "Suppliers",
-    items: [ { name: "SupplierID", iskey: true, figure: "Decision", color: yellowgrad },
-        { name: "CompanyName", iskey: false, figure: "Cube1", color: bluegrad },
-        { name: "ContactName", iskey: false, figure: "Cube1", color: bluegrad },
-        { name: "Address", iskey: false, figure: "Cube1", color: bluegrad } ] },
-  { key: "Categories",
-    items: [ { name: "CategoryID", iskey: true, figure: "Decision", color: yellowgrad },
-        { name: "CategoryName", iskey: false, figure: "Cube1", color: bluegrad },
-        { name: "Description", iskey: false, figure: "Cube1", color: bluegrad },
-        { name: "Picture", iskey: false, figure: "TriangleUp", color: redgrad } ] },
-  { key: "Order Details",
-    items: [ { name: "OrderID", iskey: true, figure: "Decision", color: yellowgrad },
-        { name: "ProductID", iskey: true, figure: "Decision", color: yellowgrad },
-        { name: "UnitPrice", iskey: false, figure: "MagneticData", color: greengrad },
-        { name: "Quantity", iskey: false, figure: "MagneticData", color: greengrad },
-        { name: "Discount", iskey: false, figure: "MagneticData", color: greengrad } ] },
-  { key: "Lone Wolf",
-    items: [ { name: "FUCK", iskey: true, figure: "Decision", color: yellowgrad },
-        { name: "THIS", iskey: false, figure: "MagneticData", color: greengrad } ] }
-  ];
-  this.fakeData.linkDataArray = [
-    { from: "Products", to: "Suppliers" },
-    { from: "Products", to: "Categories" },
-    { from: "Order Details", to: "Products" }
-  ];
 
   this.subscribe = function(event, scope, callback) {
       var handler = $rootScope.$on(event, callback);
       scope.$on('$destroy', handler);
   }
-
-
-
 }]);

@@ -22,6 +22,12 @@
 			</table>
 		</div>
 
+		<div id="projectList">
+			<div ng-repeat="item in projectList">
+				<div ng-click="changeProject(item.id)" style="color: white; font-size: 16pt;">{{item.name}}</div>
+			</div>
+		</div>
+
 		<!-- Layouts Card Starts-->
 		<div class="mdl-card__actions layout-title mdl-shadow--2dp">
 			<h5>Layouts</h5>
@@ -45,7 +51,7 @@
 	<!-- Layouts Card Ends-->
 
 	<!-- Main Content Starts-->
-	<div class="">
+	<div>
 		<div class="er-content" id="databaseDiagram"></div>
 	
 	</div>

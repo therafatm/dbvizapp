@@ -213,7 +213,10 @@ app.service('goService', ['$rootScope', function($rootScope) {
             itemTemplate: attributeTemplate
           },
           new go.Binding("itemArray", "items"))
-      )  // end Table Panel
+      ),
+        GO("ExpandEntityButton", "ENTITY",  // the name of the element whose visibility this button toggles
+            { row: 0, alignment: go.Spot.BottomRight })
+        // end Table Panel
     );  // end Node
 
   // define the Link template, representing a relationship

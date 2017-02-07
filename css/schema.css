@@ -60,6 +60,37 @@
 
 
 /* ==========================================================================
+    Scrollbar
+   ========================================================================== */
+
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+
+/* Track */
+
+::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+}
+
+
+/* Handle */
+
+::-webkit-scrollbar-thumb {
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+    background: rgba(109, 109, 109, 0.8);
+    ;
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.5);
+}
+
+::-webkit-scrollbar-thumb:window-inactive {
+    background: rgba(109, 109, 109, 0.4);
+}
+
+
+/* ==========================================================================
     Control Panel
    ========================================================================== */
 
@@ -73,6 +104,59 @@
     margin: 0px;
     background: #2A3743;
     justify-content: flex-end;
+}
+
+
+/* hidden attr card
+   ========================================================================== */
+
+.hidden-attr-card {
+    background: inherit;
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+.hidden-attr-list {
+    width: 300px;
+}
+
+.hidden-attr-item {
+    color: #fff;
+}
+
+.hidden-attr-item:hover {
+    background: #33414d;
+}
+
+
+/* Control Card
+   ========================================================================== */
+
+.control-card {
+    margin-top: 10px;
+    width: 100%;
+    min-height: 130px;
+    height: 130px;
+    background: inherit;
+    flex-direction: row;
+    -webkit-flex-wrap: wrap;
+    flex-wrap: wrap;
+}
+
+.attr-show {
+    margin-right: 24px;
+    margin-top: 15px
+}
+
+.attr-hide {
+    margin-left: 25px;
+    margin-top: 15px;
+}
+
+.export-button {
+    margin-left: calc(69% - 16px);
 }
 
 

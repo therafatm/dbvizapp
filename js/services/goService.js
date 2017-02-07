@@ -60,6 +60,22 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
     this.diagram.commitTransaction("Collapse/Expand Entity");
   }
 
+  this.updateLayout = (layout) => {
+    if(layout == tp().LAYOUTS.GRID){
+      this.diagram.layout = new go.GridLayout();
+    }
+    if(layout == tp().LAYOUTS.CIRCULAR){
+      this.diagram.layout = new go.CircularLayout();
+    }
+
+    if(layout == tp().LAYOUTS.FORCEDIRECTED){
+      this.diagram.layout = new go.ForceDirectedLayout();
+    }
+    if(layout == tp().LAYOUTS.DIGRAPH){
+      this.diagram.layout = new go.LayeredDigraphLayout();
+    }
+  }
+
   // Exporting image of diagram.
   this.getDiagramCurrentView = function() {
       // Creates an image that is the same size as the viewport.
@@ -156,7 +172,6 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
     return button;
   });
 
-
 	this.drawSchema = (projectData) => {
 	    this.diagram =
 	        GO(go.Diagram, "databaseDiagram",
@@ -165,7 +180,7 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
 	                "undoManager.isEnabled": true, // enable Ctrl-Z to undo and Ctrl-Y to redo
 	                allowDelete: false,
 	                allowCopy: false,
-	                layout: GO(go.ForceDirectedLayout)
+	                layout: GO(go.LayeredDigraphLayout)
 	            });
 
       this.diagram.nodeTemplate = tp().tableTemplate;

@@ -130,6 +130,10 @@
     background: #33414d;
 }
 
+.vis-icon {
+    color: #858e96;
+}
+
 
 /* Control Card
    ========================================================================== */
@@ -227,13 +231,14 @@
 }
 
 #databaseActions, #databaseDiagram {
-    float:left;
+    float: left;
 }
 
 #databaseActions button {
     margin-top: 15px;
     margin-bottom: 15px;
 }
+
 
 /* ==========================================================================
     Footer

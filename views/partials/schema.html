@@ -3,105 +3,34 @@
 	<!-- Control Panel Starts-->
 	<div class="mdl-card mdl-shadow--2dp mdl-cell mdl-cell--3-col mdl-cell--stretch panel">
 		<div class="mdl-card hidden-attr-card">
-			<div class="mdl-list hidded-attr-list">
+			<div class="mdl-list hidded-attr-list" id="projectList">
+				<div ng-repeat="item in projectList">
 
-<<<<<<< HEAD
-				<div class="mdl-list__item hidden-attr-item">
-					<span class="mdl-list__item-primary-content">
-					<span>Patients</span>
-					</span>
-					<a class="mdl-list__item-secondary-action"><i class="material-icons">visibility</i></a>
+					<div ng-click="changeProject(item.id)" class="mdl-list__item hidden-attr-item">
+						<span class="mdl-list__item-primary-content">
+					                <span>{{item.name}}</span>
+						</span>
+						<a class="mdl-list__item-secondary-action vis-icon"><i class="material-icons">visibility</i></a>
+					</div>
+
 				</div>
-
-				<div class="mdl-list__item hidden-attr-item">
-					<span class="mdl-list__item-primary-content">
-					<span>Drugs</span>
-					</span>
-					<a class="mdl-list__item-secondary-action"><i class="material-icons">visibility</i></a>
-				</div>
-
-				<div class="mdl-list__item hidden-attr-item">
-					<span class="mdl-list__item-primary-content">
-					<span>Prescritions</span>
-					</span>
-					<a class="mdl-list__item-secondary-action"><i class="material-icons">visibility</i></a>
-				</div>
-
-				<div class="mdl-list__item hidden-attr-item">
-					<span class="mdl-list__item-primary-content">
-					<span>Doctors</span>
-					</span>
-					<a class="mdl-list__item-secondary-action"><i class="material-icons">visibility</i></a>
-				</div>
-
-				<div class="mdl-list__item hidden-attr-item">
-					<span class="mdl-list__item-primary-content">
-					<span>Hosptials</span>
-					</span>
-					<a class="mdl-list__item-secondary-action"><i class="material-icons">visibility</i></a>
-				</div>
-
-				<div class="mdl-list__item hidden-attr-item">
-					<span class="mdl-list__item-primary-content">
-					<span>MOARR DRUGS</span>
-					</span>
-					<a class="mdl-list__item-secondary-action"><i class="material-icons">visibility</i></a>
-				</div>
-
-				<div class="mdl-list__item hidden-attr-item">
-					<span class="mdl-list__item-primary-content">
-					<span>Kids</span>
-					</span>
-					<a class="mdl-list__item-secondary-action"><i class="material-icons">visibility</i></a>
-				</div>
-
 			</div>
 		</div>
 
 		<!-- Conrtol Buttons Starts -->
 		<div class="mdl-card mdl-shadow--8dp control-card">
-			<button class="mdl-button mdl-js-button mdl-button--accent attr-show">
+			<button ng-click="toggleAttributeVisibility($event)" class="mdl-button mdl-js-button mdl-button--accent attr-show">
   				Show all attr.
 				</button>
-			<button class="mdl-button mdl-js-button mdl-button--accent attr-hide">
+			<button ng-click="toggleAttributeVisibility($event)" class="mdl-button mdl-js-button mdl-button--accent attr-hide">
   				Hide all attr.
 				</button>
-			<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent export-button">
+			<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent export-button" download="{{currentProject.name}}-diagram.png" ng-href="{{diagramImage}}" ng-click="getDiagramImage()" id="imgExport">
   			Export
 			</button>
 		</div>
 		<!-- Conrtol Buttons Ends -->
-=======
-		<div>
-			<div class="mdl-card__actions layout-title mdl-shadow--2dp">
-				<h5>Hidden Entities</h5>
-			</div>
-			<div id="imgExport">
-				<a download="{{currentProject.name}}-diagram.png" ng-href="{{diagramImage}}" ng-click="getDiagramImage()" class="btn btn-primary" data-toggle="button" aria-pressed="false">
-					Export Image
-				</a>
-			</div>
-			<div id="databaseActions">
-				<button type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off" ng-click="toggleAttributeVisibility($event)">
-					Show / Hide All Attributes
-				</button>
-			</div>
-			<table class="table table-striped table-hover ">
-				<tbody>
-					<tr ng-repeat="item in hiddenEntities">
-					<td class="col-sm-8">{{item}} </td>
-					<td class="col-sm-1"><div ng-click="showEntity(item)"><a class="btn btn-warning">Show</a></div></td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
 
-		<div id="projectList">
-			<div ng-repeat="item in projectList">
-				<div ng-click="changeProject(item.id)" style="color: white; font-size: 16pt;">{{item.name}}</div>
-			</div>
-		</div>
->>>>>>> 1529c305d83567422ec35f2bc8601ceef35809d6
 
 		<!-- Layouts Card Starts-->
 		<div class="mdl-card__actions layout-title mdl-shadow--2dp">

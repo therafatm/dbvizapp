@@ -56,9 +56,9 @@ app.service('goService', ['$rootScope', function($rootScope) {
           
           //go  through each of its relationships
           var linksIter = entity.findLinksConnected().iterator;
-          while(linksIter.next()) {
-            linksIter.value;
-              
+
+          while(linksIter.next()){
+
             // deal with the cases of to and from links
             if(linksIter.value.toNode.findObject("TABLENAME").text == table.text){
               if( linksIter.value.fromNode.visible ){
@@ -77,7 +77,7 @@ app.service('goService', ['$rootScope', function($rootScope) {
   };
 
   // Exporting image of diagram.
-  this.getImageBase64 = function() {
+  this.getDiagramCurrentView = function() {
       // Creates an image that is the same size as the viewport.
       if (this.diagram) {
           // Returns the image data in the form "data:image/png,<base64 image data>"
@@ -86,6 +86,16 @@ app.service('goService', ['$rootScope', function($rootScope) {
           return "#"; // returns to homepage currently, but would be good to display error feedback.
       }
   };
+
+  this.getFullDiagram = function () {
+      // Creates an image containing the whole diagram.
+      if (this.diagram) {
+          // Returns the image data in the form "data:image/png,<base64 image data>"
+          return this.diagram.makeImageData({scale: 1});
+      } else {
+          return "#"; // returns to homepage currently, but would be good to display error feedback.
+      }
+  }
 
   // create a button for toggling an entities visibility
   go.GraphObject.defineBuilder("ToggleEntityVisibilityButton", function(args) {

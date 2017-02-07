@@ -96,6 +96,7 @@ app.controller('schemaController', ['$scope', '$http', '$routeParams', '$locatio
             $scope.diagramFullView = goService.getFullDiagram();
         };
 
+
         $scope.openImageModal = function() {
             $modal.open({
                 templateUrl: '/views/partials/imagePreviewModal.html',

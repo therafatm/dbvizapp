@@ -1,0 +1,25 @@
+<div class="modal-header" ng-init="generateImagePreviews()">
+    <h3>Image Previews</h3>
+</div>
+<div class="modal-body">
+    <div class="jumbotron" align="left" style="font-size:14px; display: flex; justify-content: space-around; align-items: flex-end">
+        <!-- Current View -->
+        <figure>
+            <img style="max-width: 200px; max-height: 300px; border: 1px solid lightgrey; margin: auto" ng-src="{{diagramCurrentView}}"/>
+            <figcaption>Current View</figcaption>
+        </figure>
+        <figure>
+            <img style="max-width: 200px; max-height: 300px; border: 1px solid lightgrey; margin: auto" ng-src="{{diagramFullView}}"/>
+            <figcaption>Full Diagram</figcaption>
+        </figure>
+    </div>
+</div>
+<div class="modal-footer">
+    <a download="{{currentProject.name}}-diagram.png" ng-href="{{diagramCurrentView}}" class="btn btn-primary" data-toggle="button" aria-pressed="false">
+        Export Current View
+    </a>
+    <a download="{{currentProject.name}}-diagram.png" ng-href="{{diagramFullView}}" class="btn btn-primary" data-toggle="button" aria-pressed="false">
+        Export Whole Diagram
+    </a>
+    <button class="btn btn-error" ng-click="cancelImageRequest()">Cancel</button>
+</div>

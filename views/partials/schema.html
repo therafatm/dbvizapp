@@ -5,6 +5,7 @@
 		<div class="mdl-card hidden-attr-card">
 			<div class="mdl-list hidded-attr-list">
 
+<<<<<<< HEAD
 				<div class="mdl-list__item hidden-attr-item">
 					<span class="mdl-list__item-primary-content">
 					<span>Patients</span>
@@ -70,6 +71,37 @@
 			</button>
 		</div>
 		<!-- Conrtol Buttons Ends -->
+=======
+		<div>
+			<div class="mdl-card__actions layout-title mdl-shadow--2dp">
+				<h5>Hidden Entities</h5>
+			</div>
+			<div id="imgExport">
+				<a download="{{currentProject.name}}-diagram.png" ng-href="{{diagramImage}}" ng-click="getDiagramImage()" class="btn btn-primary" data-toggle="button" aria-pressed="false">
+					Export Image
+				</a>
+			</div>
+			<div id="databaseActions">
+				<button type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off" ng-click="toggleAttributeVisibility($event)">
+					Show / Hide All Attributes
+				</button>
+			</div>
+			<table class="table table-striped table-hover ">
+				<tbody>
+					<tr ng-repeat="item in hiddenEntities">
+					<td class="col-sm-8">{{item}} </td>
+					<td class="col-sm-1"><div ng-click="showEntity(item)"><a class="btn btn-warning">Show</a></div></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
+		<div id="projectList">
+			<div ng-repeat="item in projectList">
+				<div ng-click="changeProject(item.id)" style="color: white; font-size: 16pt;">{{item.name}}</div>
+			</div>
+		</div>
+>>>>>>> 1529c305d83567422ec35f2bc8601ceef35809d6
 
 		<!-- Layouts Card Starts-->
 		<div class="mdl-card__actions layout-title mdl-shadow--2dp">
@@ -95,6 +127,6 @@
 
 	<!-- Main Content Starts-->
 	<div class="er-container">
-		<div ng-init="gojs()" class="er-content" id="databaseDiagram"></div>
+		<div class="er-content" id="databaseDiagram"></div>
 	</div>
 </div>

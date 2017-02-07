@@ -1,6 +1,9 @@
 var app = angular.module('dbVizApp', ['ngRoute', 'ui.bootstrap']);
 
-app.config(function($routeProvider) {
+app.config(function($routeProvider, $compileProvider) {
+
+    // Allows image download link (data).
+    $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|data):/);
 
     $routeProvider
         .when('/', {

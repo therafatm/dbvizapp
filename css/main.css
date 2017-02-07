@@ -1,3 +1,46 @@
+/* ==========================================================================
+   Section comment block
+   ========================================================================== */
+
+
+/* Sub-section comment block
+   ========================================================================== */
+
+
+/**
+ * Short description using Doxygen-style comment format
+ *
+ * The first sentence of the long description starts here and continues on this
+ * line for a while finally concluding here at the end of this paragraph.
+ *
+ * The long description is ideal for more detailed explanations and
+ * documentation. It can include example HTML, URLs, or any other information
+ * that is deemed necessary or useful.
+ *
+ * @tag This is a tag named 'tag'
+ *
+ * TODO: This is a todo statement that describes an atomic task to be completed
+ *   at a later date. It wraps after 80 characters and following lines are
+ *   indented by 2 spaces.
+ */
+
+
+/* Basic comment */
+
+
+/* ==========================================================================
+    Content Container
+   ========================================================================== */
+
+input {
+    height: 30px;
+}
+
+body {
+    background-image: url(http://www.pixelstalk.net/wp-content/uploads/2016/11/HD-Flat-Design-Photos.jpg);
+    background-size: 100% 100%;
+}
+
 .main-center {
     align-items: center;
     justify-content: center;
@@ -13,28 +56,55 @@
     height: 700px;
 }
 
-.add-project-container {
-    height: 300px;
+
+/* ==========================================================================
+    Add Project
+   ========================================================================== */
+
+.ap-container {
+    height: 500px;
     margin: 10px;
 }
 
-.add-project-button {
+.ap-input-container {
+    width: 100%
+}
+
+.ap-button {
     left: 75%;
     margin-top: 20px;
     background-color: #3F51B5;
     color: white;
 }
 
-.existing-project-container {
+
+/* ==========================================================================
+    Existing Projects
+   ========================================================================== */
+
+.ep-list {
+    padding: 0px;
+}
+
+.ep-container {
     height: 400px;
+    width: 600px;
     margin: 10px;
 }
 
-input {
-    height: 30px;
+.ep-list-item:hover {
+    background: whitesmoke;
 }
 
-body {
-    background-image: url(http://www.pixelstalk.net/wp-content/uploads/2016/11/HD-Flat-Design-Photos.jpg);
-    background-size: 100% 100%;
+.ep-list-button-enter {
+    margin-right: 10px;
+}
+
+.ep-list-button-edit {
+    color: #ffc107 !important;
+    margin-right: 10px;
+}
+
+.ep-list-button-remove {
+    color: #f44336 !important;
 }

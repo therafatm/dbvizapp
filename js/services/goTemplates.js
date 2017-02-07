@@ -9,6 +9,12 @@ app.constant("goTemplates", function(){
   tp.yellowgrad = GO(go.Brush, "Linear", { 0: "rgb(254, 221, 50)", 1: "rgb(254, 182, 50)" });
   tp.lightgrad = GO(go.Brush, "Linear", { 1: "#E6E6FA", 0: "#FFFAF0" });
 
+  tp.LAYOUTS = {
+    GRID:0,
+    FORCEDIRECTED:1,
+    CIRCULAR:2,
+    DIGRAPH:3,
+  }
   
 	// the template for each attribute in a node's array of item data
   tp.attributeTemplate =

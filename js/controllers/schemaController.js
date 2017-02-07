@@ -10,7 +10,7 @@ app.controller('schemaController', ['$scope', '$http', '$routeParams', '$locatio
 
     $scope.LAYOUTS = tp().LAYOUTS;
 
-    $scope.currentLayout = tp().LAYOUTS.GRID;
+    $scope.currentLayout = tp().LAYOUTS.DIGRAPH;
 
 
 

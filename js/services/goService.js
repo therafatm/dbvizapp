@@ -171,7 +171,7 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
 	                "undoManager.isEnabled": true, // enable Ctrl-Z to undo and Ctrl-Y to redo
 	                allowDelete: false,
 	                allowCopy: false,
-	                layout: GO(go.GridLayout)
+	                layout: GO(go.LayeredDigraphLayout)
 	            });
 
       this.diagram.nodeTemplate = tp().tableTemplate;

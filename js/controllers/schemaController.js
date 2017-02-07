@@ -1,5 +1,5 @@
-app.controller('schemaController', ['$scope', '$http', '$routeParams', '$location', '$timeout', 'goService', 'projectService', 'projectApiService',
-    function($scope, $http, $routeParams, $location, $timeout, goService, projectService, projectApiService) {
+app.controller('schemaController', ['$scope', '$http', '$routeParams', '$location', '$timeout', '$modal', 'goService', 'projectService', 'projectApiService',
+    function($scope, $http, $routeParams, $location, $timeout, $modal, goService, projectService, projectApiService) {
 
     $scope.projectList = projectService.getProjects();
     $scope.currentProject = projectService.getCurrentProject();
@@ -28,7 +28,7 @@ app.controller('schemaController', ['$scope', '$http', '$routeParams', '$locatio
                 goService.drawSchema(schemaInfo);
             })
             .error((error) => {
-                alert("Error - " + error.data);
+                alert("Error - " + error.message);
             });
     };
 
@@ -78,12 +78,24 @@ app.controller('schemaController', ['$scope', '$http', '$routeParams', '$locatio
 
     }
 
-    $scope.getDiagramImage = function() {
-        let img = goService.getImageBase64();
-        // Change leading data:image/png to data:application/octet
-        // window.location.href = img;
-        $scope.diagramImage = img;
+    $scope.generateImagePreviews = function() {
+        $scope.diagramCurrentView = goService.getDiagramCurrentView();
+        $scope.diagramFullView = goService.getFullDiagram();
     }
+
+    $scope.openImageModal = function(){
+        var modalInstance = $modal.open({
+            templateUrl: '/views/partials/imagePreviewModal.html',
+            controller: ModalInstanceCtrl,
+            scope: $scope
+        });
+    }
+
+    var ModalInstanceCtrl = function ($scope, $modalInstance) {
+        $scope.cancelImageRequest = function () {
+            $modalInstance.dismiss("cancel");
+        };
+    };
 
     goService.subscribe("hide-entity", $scope, (name,entityName) => {
         $scope.hiddenEntities.push(entityName);

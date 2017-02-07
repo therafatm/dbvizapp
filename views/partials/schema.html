@@ -7,11 +7,12 @@
 			<div class="mdl-card__actions layout-title mdl-shadow--2dp">
 				<h5>Hidden Entities</h5>
 			</div>
-			<div id="imgExport">
-				<a download="{{currentProject.name}}-diagram.png" ng-href="{{diagramImage}}" ng-click="getDiagramImage()" class="btn btn-primary" data-toggle="button" aria-pressed="false">
-					Export Image
-				</a>
-			</div>
+			<div ng-click="openImageModal()"><a class="btn">Export Diagram</a></div>
+			<!--<div id="imgExport">-->
+				<!--<a download="{{currentProject.name}}-diagram.png" ng-href="{{diagramImage}}" ng-click="getDiagramImage()" class="btn btn-primary" data-toggle="button" aria-pressed="false">-->
+					<!--Export Image-->
+				<!--</a>-->
+			<!--</div>-->
 			<div id="databaseActions">
 				<button type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off" ng-click="toggleAttributeVisibility($event)">
 					Show / Hide All Attributes

@@ -66,7 +66,7 @@ router.route('/')
         }
         // SQL Query > Insert Data
         client.query('INSERT INTO projects (name, database, host, port, username, password) VALUES ($1, $2, $3, $4, $5, $6)',
-          [req.body.name, req.body.name, req.body.host, req.body.port, req.body.username, req.body.password]);
+          [req.body.name, req.body.schema, req.body.host, req.body.port, req.body.username, req.body.password]);
 
         // SQL Query > Select Data
         const query = client.query('SELECT * FROM projects ORDER BY id ASC');
@@ -98,8 +98,8 @@ router.put('/', (req, res, next) => {
     }
     // SQL Query > Update Data
     //console.log("I am here now");
-    client.query('UPDATE projects SET name = $1, database = $1, host = $2, port = $3, username = $4, password = $5 WHERE id=$6',
-    [req.body.name, req.body.host, req.body.port, req.body.username, req.body.password, req.body.id]);
+    client.query('UPDATE projects SET name = $1, database = $2, host = $2, port = $3, username = $4, password = $5 WHERE id=$6',
+    [req.body.name, req.body.schema, req.body.host, req.body.port, req.body.username, req.body.password, req.body.id]);
     var query = client.query('SELECT * FROM projects ORDER BY id ASC');
     // Stream results back one row at a time
     query.on('row', (row) => {

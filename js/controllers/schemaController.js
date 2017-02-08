@@ -1,16 +1,14 @@
-app.controller('schemaController', ['$scope', '$http', '$routeParams', '$location', '$timeout', '$modal', 'goService', 'projectService', 'projectApiService',
-    function($scope, $http, $routeParams, $location, $timeout, $modal, goService, projectService, projectApiService) {
+app.controller('schemaController', ['$scope', '$http', '$routeParams', '$location', '$timeout', '$modal', 'goService', 'projectService', 'projectApiService', 'goTemplates',
+    function($scope, $http, $routeParams, $location, $timeout, $modal, goService, projectService, projectApiService, tp) {
 
         $scope.projectList = projectService.getProjects();
         $scope.currentProject = projectService.getCurrentProject();
 
         $scope.hiddenEntities = [];
 
-        //$scope.LAYOUTS = tp().LAYOUTS;
+        $scope.LAYOUTS = tp().LAYOUTS;
 
-        //$scope.currentLayout = tp().LAYOUTS.DIGRAPH;
-
-
+        $scope.currentLayout = tp().LAYOUTS.DIGRAPH;
 
         $scope.updateCurrentProject = function(project) {
             $scope.currentProject = project;
@@ -40,7 +38,7 @@ app.controller('schemaController', ['$scope', '$http', '$routeParams', '$locatio
                     goService.drawSchema(schemaInfo);
                 })
                 .error((error) => {
-                    alert("Error - " + error.message);
+                    la("Error - " + error.message);
                 });
         };
 

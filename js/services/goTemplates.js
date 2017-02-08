@@ -15,7 +15,7 @@ app.constant("goTemplates", function(){
     CIRCULAR:2,
     DIGRAPH:3,
   }
-  
+
 	// the template for each attribute in a node's array of item data
   tp.attributeTemplate =
     GO(go.Panel, "Horizontal",
@@ -34,7 +34,7 @@ app.constant("goTemplates", function(){
   tp.tableTemplate =
     GO(go.Node, "Auto",  // the whole node panel
       {
-        name: "ENTITY", 
+        name: "ENTITY",
         selectionAdorned: true,
         resizable: false,
         minSize: new go.Size(150,50),
@@ -98,4 +98,4 @@ app.constant("goTemplates", function(){
 		);
 
   return tp;
-})
+});

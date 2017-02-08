@@ -1,62 +1,46 @@
-app.service('goService', ['$rootScope', function($rootScope) {
-	
+app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
+
   var GO = go.GraphObject.make;
 
   this.diagram = null;
 
-	 // define several shared Brushes for drawing go elements
-  var bluegrad = GO(go.Brush, "Linear", { 0: "rgb(150, 150, 250)", 0.5: "rgb(86, 86, 186)", 1: "rgb(86, 86, 186)" });
-  var greengrad = GO(go.Brush, "Linear", { 0: "rgb(158, 209, 159)", 1: "rgb(67, 101, 56)" });
-  var redgrad = GO(go.Brush, "Linear", { 0: "rgb(206, 106, 100)", 1: "rgb(180, 56, 50)" });
-  var yellowgrad = GO(go.Brush, "Linear", { 0: "rgb(254, 221, 50)", 1: "rgb(254, 182, 50)" });
-  var lightgrad = GO(go.Brush, "Linear", { 1: "#E6E6FA", 0: "#FFFAF0" });
-
   this.toggleAllAttributeVisibility = () => {
-  
-      if (this.diagram === null) return;
-      if (this.diagram.isReadOnly) return;
 
-      this.diagram.startTransaction("Collapse/Expand all panels");
+        if (this.diagram === null) return;
+        if (this.diagram.isReadOnly) return;
 
-      // look for each attribute object in every entity and check if any are visible
-      var isExpanded = false;
-      this.diagram.nodes.each( (node) => {
-          var list = node.findObject("ATTRIBUTES");
-          if( list !== null && list.visible == true) isExpanded = true;
-      });
+        this.diagram.startTransaction("Collapse/Expand all panels");
 
-      if( isExpanded ){
-        // if any are visible, hide all of them
-          this.diagram.nodes.each( (node) => {
-              var list = node.findObject("ATTRIBUTES");
-              if( list !== null) list.visible = false;
-          });
-      } else {
-        // if all are visiible, show all of them
-          this.diagram.nodes.each( (node) => {
-              var list = node.findObject("ATTRIBUTES");
-              if( list !== null) list.visible = true;
-          });
-      }
+        var isExpanded = false;
+        this.diagram.nodes.each( (node) => {
+            var list = node.findObject("ATTRIBUTES");
+            if( list !== null && list.visible == true) isExpanded = true;
+        })
 
-      this.diagram.commitTransaction("Collapse/Expand all panels");
-  };
+        if( isExpanded ){
+            this.diagram.nodes.each( (node) => {
+                var list = node.findObject("ATTRIBUTES");
+                if( list !== null) list.visible = false;
+            })
+        } else {
+            this.diagram.nodes.each( (node) => {
+                var list = node.findObject("ATTRIBUTES");
+                if( list !== null) list.visible = true;
+            })
+        }
+
+        this.diagram.commitTransaction("Collapse/Expand all panels");
+  }
 
   this.showEntity = (entityName) => {
-
-    // go through each node
     this.diagram.startTransaction("Collapse/Expand Entity");
     this.diagram.nodes.each( (node) => {
-      // find the ent object
         var table = node.findObject("TABLENAME");
         var entity = table.panel.panel;
         if( table.text == entityName ){
-          // make it visible
           entity.visible = true;
-          
-          //go  through each of its relationships
-          var linksIter = entity.findLinksConnected().iterator;
 
+          var linksIter = entity.findLinksConnected().iterator;
           while(linksIter.next()){
 
             // deal with the cases of to and from links
@@ -72,9 +56,25 @@ app.service('goService', ['$rootScope', function($rootScope) {
 
           }
         }
-    });
+    })
     this.diagram.commitTransaction("Collapse/Expand Entity");
-  };
+  }
+
+  this.updateLayout = (layout) => {
+    if(layout == tp().LAYOUTS.GRID){
+      this.diagram.layout = new go.GridLayout();
+    }
+    if(layout == tp().LAYOUTS.CIRCULAR){
+      this.diagram.layout = new go.CircularLayout();
+    }
+
+    if(layout == tp().LAYOUTS.FORCEDIRECTED){
+      this.diagram.layout = new go.ForceDirectedLayout();
+    }
+    if(layout == tp().LAYOUTS.DIGRAPH){
+      this.diagram.layout = new go.LayeredDigraphLayout();
+    }
+  }
 
   // Exporting image of diagram.
   this.getDiagramCurrentView = function() {
@@ -85,7 +85,7 @@ app.service('goService', ['$rootScope', function($rootScope) {
       } else {
           return "#"; // returns to homepage currently, but would be good to display error feedback.
       }
-  };
+  }
 
   this.getFullDiagram = function () {
       // Creates an image containing the whole diagram.
@@ -97,8 +97,9 @@ app.service('goService', ['$rootScope', function($rootScope) {
       }
   }
 
-  // create a button for toggling an entities visibility
   go.GraphObject.defineBuilder("ToggleEntityVisibilityButton", function(args) {
+    var eltname = /** @type {string} */ (go.GraphObject.takeBuilderArgument(args, "COLLAPSIBLE"));
+
     var button = /** @type {Panel} */ (
       GO("Button",
         GO(go.Shape, "IrritationHazard",
@@ -124,13 +125,14 @@ app.service('goService', ['$rootScope', function($rootScope) {
       entity.visible = false;
       $rootScope.$emit('hide-entity', entity.findObject("TABLENAME").text);
       diagram.commitTransaction("Collapse/Expand Entity");
-    };
+    }
 
     return button;
   });
 
-  // create a button for expanding an entity
   go.GraphObject.defineBuilder("ExpandEntityButton", function(args) {
+    var eltname = /** @type {string} */ (go.GraphObject.takeBuilderArgument(args, "COLLAPSIBLE"));
+
     var button = /** @type {Panel} */ (
       GO("Button",
         GO(go.Shape, "NinePointedBurst",
@@ -139,7 +141,7 @@ app.service('goService', ['$rootScope', function($rootScope) {
         )
       )
     );
-    
+
     var border = button.findObject("ButtonBorder");
     if (border instanceof go.Shape) {
       border.stroke = null;
@@ -149,17 +151,11 @@ app.service('goService', ['$rootScope', function($rootScope) {
     button.click = function(e, button) {
       var diagram = button.diagram;
       diagram.startTransaction("Expand Diagram based on Entity");
-
-      // look for the entity
       var entity = button.panel;
       var entityName = entity.findObject("TABLENAME").text;
       var linksIter = entity.findLinksConnected().iterator;
-
-      // go through all it's connected links
       while(linksIter.next()){
-
-          // deal with the cases of to and from links
-          // show all related entities
+                    // deal with the cases of to and from links
           if(linksIter.value.toNode.findObject("TABLENAME").text == entityName){
             if( !linksIter.value.fromNode.visible ){
               $rootScope.$emit('show-entity', linksIter.value.fromNode.findObject("TABLENAME").text);
@@ -171,91 +167,10 @@ app.service('goService', ['$rootScope', function($rootScope) {
           }
       }
       diagram.commitTransaction("Expand Diagram based on Entity");
-    };
+    }
 
     return button;
   });
-
-	// the template for each attribute in a node's array of item data
-  var attributeTemplate =
-    GO(go.Panel, "Horizontal",
-        {fromSpot: go.Spot.LeftRightSides, toSpot: go.Spot.LeftRightSides},
-      GO(go.Shape,
-        { desiredSize: new go.Size(10, 10), margin: 3 },
-        new go.Binding("figure", "figure"),
-        new go.Binding("fill", "color")),
-      GO(go.TextBlock,
-        { stroke: "#333333",
-          font: "bold 14px sans-serif"},
-          new go.Binding("text", "name")), new go.Binding("portId", "name")
-    );
-
-  // define the Node template, representing an entity
-  var tableTemplate =
-    GO(go.Node, "Auto",  // the whole node panel
-      {
-        name: "ENTITY", 
-        selectionAdorned: true,
-        resizable: false,
-        minSize: new go.Size(150,50),
-        layoutConditions: go.Part.LayoutStandard & ~go.Part.LayoutNodeSized,
-        fromSpot: go.Spot.AllSides,
-        toSpot: go.Spot.AllSides,
-        isShadowed: true,
-        shadowColor: "#C5C1AA" },
-      new go.Binding("location", "location").makeTwoWay(),
-      // define the node's outer shape, which will surround the Table
-      GO(go.Shape, "Rectangle",
-        { fill: lightgrad, stroke: "#756875", strokeWidth: 3 }),
-      GO(go.Panel, "Table",
-          { margin: 8, stretch: go.GraphObject.Fill },
-          GO(go.RowColumnDefinition, { row: 0, background: "#1199ff", sizing: go.RowColumnDefinition.None}),
-          // the table header
-          GO(go.TextBlock,
-          {
-            name: "TABLENAME",
-            row: 0, alignment: go.Spot.Center,
-            margin: new go.Margin(0, 14, 0, 14),  // leave room for Button
-            font: "bold 16px sans-serif"
-          },
-          new go.Binding("text", "key")),
-        // the collapse/expand button
-        GO("PanelExpanderButton", "ATTRIBUTES",  // the name of the element whose visibility this button toggles
-          { row: 0, alignment: go.Spot.TopRight }),
-        GO("ToggleEntityVisibilityButton",  // the name of the element whose visibility this button toggles
-          { row: 0, alignment: go.Spot.TopLeft }),
-        GO(go.Panel, "Vertical",
-          {
-            name: "ATTRIBUTES",
-            row: 1,
-            padding: 0,
-            alignment: go.Spot.TopLeft,
-            defaultAlignment: go.Spot.Left,
-            stretch: go.GraphObject.Horizontal,
-            itemTemplate: attributeTemplate
-          },
-          new go.Binding("itemArray", "items"))
-      ),
-        GO("ExpandEntityButton", // the name of the element whose visibility this button toggles
-            { row: 0, alignment: go.Spot.BottomRight })
-        // end Table Panel
-    );  // end Node
-
-  // define the Link template, representing a relationship
-  var relationshipTemplate =
-
-		  GO(go.Link,  // the whole link panel
-			{
-				selectionAdorned: true,
-				layerName: "Foreground",
-				reshapable: true,
-				routing: go.Link.AvoidsNodes,
-				corner: 5,
-				curve: go.Link.JumpOver
-			},
-			GO(go.Shape,  // the link shape
-				{ stroke: "#303B45", strokeWidth: 2.5 })
-		);
 
 	this.drawSchema = (projectData) => {
 	    this.diagram =
@@ -265,11 +180,11 @@ app.service('goService', ['$rootScope', function($rootScope) {
 	                "undoManager.isEnabled": true, // enable Ctrl-Z to undo and Ctrl-Y to redo
 	                allowDelete: false,
 	                allowCopy: false,
-	                layout: GO(go.ForceDirectedLayout)
+	                layout: GO(go.LayeredDigraphLayout)
 	            });
 
-      this.diagram.nodeTemplate = tableTemplate;
-      this.diagram.linkTemplate = relationshipTemplate;
+      this.diagram.nodeTemplate = tp().tableTemplate;
+      this.diagram.linkTemplate = tp().relationshipTemplate;
 
 	    // Visualize a database; based on http://gojs.net/latest/samples/entityRelationship.html
 
@@ -303,59 +218,59 @@ app.service('goService', ['$rootScope', function($rootScope) {
 			} else if (type.includes("enum") || type.includes("set")) {
 				return dataTypeMapping.enumeration;
 			} else {
-				return {shape: "ThinX", color: "red"};
+				return {shape: "ThinX", color: "red"}
 			}
-		};
+		}
 
-    //diagram.nodeTemplate = tableTempl;
-    // convert to node data array
-    var nodeDataArray = [];
+	    //diagram.nodeTemplate = tableTempl;
+	    // convert to node data array
+	    var nodeDataArray = [];
 
-    for (let i = 0; i < projectData.tablesAndCols.length; i++) {
-        var tbl_name = projectData.tablesAndCols[i].table_name;
-        var existing_tbl = _.where(nodeDataArray, {key: tbl_name});
+	    for (let i = 0; i < projectData.tablesAndCols.length; i++) {
+	        var tbl_name = projectData.tablesAndCols[i].table_name;
+	        var existing_tbl = _.where(nodeDataArray, {key: tbl_name});
 
-          let shapeData = getDataTypeMapping(projectData.tablesAndCols[i].data_type);
+            let shapeData = getDataTypeMapping(projectData.tablesAndCols[i].data_type);
 
-        if (existing_tbl && existing_tbl.length > 0 && projectData.tablesAndCols[i]) {
-            existing_tbl[0].items.push({name: projectData.tablesAndCols[i].column_name,
-        isKey: (projectData.tablesAndCols[i].column_key == "PRI"),
-        color: shapeData.color,
-        figure: shapeData.shape
-            });
-        } else {
-            var new_tbl = {key: tbl_name, items: [ {name: projectData.tablesAndCols[i].column_name,
-        isKey: (projectData.tablesAndCols[i].column_key == "PRI"),
-                  color: shapeData.color,
-                  figure: shapeData.shape
-            }]};
-            nodeDataArray.push(new_tbl);
-        }
-    }
+	        if (existing_tbl && existing_tbl.length > 0 && projectData.tablesAndCols[i]) {
+	            existing_tbl[0].items.push({name: projectData.tablesAndCols[i].column_name,
+					isKey: (projectData.tablesAndCols[i].column_key == "PRI"),
+					color: shapeData.color,
+					figure: shapeData.shape
+	            });
+	        } else {
+	            var new_tbl = {key: tbl_name, items: [ {name: projectData.tablesAndCols[i].column_name,
+					isKey: (projectData.tablesAndCols[i].column_key == "PRI"),
+                    color: shapeData.color,
+                    figure: shapeData.shape
+	            }]};
+	            nodeDataArray.push(new_tbl);
+	        }
+	    }
 
-    var linkDataArray = [];
+	    var linkDataArray = [];
 
-    for (let j = 0; j < projectData.foreignKeys.length; j++) {
-      if (projectData.foreignKeys[j].referenced_table_name) {
-              linkDataArray.push({
-                from: projectData.foreignKeys[j].table_name,
-        fromPort: projectData.foreignKeys[j].column_name,
-                  to: projectData.foreignKeys[j].referenced_table_name,
-                  toPort: projectData.foreignKeys[j].referenced_column_name,
-                  toText: projectData.foreignKeys[j].constraint_name
+	    for (let j = 0; j < projectData.foreignKeys.length; j++) {
+	    	if (projectData.foreignKeys[j].referenced_table_name) {
+                linkDataArray.push({
+                	from: projectData.foreignKeys[j].table_name,
+					fromPort: projectData.foreignKeys[j].column_name,
+                    to: projectData.foreignKeys[j].referenced_table_name,
+                    toPort: projectData.foreignKeys[j].referenced_column_name,
+                    toText: projectData.foreignKeys[j].constraint_name
 
-              });
-    }
-    }
+                });
+			}
+	    }
 
-    this.diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+	    this.diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
 
-      this.diagram.model.linkFromPortIdProperty = "fromPort";  // necessary to remember portIds
-      this.diagram.model.linkToPortIdProperty = "toPort";		// Allows linking from specific columns
+        this.diagram.model.linkFromPortIdProperty = "fromPort";  // necessary to remember portIds
+        this.diagram.model.linkToPortIdProperty = "toPort";		// Allows linking from specific columns
 	};
 
   this.subscribe = function(event, scope, callback) {
       var handler = $rootScope.$on(event, callback);
       scope.$on('$destroy', handler);
-  };
+  }
 }]);

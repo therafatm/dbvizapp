@@ -62,7 +62,7 @@ body {
    ========================================================================== */
 
 .ap-container {
-    height: 500px;
+    height: 565px;
     margin: 10px;
 }
 
@@ -86,8 +86,12 @@ body {
     padding: 0px;
 }
 
+.ep-list-container {
+  overflow-y: auto;
+}
+
 .ep-container {
-    height: 400px;
+    height: 500px;
     width: 600px;
     margin: 10px;
 }

@@ -2,6 +2,7 @@
 
 	<!-- Control Panel Starts-->
 	<div class="mdl-card mdl-shadow--2dp mdl-cell mdl-cell--3-col mdl-cell--stretch panel">
+		<!-- Hidden Entity List Starts-->
 		<div class="mdl-card hidden-attr-card">
 			<div class="mdl-list hidded-attr-list" id="projectList">
 				<div ng-repeat="item in hiddenEntities">
@@ -18,6 +19,9 @@
 
 		<!-- Conrtol Buttons Starts -->
 		<div class="mdl-card mdl-shadow--6dp control-card">
+			<button class="mdl-button mdl-js-button mdl-button--accent change-projects-button" ng-click="goHome()">
+				Change Project
+			</button>
 			<button ng-click="toggleAttributeVisibility($event)" class="mdl-button mdl-js-button mdl-button--accent attr-show-hide">
   				Show/hide attributes
 				</button>

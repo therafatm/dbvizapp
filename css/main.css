@@ -41,6 +41,7 @@ body {
     background-size: 100% 100%;
 }
 
+
 .main-center {
     align-items: center;
     justify-content: center;
@@ -111,4 +112,28 @@ body {
 
 .ep-list-button-remove {
     color: #f44336 !important;
+}
+
+.edit-button-submit {
+  background: rgb(0,150,136);
+  color: #fff;
+  margin-left: 28%;
+}
+
+.edit-input-container {
+  margin-left: 22%;
+}
+
+.edit-button-submit:hover {
+  background: rgb(2, 115, 105);
+}
+
+.edit-button-cancel {
+  color:#f44336;
+  margin-left: 5px
+}
+
+.edit-container {
+  margin: auto;
+  width: 100%;
 }

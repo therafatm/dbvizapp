@@ -1,4 +1,4 @@
-app.controller('projectController', ['$scope', '$location', 'goService', 'projectApiService', 'projectService', '$modal', 'goTemplates', function($scope, $location, goService, projectApiService, projectService, $modal, goTemplates){
+app.controller('projectController', ['$scope', '$location', 'goService', 'projectApiService', 'projectService', '$modal', function($scope, $location, goService, projectApiService, projectService, $modal, goTemplates){
 
 	$scope.currentProjects = {};
 	$scope.projectToAdd = {};
@@ -48,7 +48,7 @@ app.controller('projectController', ['$scope', '$location', 'goService', 'projec
 	$scope.openEditModal = function(projectId){
 		$scope.projectToEdit = projectService.getProjectById(projectId);
 	    $modal.open({
-	      templateUrl: '/views/partials/editModal.html',
+	      templateUrl: '/views/partials/editModal2.html',
 	      controller: ModalInstanceCtrl,
 	      scope: $scope
 	    });

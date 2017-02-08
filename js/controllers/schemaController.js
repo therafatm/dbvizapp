@@ -129,6 +129,10 @@ app.controller('schemaController', ['$scope', '$http', '$routeParams', '$locatio
             });
         };
 
+        $scope.goHome = function(id) {
+          $location.path("/");
+        };
+
         $scope.layoutGrid;
         $scope.layoutForced;
         $scope.layoutCircular;

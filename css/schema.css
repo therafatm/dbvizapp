@@ -141,11 +141,15 @@
 .control-card {
     margin-top: 10px;
     width: 100%;
-    min-height: 70px;
+    min-height: 90px;
     background: inherit;
     flex-direction: row;
     -webkit-flex-wrap: wrap;
     flex-wrap: wrap;
+}
+
+.change-projects-button {
+  margin: auto;
 }
 
 .attr-show-hide {
@@ -153,7 +157,7 @@
 }
 
 .export-button {
-    margin: auto;
+  margin: auto;
 }
 
 

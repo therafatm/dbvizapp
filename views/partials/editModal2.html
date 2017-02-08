@@ -1,0 +1,48 @@
+<div class="mdl-card mdl-shadow--4dp edit-container">
+  <div class="mdl-card__title main-card mdl-color-text--white">
+      <h2 class="mdl-card__title-text">Edit Existing Project</h2>
+  </div>
+  <div class="mdl-card__supporting-text ap-input-container">
+      <form action="#">
+          <!-- Textfield with Floating Label -->
+          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+              <input class="mdl-textfield__input" type="text" id="projectName" ng-model="projectToEdit.name">
+              <label class="mdl-textfield__label" for="projectName">Project</label>
+          </div>
+
+          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+              <input class="mdl-textfield__input" type="text" id="projectSchema" ng-model="projectToEdit.schema">
+              <label class="mdl-textfield__label" for="projectSchema">Schema Name</label>
+          </div>
+
+          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+              <input class="mdl-textfield__input" type="text" id="projectHost" ng-model="projectToEdit.host">
+              <label class="mdl-textfield__label" for="projectHost">Host</label>
+          </div>
+
+          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+              <input class="mdl-textfield__input" type="text" id="projectPort" ng-model="projectToEdit.port" pattern="-?[0-9]*(\.[0-9]+)?">
+              <label class="mdl-textfield__label" for="projectPort">Port</label>
+              <span class="mdl-textfield__error">Input is not a number!</span>
+          </div>
+
+          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+              <input class="mdl-textfield__input" type="text" id="projectUser" ng-model="projectToEdit.username">
+              <label class="mdl-textfield__label" for="projectUser">Username</label>
+          </div>
+
+          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+              <input class="mdl-textfield__input" type="text" id="projectPassword" placeholder="Password" ng-model="projectToEdit.password">
+          </div>
+      </form>
+
+      <button class="mdl-button mdl-js-button mdl-button--raised edit-button" ng-click="submitEditRequest(projectToEdit)">
+            Submit
+          </button>
+      <button class="mdl-button mdl-js-button mdl-button--raised edit-button" ng-click="cancelEditRequest()">
+            Cancel
+      </button>
+      </form>
+  </div>
+
+</div>

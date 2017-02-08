@@ -19,9 +19,9 @@ client.connect();
 
 // middleware that is specific to this router
 router.use(function timeLog (req, res, next) {
-  console.log('Time: ', Date.now())
-  next()
-})
+  console.log('Time: ', Date.now());
+  next();
+});
 
 //GET all projects
 router.route('/')
@@ -51,36 +51,36 @@ router.route('/')
 
   //Add project to DB
   .post(function(req, res, next){
-  const results = [];
+    const results = [];
 
-  console.log(req.body);
+    console.log(req.body);
 
-  // Grab data from http request
-  // Get a Postgres client from the connection pool
-  pg.connect(config, (err, client, done) => {
-      // Handle connection errors
-      if(err) {
-        done();
-        console.log(err);
-        return res.status(500).json({success: false, data: err});
-      }
-      // SQL Query > Insert Data
-      client.query('INSERT INTO projects (name, database, host, port, username, password) VALUES ($1, $2, $3, $4, $5, $6)',
+    // Grab data from http request
+    // Get a Postgres client from the connection pool
+    pg.connect(config, (err, client, done) => {
+        // Handle connection errors
+        if(err) {
+          done();
+          console.log(err);
+          return res.status(500).json({success: false, data: err});
+        }
+        // SQL Query > Insert Data
+        client.query('INSERT INTO projects (name, database, host, port, username, password) VALUES ($1, $2, $3, $4, $5, $6)',
           [req.body.name, req.body.name, req.body.host, req.body.port, req.body.username, req.body.password]);
 
-      // SQL Query > Select Data
-      const query = client.query('SELECT * FROM projects ORDER BY id ASC');
-      // Stream results back one row at a time
-      query.on('row', (row) => {
-        results.push(row);
+        // SQL Query > Select Data
+        const query = client.query('SELECT * FROM projects ORDER BY id ASC');
+        // Stream results back one row at a time
+        query.on('row', (row) => {
+          results.push(row);
+        });
+        // After all data is returned, close connection and return results
+        query.on('end', () => {
+          done();
+          return res.json(results);
+        });
       });
-      // After all data is returned, close connection and return results
-      query.on('end', () => {
-        done();
-        return res.json(results);
-      });
-    });
-  })
+  });
 
 router.put('/', (req, res, next) => {
 
@@ -111,7 +111,7 @@ router.put('/', (req, res, next) => {
       return res.json(results);
     });
   });
-})
+});
 
 router.delete('/:id', (req, res, next) => {
 

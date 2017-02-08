@@ -7,20 +7,20 @@ app.controller('projectController', ['$scope', '$location', 'goService', 'projec
 	$scope.msg = "Pikachu!!";
 
 	$scope.updateCurrentProjects = function(projects) {
-	    $scope.currentProjects = projects;
+	    $scope.currentProjects = projects; 
 	    projectService.setProjects(projects);
-    }
+    };
 
 	$scope.init = function(){
-		projectApiService.getAllProjects()
+		projectApiService.getAllProjects() 
 			.then(
 				function(projects){
 					$scope.updateCurrentProjects(projects);
 				}, function(error){
-					alert(error.error);
+					alert(error.error); 
 				}
 		);
-	}
+	};
 
 	$scope.deleteProjectFromDB = function(id){
 		projectApiService.deleteProject(id)
@@ -33,7 +33,7 @@ app.controller('projectController', ['$scope', '$location', 'goService', 'projec
 					alert(error.error);
 				}
 			)
-;	}
+;	};
 
 	var ModalInstanceCtrl = function ($scope, $modalInstance) {
 	  $scope.submitEditRequest = function (id) {
@@ -47,14 +47,14 @@ app.controller('projectController', ['$scope', '$location', 'goService', 'projec
 
 	$scope.openEditModal = function(projectId){
 		$scope.projectToEdit = projectService.getProjectById(projectId);		
-	    var modalInstance = $modal.open({
+	    $modal.open({
 	      templateUrl: '/views/partials/editModal.html',
 	      controller: ModalInstanceCtrl,
 	      scope: $scope
 	    });		
-	}
+	};
 
-	$scope.editProjectInDB = function(id, $modalInstance){
+	$scope.editProjectInDB = function(id){
 		projectApiService.updateProject(id)
 			.then(
 				function(projects){
@@ -66,13 +66,13 @@ app.controller('projectController', ['$scope', '$location', 'goService', 'projec
 				function(error){
 					alert(error.error);
 				}
-			)
-	}
+			);
+	};
 
 	$scope.cancelEditRequest = function(){
 		$scope.projectToEdit = {};
 		return;		
-	}
+	};
 
 	$scope.addProjectToDB = function(project){
 		projectApiService.addProject(project)
@@ -85,7 +85,7 @@ app.controller('projectController', ['$scope', '$location', 'goService', 'projec
 					alert(error.error);
 				}
 			);
-	}
+	};
 
     $scope.showProject = function(id) {
         let project = projectService.getProjectById(id);
@@ -96,6 +96,6 @@ app.controller('projectController', ['$scope', '$location', 'goService', 'projec
         } else {
             alert("Error: project doesn't exist.");
         }
-    }
+    };
 
 }]);

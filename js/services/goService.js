@@ -22,22 +22,22 @@ app.service('goService', ['$rootScope', function($rootScope) {
         this.diagram.nodes.each( (node) => {
             var list = node.findObject("ATTRIBUTES");
             if( list !== null && list.visible == true) isExpanded = true;
-        })
+        });
 
         if( isExpanded ){
             this.diagram.nodes.each( (node) => {
                 var list = node.findObject("ATTRIBUTES");
                 if( list !== null) list.visible = false;
-            })
+            });
         } else {
             this.diagram.nodes.each( (node) => {
                 var list = node.findObject("ATTRIBUTES");
                 if( list !== null) list.visible = true;
-            })
+            });
         }
 
         this.diagram.commitTransaction("Collapse/Expand all panels");
-  }
+  };
 
   this.showEntity = (entityName) => {
     this.diagram.startTransaction("Collapse/Expand Entity");
@@ -46,11 +46,11 @@ app.service('goService', ['$rootScope', function($rootScope) {
         var entity = table.panel.panel;
         if( table.text == entityName ){
           entity.visible = true;
-
+ 
           var linksIter = entity.findLinksConnected().iterator;
-          while(linksIter.next()){
+          while(linksIter.next()) {
             linksIter.value;
-            
+              
             // deal with the cases of to and from links
             if(linksIter.value.toNode.findObject("TABLENAME").text == table.text){
               if( linksIter.value.fromNode.visible ){
@@ -64,9 +64,9 @@ app.service('goService', ['$rootScope', function($rootScope) {
 
           }
         }
-    })
+    });
     this.diagram.commitTransaction("Collapse/Expand Entity");
-  }
+  };
 
   // Exporting image of diagram.
     this.getImageBase64 = function() {
@@ -77,11 +77,9 @@ app.service('goService', ['$rootScope', function($rootScope) {
         } else {
             return "#"; // returns to homepage currently, but would be good to display error feedback.
         }
-    }
+    };
 
   go.GraphObject.defineBuilder("ToggleEntityVisibilityButton", function(args) {
-    var eltname = /** @type {string} */ (go.GraphObject.takeBuilderArgument(args, "COLLAPSIBLE"));
-
     var button = /** @type {Panel} */ (
       GO("Button",
         GO(go.Shape, "IrritationHazard",
@@ -107,14 +105,12 @@ app.service('goService', ['$rootScope', function($rootScope) {
       entity.visible = false;
       $rootScope.$emit('hide-entity', entity.findObject("TABLENAME").text);
       diagram.commitTransaction("Collapse/Expand Entity");
-    }
+    };
 
     return button;
   });
 
   go.GraphObject.defineBuilder("ExpandEntityButton", function(args) {
-    var eltname = /** @type {string} */ (go.GraphObject.takeBuilderArgument(args, "COLLAPSIBLE"));
-
     var button = /** @type {Panel} */ (
       GO("Button",
         GO(go.Shape, "NinePointedBurst",
@@ -149,7 +145,7 @@ app.service('goService', ['$rootScope', function($rootScope) {
           }
       }
       diagram.commitTransaction("Expand Diagram based on Entity");
-    }
+    };
 
     return button;
   });
@@ -281,9 +277,9 @@ app.service('goService', ['$rootScope', function($rootScope) {
 			} else if (type.includes("enum") || type.includes("set")) {
 				return dataTypeMapping.enumeration;
 			} else {
-				return {shape: "ThinX", color: "red"}
+				return {shape: "ThinX", color: "red"};
 			}
-		}
+		};
 
 	    //diagram.nodeTemplate = tableTempl;
 	    // convert to node data array
@@ -335,5 +331,5 @@ app.service('goService', ['$rootScope', function($rootScope) {
   this.subscribe = function(event, scope, callback) {
       var handler = $rootScope.$on(event, callback);
       scope.$on('$destroy', handler);
-  }
+  };
 }]);

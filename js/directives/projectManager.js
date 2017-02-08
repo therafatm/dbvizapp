@@ -5,7 +5,7 @@ app.directive('projectManager', function() {
     link: function(scope){
     },
     templateUrl: '/views/partials/projectList.html'
-  };
+  }; 
 });
 
 

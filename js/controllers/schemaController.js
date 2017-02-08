@@ -15,16 +15,16 @@ app.controller('schemaController', ['$scope', '$http', '$routeParams', '$locatio
         $scope.updateCurrentProject = function(project) {
             $scope.currentProject = project;
             projectService.setCurrentProject(project);
-        }
+        };
 
         $scope.updateProjectList = function(projects) {
             $scope.projectList = projects;
             projectService.setProjects(projects);
-        }
+        };
 
         $scope.updateLayout = function(layout) {
             goService.updateLayout(layout);
-        }
+        };
 
         var projectId = parseInt($routeParams.id);
 
@@ -75,36 +75,36 @@ app.controller('schemaController', ['$scope', '$http', '$routeParams', '$locatio
                         );
                 }
             }
-        }
+        };
 
         $scope.changeProject = function(id) {
             let project = projectService.getProjectById(id);
             if (project) {
                 projectService.setCurrentProject(project);
-                $location.path('/schema/' + id)
+                $location.path('/schema/' + id);
             }
-        }
+        };
 
         $scope.toggleAttributeVisibility = function() {
 
             goService.toggleAllAttributeVisibility();
 
-        }
+        };
 
         $scope.generateImagePreviews = function() {
             $scope.diagramCurrentView = goService.getDiagramCurrentView();
             $scope.diagramFullView = goService.getFullDiagram();
-        }
+        };
 
         $scope.openImageModal = function() {
-            var modalInstance = $modal.open({
+            $modal.open({
                 templateUrl: '/views/partials/imagePreviewModal.html',
                 controller: ModalInstanceCtrl,
                 scope: $scope
             });
-        }
+        };
 
-        var ModalInstanceCtrl = function($scope, $modalInstance) {
+        var ModalInstanceCtrl = function($scope) {
             $scope.cancelImageRequest = function() {
                 $modalInstance.dismiss("cancel");
             };
@@ -113,11 +113,11 @@ app.controller('schemaController', ['$scope', '$http', '$routeParams', '$locatio
         goService.subscribe("hide-entity", $scope, (name, entityName) => {
             $scope.hiddenEntities.push(entityName);
             $scope.$apply();
-        })
+        });
 
         goService.subscribe("show-entity", $scope, (name, entityName) => {
             $scope.showEntity(entityName);
-        })
+        });
 
         $scope.showEntity = function(entityName) {
             goService.showEntity(entityName);
@@ -127,8 +127,8 @@ app.controller('schemaController', ['$scope', '$http', '$routeParams', '$locatio
                         arr.splice(index, 1);
                     }, 0);
                 }
-            })
-        }
+            });
+        };
 
         $scope.layoutGrid;
         $scope.layoutForced;
@@ -150,7 +150,7 @@ app.controller('schemaController', ['$scope', '$http', '$routeParams', '$locatio
             } else {
                 $scope.layoutLayered = true;
             }
-        }
+        };
 
     }
 ]);

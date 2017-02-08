@@ -9,7 +9,7 @@ app.service('projectApiService', ['$http', '$q', function($http, $q){
 		 });
 
 		return deferred.promise;	
-	}
+	};
 
 	this.deleteProject = function(id){
 		var deferred = $q.defer();		
@@ -23,7 +23,7 @@ app.service('projectApiService', ['$http', '$q', function($http, $q){
 		});
 
 		return deferred.promise;
-	}
+	};
 
 	this.updateProject = function(project){
 		var deferred = $q.defer();
@@ -47,7 +47,7 @@ app.service('projectApiService', ['$http', '$q', function($http, $q){
         }
 
 		return deferred.promise;
-	}
+	};
 
 	this.addProject = function(project){
 		var deferred = $q.defer();
@@ -71,6 +71,6 @@ app.service('projectApiService', ['$http', '$q', function($http, $q){
         }
 
 		return deferred.promise;
-	}
+	};
 
 }]);

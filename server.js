@@ -35,4 +35,4 @@ app.use('/api/schema', schemaAPI);
 
 app.listen(port, function(){
 	console.log("Server listening on port " + port + " !");
-})
+});

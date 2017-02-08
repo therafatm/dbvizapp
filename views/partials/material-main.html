@@ -1,6 +1,6 @@
 <div class="page-content mdl-grid main-center">
 
-    <div class="mdl-card ap-container">
+    <div class="mdl-card ap-container mdl-shadow--4dp" >
         <div class="mdl-card__title main-card mdl-color-text--white">
             <h2 class="mdl-card__title-text">New Project</h2>
         </div>
@@ -8,33 +8,34 @@
         <div class="mdl-card__supporting-text ap-input-container">
             <form action="#">
                 <!-- Textfield with Floating Label -->
-                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <div class="mdl-textfield mdl-js-textfield">
                     <input class="mdl-textfield__input" type="text" id="projectName" ng-model="projectToAdd.name">
                     <label class="mdl-textfield__label" for="projectName">Project</label>
                 </div>
 
-                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <div class="mdl-textfield mdl-js-textfield">
                     <input class="mdl-textfield__input" type="text" id="projectSchema" ng-model="projectToAdd.schema">
                     <label class="mdl-textfield__label" for="projectSchema">Schema Name</label>
                 </div>
 
-                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <div class="mdl-textfield mdl-js-textfield">
                     <input class="mdl-textfield__input" type="text" id="projectHost" ng-model="projectToAdd.host">
                     <label class="mdl-textfield__label" for="projectHost">Host</label>
                 </div>
 
-                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <div class="mdl-textfield mdl-js-textfield">
                     <input class="mdl-textfield__input" type="text" id="projectPort" ng-model="projectToAdd.port" pattern="-?[0-9]*(\.[0-9]+)?">
-                    <label class="mdl-textfield__label" for="projectPort">Port</label>
+                    <label class="mdl-textfield__label" for="projectPassword">Port</label>
                     <span class="mdl-textfield__error">Input is not a number!</span>
                 </div>
 
-                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <div class="mdl-textfield mdl-js-textfield">
                     <input class="mdl-textfield__input" type="text" id="projectUser" ng-model="projectToAdd.username">
-                    <label class="mdl-textfield__label" for="projectUser">Username</label>
+                    <label class="mdl-textfield__label" for="projectUsername">Username</label>
+
                 </div>
 
-                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <div class="mdl-textfield mdl-js-textfield">
                     <input class="mdl-textfield__input" type="password" id="projectPassword" ng-model="projectToAdd.password">
                     <label class="mdl-textfield__label" for="projectPassword">Password</label>
                 </div>
@@ -47,44 +48,31 @@
         </div>
     </div>
 
-    <div class="mdl-card ep-container">
+    <div class="mdl-card mdl-shadow--4dp ep-container">
         <div class="mdl-card__title main-card mdl-color-text--white">
             <h2 class="mdl-card__title-text">Existing Projects</h2>
         </div>
-        <ul class="mdl-list ep-list">
-            <li class="mdl-list__item mdl-list__item--two-line ep-list-item">
-                <span class="mdl-list__item-primary-content">
-                  <span>Oscar DB Project</span>
-                <span class="mdl-list__item-sub-title">http://beta.oscar.com/</span>
-                </span>
-                <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--primary ep-list-button-enter">
-                  Enter
-                </button>
-                <button class="mdl-button mdl-js-button mdl-button--icon mdl-button--colored ep-list-button-edit">
-                  <i class="material-icons">edit</i>
-                </button>
-                <button class="mdl-button mdl-js-button mdl-button--icon mdl-button--colored ep-list-button-remove">
-                  <i class="material-icons">close</i>
-                </button>
-            </li>
+        <div class="ep-list-container">
+          <ul class="mdl-list ep-list" ng-repeat="item in currentProjects">
 
             <li class="mdl-list__item mdl-list__item--two-line ep-list-item">
                 <span class="mdl-list__item-primary-content">
-                  <span>Tiger Tails 2.0</span>
-                <span class="mdl-list__item-sub-title">http://beta.TigerTails.com/</span>
+                  <span>{{item.name}}</span>
+                <span class="mdl-list__item-sub-title">{{item.host}}</span>
                 </span>
-                <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--primary ep-list-button-enter">
+                <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--primary ep-list-button-enter" ng-click="showProject(item.id)">
                   Enter
                 </button>
                 <button class="mdl-button mdl-js-button mdl-button--icon mdl-button--colored ep-list-button-edit">
-                  <i class="material-icons">edit</i>
+                  <i class="material-icons" ng-click="openEditModal(item.id)">edit</i>
                 </button>
                 <button class="mdl-button mdl-js-button mdl-button--icon mdl-button--colored ep-list-button-remove">
-                  <i class="material-icons">close</i>
+                  <i class="material-icons" ng-click="deleteProjectFromDB(item.id)">close</i>
                 </button>
             </li>
-
         </ul>
+      </div>
+
 
 
 

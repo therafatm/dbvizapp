@@ -1,17 +1,10 @@
-app.service('goService', ['$rootScope', function($rootScope) {
+app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
 	
   var GO = go.GraphObject.make;
 
   this.diagram = null;
 
-	 // define several shared Brushes for drawing go elements
-  var bluegrad = GO(go.Brush, "Linear", { 0: "rgb(150, 150, 250)", 0.5: "rgb(86, 86, 186)", 1: "rgb(86, 86, 186)" });
-  var greengrad = GO(go.Brush, "Linear", { 0: "rgb(158, 209, 159)", 1: "rgb(67, 101, 56)" });
-  var redgrad = GO(go.Brush, "Linear", { 0: "rgb(206, 106, 100)", 1: "rgb(180, 56, 50)" });
-  var yellowgrad = GO(go.Brush, "Linear", { 0: "rgb(254, 221, 50)", 1: "rgb(254, 182, 50)" });
-  var lightgrad = GO(go.Brush, "Linear", { 1: "#E6E6FA", 0: "#FFFAF0" });
-
-    this.toggleAllAttributeVisibility = () => {
+  this.toggleAllAttributeVisibility = () => {
     
         if (this.diagram === null) return;
         if (this.diagram.isReadOnly) return;
@@ -49,7 +42,6 @@ app.service('goService', ['$rootScope', function($rootScope) {
 
           var linksIter = entity.findLinksConnected().iterator;
           while(linksIter.next()){
-            linksIter.value;
             
             // deal with the cases of to and from links
             if(linksIter.value.toNode.findObject("TABLENAME").text == table.text){
@@ -68,16 +60,42 @@ app.service('goService', ['$rootScope', function($rootScope) {
     this.diagram.commitTransaction("Collapse/Expand Entity");
   }
 
-  // Exporting image of diagram.
-    this.getImageBase64 = function() {
-        // Creates an image that is the same size as the viewport.
-        if (this.diagram) {
-            // Returns the image data in the form "data:image/png,<base64 image data>"
-            return this.diagram.makeImageData();
-        } else {
-            return "#"; // returns to homepage currently, but would be good to display error feedback.
-        }
+  this.updateLayout = (layout) => {
+    if(layout == tp().LAYOUTS.GRID){
+      this.diagram.layout = new go.GridLayout();
     }
+    if(layout == tp().LAYOUTS.CIRCULAR){
+      this.diagram.layout = new go.CircularLayout();
+    }
+
+    if(layout == tp().LAYOUTS.FORCEDIRECTED){
+      this.diagram.layout = new go.ForceDirectedLayout();
+    }
+    if(layout == tp().LAYOUTS.DIGRAPH){
+      this.diagram.layout = new go.LayeredDigraphLayout();
+    }
+  }
+
+  // Exporting image of diagram.
+  this.getDiagramCurrentView = function() {
+      // Creates an image that is the same size as the viewport.
+      if (this.diagram) {
+          // Returns the image data in the form "data:image/png,<base64 image data>"
+          return this.diagram.makeImageData();
+      } else {
+          return "#"; // returns to homepage currently, but would be good to display error feedback.
+      }
+  }
+
+  this.getFullDiagram = function () {
+      // Creates an image containing the whole diagram.
+      if (this.diagram) {
+          // Returns the image data in the form "data:image/png,<base64 image data>"
+          return this.diagram.makeImageData({scale: 1});
+      } else {
+          return "#"; // returns to homepage currently, but would be good to display error feedback.
+      }
+  }
 
   go.GraphObject.defineBuilder("ToggleEntityVisibilityButton", function(args) {
     var eltname = /** @type {string} */ (go.GraphObject.takeBuilderArgument(args, "COLLAPSIBLE"));
@@ -154,87 +172,6 @@ app.service('goService', ['$rootScope', function($rootScope) {
     return button;
   });
 
-	// the template for each attribute in a node's array of item data
-  var attributeTemplate =
-    GO(go.Panel, "Horizontal",
-        {fromSpot: go.Spot.LeftRightSides, toSpot: go.Spot.LeftRightSides},
-      GO(go.Shape,
-        { desiredSize: new go.Size(10, 10), margin: 3 },
-        new go.Binding("figure", "figure"),
-        new go.Binding("fill", "color")),
-      GO(go.TextBlock,
-        { stroke: "#333333",
-          font: "bold 14px sans-serif"},
-          new go.Binding("text", "name")), new go.Binding("portId", "name")
-    );
-
-  // define the Node template, representing an entity
-  var tableTemplate =
-    GO(go.Node, "Auto",  // the whole node panel
-      {
-        name: "ENTITY", 
-        selectionAdorned: true,
-        resizable: false,
-        minSize: new go.Size(150,50),
-        layoutConditions: go.Part.LayoutStandard & ~go.Part.LayoutNodeSized,
-        fromSpot: go.Spot.AllSides,
-        toSpot: go.Spot.AllSides,
-        isShadowed: true,
-        shadowColor: "#C5C1AA" },
-      new go.Binding("location", "location").makeTwoWay(),
-      // define the node's outer shape, which will surround the Table
-      GO(go.Shape, "Rectangle",
-        { fill: lightgrad, stroke: "#756875", strokeWidth: 3 }),
-      GO(go.Panel, "Table",
-          { margin: 8, stretch: go.GraphObject.Fill },
-          GO(go.RowColumnDefinition, { row: 0, background: "#1199ff", sizing: go.RowColumnDefinition.None}),
-          // the table header
-          GO(go.TextBlock,
-          {
-            name: "TABLENAME",
-            row: 0, alignment: go.Spot.Center,
-            margin: new go.Margin(0, 14, 0, 14),  // leave room for Button
-            font: "bold 16px sans-serif"
-          },
-          new go.Binding("text", "key")),
-        // the collapse/expand button
-        GO("PanelExpanderButton", "ATTRIBUTES",  // the name of the element whose visibility this button toggles
-          { row: 0, alignment: go.Spot.TopRight }),
-        GO("ToggleEntityVisibilityButton", "ENTITY",  // the name of the element whose visibility this button toggles
-          { row: 0, alignment: go.Spot.TopLeft }),
-        GO(go.Panel, "Vertical",
-          {
-            name: "ATTRIBUTES",
-            row: 1,
-            padding: 0,
-            alignment: go.Spot.TopLeft,
-            defaultAlignment: go.Spot.Left,
-            stretch: go.GraphObject.Horizontal,
-            itemTemplate: attributeTemplate
-          },
-          new go.Binding("itemArray", "items"))
-      ),
-        GO("ExpandEntityButton", "ENTITY",  // the name of the element whose visibility this button toggles
-            { row: 0, alignment: go.Spot.BottomRight })
-        // end Table Panel
-    );  // end Node
-
-  // define the Link template, representing a relationship
-  var relationshipTemplate =
-
-		  GO(go.Link,  // the whole link panel
-			{
-				selectionAdorned: true,
-				layerName: "Foreground",
-				reshapable: true,
-				routing: go.Link.AvoidsNodes,
-				corner: 5,
-				curve: go.Link.JumpOver
-			},
-			GO(go.Shape,  // the link shape
-				{ stroke: "#303B45", strokeWidth: 2.5 })
-		);
-
 	this.drawSchema = (projectData) => {
 	    this.diagram =
 	        GO(go.Diagram, "databaseDiagram",
@@ -243,11 +180,11 @@ app.service('goService', ['$rootScope', function($rootScope) {
 	                "undoManager.isEnabled": true, // enable Ctrl-Z to undo and Ctrl-Y to redo
 	                allowDelete: false,
 	                allowCopy: false,
-	                layout: GO(go.ForceDirectedLayout)
+	                layout: GO(go.LayeredDigraphLayout)
 	            });
 
-      this.diagram.nodeTemplate = tableTemplate;
-      this.diagram.linkTemplate = relationshipTemplate;
+      this.diagram.nodeTemplate = tp().tableTemplate;
+      this.diagram.linkTemplate = tp().relationshipTemplate;
 
 	    // Visualize a database; based on http://gojs.net/latest/samples/entityRelationship.html
 

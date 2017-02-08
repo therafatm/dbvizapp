@@ -76,11 +76,12 @@
 			<div class="mdl-card__actions layout-title mdl-shadow--2dp">
 				<h5>Hidden Entities</h5>
 			</div>
-			<div id="imgExport">
-				<a download="{{currentProject.name}}-diagram.png" ng-href="{{diagramImage}}" ng-click="getDiagramImage()" class="btn btn-primary" data-toggle="button" aria-pressed="false">
-					Export Image
-				</a>
-			</div>
+			<div ng-click="openImageModal()"><a class="btn">Export Diagram</a></div>
+			<!--<div id="imgExport">-->
+				<!--<a download="{{currentProject.name}}-diagram.png" ng-href="{{diagramImage}}" ng-click="getDiagramImage()" class="btn btn-primary" data-toggle="button" aria-pressed="false">-->
+					<!--Export Image-->
+				<!--</a>-->
+			<!--</div>-->
 			<div id="databaseActions">
 				<button type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off" ng-click="toggleAttributeVisibility($event)">
 					Show / Hide All Attributes
@@ -108,16 +109,16 @@
 			<h5>Layouts</h5>
 		</div>
 		<div class="mdl-card layout-card">
-			<div class="mdl-card__actions layout-button layout-button-toggled">
+			<div class="mdl-card__actions layout-button layout-button-toggled" ng-click="updateLayout(LAYOUTS.GRID)">
 				<i class="material-icons">view_module</i>
 			</div>
-			<div class="mdl-card__actions layout-button border-left">
+			<div class="mdl-card__actions layout-button border-left" ng-click="updateLayout(LAYOUTS.FORCEDIRECTED)">
 				<i class="material-icons">swap_horiz</i>
 			</div>
-			<div class="mdl-card__actions layout-button border-top">
+			<div class="mdl-card__actions layout-button border-top" ng-click="updateLayout(LAYOUTS.CIRCULAR)">
 				<i class="material-icons">toll</i>
 			</div>
-			<div class="mdl-card__actions layout-button border-top-left">
+			<div class="mdl-card__actions layout-button border-top-left" ng-click="updateLayout(LAYOUTS.DIGRAPH)">
 				<i class="material-icons">view_headline</i>
 			</div>
 		</div>

@@ -19,7 +19,7 @@ app.constant("goTemplates", function(){
 	// the template for each attribute in a node's array of item data
   tp.attributeTemplate =
     GO(go.Panel, "Horizontal",
-        {fromSpot: go.Spot.LeftRightSides, toSpot: go.Spot.LeftRightSides},
+        { fromSpot: go.Spot.Right, toSpot: go.Spot.Left},
       GO(go.Shape,
         { desiredSize: new go.Size(10, 10), margin: 3 },
         new go.Binding("figure", "figure"),
@@ -27,7 +27,8 @@ app.constant("goTemplates", function(){
       GO(go.TextBlock,
         { stroke: "#333333",
           font: "bold 14px sans-serif"},
-          new go.Binding("text", "name")), new go.Binding("portId", "name")
+          new go.Binding("text", "name")),
+          new go.Binding("portId", "name")
     );
 
   // define the Node template, representing an entity
@@ -39,10 +40,10 @@ app.constant("goTemplates", function(){
         resizable: false,
         minSize: new go.Size(150,50),
         layoutConditions: go.Part.LayoutStandard & ~go.Part.LayoutNodeSized,
-        fromSpot: go.Spot.AllSides,
-        toSpot: go.Spot.AllSides,
+          portSpreading: go.Node.SpreadingNone,
         isShadowed: true,
-        shadowColor: "#C5C1AA" },
+        shadowColor: "#C5C1AA"
+      },
       new go.Binding("location", "location").makeTwoWay(),
       // define the node's outer shape, which will surround the Table
       GO(go.Shape, "Rectangle",
@@ -61,9 +62,21 @@ app.constant("goTemplates", function(){
           new go.Binding("text", "key")),
         // the collapse/expand button
         GO("PanelExpanderButton", "ATTRIBUTES",  // the name of the element whose visibility this button toggles
-          { row: 0, alignment: go.Spot.TopRight }),
+          { row: 0, alignment: go.Spot.TopRight,
+              toolTip:  // define a tooltip for each node that displays the color as text
+                  GO(go.Adornment, "Auto",
+                      GO(go.Shape, { fill: "#FFFFCC" }),
+                      GO(go.TextBlock, { margin: 4 }, "Show/hide attributes.")
+                  )  // end of Adornment
+              }),
         GO("ToggleEntityVisibilityButton", "ENTITY",  // the name of the element whose visibility this button toggles
-          { row: 0, alignment: go.Spot.TopLeft }),
+          { row: 0, alignment: go.Spot.TopLeft,
+              toolTip:  // define a tooltip for each node that displays the color as text
+                  GO(go.Adornment, "Auto",
+                      GO(go.Shape, { fill: "#FFFFCC" }),
+                      GO(go.TextBlock, { margin: 4 }, "Hide this entity.")
+                  )  // end of Adornment
+          }),
         GO(go.Panel, "Vertical",
           {
             name: "ATTRIBUTES",
@@ -74,11 +87,24 @@ app.constant("goTemplates", function(){
             stretch: go.GraphObject.Horizontal,
             itemTemplate: tp.attributeTemplate
           },
-          new go.Binding("itemArray", "items"))
-      ),
+          new go.Binding("itemArray", "items")),
+          GO(go.Panel, "Vertical", // spacer to prevent entity button from overlapping name.
+              {
+                  row: 2,
+                  margin: 6,
+                  alignment: go.Spot.TopLeft,
+                  defaultAlignment: go.Spot.Left,
+                  stretch: go.GraphObject.Horizontal,
+              })
+      ), // end Table Panel
         GO("ExpandEntityButton", "ENTITY",  // the name of the element whose visibility this button toggles
-            { row: 0, alignment: go.Spot.BottomRight })
-        // end Table Panel
+        { row: 0, alignment: go.Spot.BottomRight, margin: 5,
+            toolTip:  // define a tooltip for each node that displays the color as text
+                GO(go.Adornment, "Auto",
+                    GO(go.Shape, { fill: "#FFFFCC" }),
+                    GO(go.TextBlock, { margin: 4 }, "Show all entities linked to this one.")
+                )  // end of Adornment
+        })
     );  // end Node
 
   // define the Link template, representing a relationship

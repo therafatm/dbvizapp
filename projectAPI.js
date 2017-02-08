@@ -98,7 +98,7 @@ router.put('/', (req, res, next) => {
     }
     // SQL Query > Update Data
     //console.log("I am here now");
-    client.query('UPDATE projects SET name = $1, database = $2, host = $2, port = $3, username = $4, password = $5 WHERE id=$6',
+    client.query('UPDATE projects SET name = $1, database = $2, host = $3, port = $4, username = $5, password = $6 WHERE id=$7',
     [req.body.name, req.body.schema, req.body.host, req.body.port, req.body.username, req.body.password, req.body.id]);
     var query = client.query('SELECT * FROM projects ORDER BY id ASC');
     // Stream results back one row at a time

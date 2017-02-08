@@ -11,42 +11,50 @@ app.service('goService', ['$rootScope', function($rootScope) {
   var yellowgrad = GO(go.Brush, "Linear", { 0: "rgb(254, 221, 50)", 1: "rgb(254, 182, 50)" });
   var lightgrad = GO(go.Brush, "Linear", { 1: "#E6E6FA", 0: "#FFFAF0" });
 
-    this.toggleAllAttributeVisibility = () => {
-    
-        if (this.diagram === null) return;
-        if (this.diagram.isReadOnly) return;
+  this.toggleAllAttributeVisibility = () => {
+  
+      if (this.diagram === null) return;
+      if (this.diagram.isReadOnly) return;
 
-        this.diagram.startTransaction("Collapse/Expand all panels");
+      this.diagram.startTransaction("Collapse/Expand all panels");
 
-        var isExpanded = false;
-        this.diagram.nodes.each( (node) => {
-            var list = node.findObject("ATTRIBUTES");
-            if( list !== null && list.visible == true) isExpanded = true;
-        });
+      // look for each attribute object in every entity and check if any are visible
+      var isExpanded = false;
+      this.diagram.nodes.each( (node) => {
+          var list = node.findObject("ATTRIBUTES");
+          if( list !== null && list.visible == true) isExpanded = true;
+      });
 
-        if( isExpanded ){
-            this.diagram.nodes.each( (node) => {
-                var list = node.findObject("ATTRIBUTES");
-                if( list !== null) list.visible = false;
-            });
-        } else {
-            this.diagram.nodes.each( (node) => {
-                var list = node.findObject("ATTRIBUTES");
-                if( list !== null) list.visible = true;
-            });
-        }
+      if( isExpanded ){
+        // if any are visible, hide all of them
+          this.diagram.nodes.each( (node) => {
+              var list = node.findObject("ATTRIBUTES");
+              if( list !== null) list.visible = false;
+          });
+      } else {
+        // if all are visiible, show all of them
+          this.diagram.nodes.each( (node) => {
+              var list = node.findObject("ATTRIBUTES");
+              if( list !== null) list.visible = true;
+          });
+      }
 
-        this.diagram.commitTransaction("Collapse/Expand all panels");
+      this.diagram.commitTransaction("Collapse/Expand all panels");
   };
 
   this.showEntity = (entityName) => {
+
+    // go through each node
     this.diagram.startTransaction("Collapse/Expand Entity");
     this.diagram.nodes.each( (node) => {
+      // find the ent object
         var table = node.findObject("TABLENAME");
         var entity = table.panel.panel;
         if( table.text == entityName ){
+          // make it visible
           entity.visible = true;
- 
+          
+          //go  through each of its relationships
           var linksIter = entity.findLinksConnected().iterator;
           while(linksIter.next()) {
             linksIter.value;
@@ -69,16 +77,17 @@ app.service('goService', ['$rootScope', function($rootScope) {
   };
 
   // Exporting image of diagram.
-    this.getImageBase64 = function() {
-        // Creates an image that is the same size as the viewport.
-        if (this.diagram) {
-            // Returns the image data in the form "data:image/png,<base64 image data>"
-            return this.diagram.makeImageData();
-        } else {
-            return "#"; // returns to homepage currently, but would be good to display error feedback.
-        }
-    };
+  this.getImageBase64 = function() {
+      // Creates an image that is the same size as the viewport.
+      if (this.diagram) {
+          // Returns the image data in the form "data:image/png,<base64 image data>"
+          return this.diagram.makeImageData();
+      } else {
+          return "#"; // returns to homepage currently, but would be good to display error feedback.
+      }
+  };
 
+  // create a button for toggling an entities visibility
   go.GraphObject.defineBuilder("ToggleEntityVisibilityButton", function(args) {
     var button = /** @type {Panel} */ (
       GO("Button",
@@ -110,6 +119,7 @@ app.service('goService', ['$rootScope', function($rootScope) {
     return button;
   });
 
+  // create a button for expanding an entity
   go.GraphObject.defineBuilder("ExpandEntityButton", function(args) {
     var button = /** @type {Panel} */ (
       GO("Button",
@@ -119,7 +129,7 @@ app.service('goService', ['$rootScope', function($rootScope) {
         )
       )
     );
-
+    
     var border = button.findObject("ButtonBorder");
     if (border instanceof go.Shape) {
       border.stroke = null;
@@ -129,11 +139,17 @@ app.service('goService', ['$rootScope', function($rootScope) {
     button.click = function(e, button) {
       var diagram = button.diagram;
       diagram.startTransaction("Expand Diagram based on Entity");
+
+      // look for the entity
       var entity = button.panel;
       var entityName = entity.findObject("TABLENAME").text;
       var linksIter = entity.findLinksConnected().iterator;
+
+      // go through all it's connected links
       while(linksIter.next()){
-                    // deal with the cases of to and from links
+
+          // deal with the cases of to and from links
+          // show all related entities
           if(linksIter.value.toNode.findObject("TABLENAME").text == entityName){
             if( !linksIter.value.fromNode.visible ){
               $rootScope.$emit('show-entity', linksIter.value.fromNode.findObject("TABLENAME").text);
@@ -281,51 +297,51 @@ app.service('goService', ['$rootScope', function($rootScope) {
 			}
 		};
 
-	    //diagram.nodeTemplate = tableTempl;
-	    // convert to node data array
-	    var nodeDataArray = [];
+    //diagram.nodeTemplate = tableTempl;
+    // convert to node data array
+    var nodeDataArray = [];
 
-	    for (let i = 0; i < projectData.tablesAndCols.length; i++) {
-	        var tbl_name = projectData.tablesAndCols[i].table_name;
-	        var existing_tbl = _.where(nodeDataArray, {key: tbl_name});
+    for (let i = 0; i < projectData.tablesAndCols.length; i++) {
+        var tbl_name = projectData.tablesAndCols[i].table_name;
+        var existing_tbl = _.where(nodeDataArray, {key: tbl_name});
 
-            let shapeData = getDataTypeMapping(projectData.tablesAndCols[i].data_type);
+          let shapeData = getDataTypeMapping(projectData.tablesAndCols[i].data_type);
 
-	        if (existing_tbl && existing_tbl.length > 0 && projectData.tablesAndCols[i]) {
-	            existing_tbl[0].items.push({name: projectData.tablesAndCols[i].column_name,
-					isKey: (projectData.tablesAndCols[i].column_key == "PRI"),
-					color: shapeData.color,
-					figure: shapeData.shape
-	            });
-	        } else {
-	            var new_tbl = {key: tbl_name, items: [ {name: projectData.tablesAndCols[i].column_name,
-					isKey: (projectData.tablesAndCols[i].column_key == "PRI"),
-                    color: shapeData.color,
-                    figure: shapeData.shape
-	            }]};
-	            nodeDataArray.push(new_tbl);
-	        }
-	    }
+        if (existing_tbl && existing_tbl.length > 0 && projectData.tablesAndCols[i]) {
+            existing_tbl[0].items.push({name: projectData.tablesAndCols[i].column_name,
+        isKey: (projectData.tablesAndCols[i].column_key == "PRI"),
+        color: shapeData.color,
+        figure: shapeData.shape
+            });
+        } else {
+            var new_tbl = {key: tbl_name, items: [ {name: projectData.tablesAndCols[i].column_name,
+        isKey: (projectData.tablesAndCols[i].column_key == "PRI"),
+                  color: shapeData.color,
+                  figure: shapeData.shape
+            }]};
+            nodeDataArray.push(new_tbl);
+        }
+    }
 
-	    var linkDataArray = [];
+    var linkDataArray = [];
 
-	    for (let j = 0; j < projectData.foreignKeys.length; j++) {
-	    	if (projectData.foreignKeys[j].referenced_table_name) {
-                linkDataArray.push({
-                	from: projectData.foreignKeys[j].table_name,
-					fromPort: projectData.foreignKeys[j].column_name,
-                    to: projectData.foreignKeys[j].referenced_table_name,
-                    toPort: projectData.foreignKeys[j].referenced_column_name,
-                    toText: projectData.foreignKeys[j].constraint_name
+    for (let j = 0; j < projectData.foreignKeys.length; j++) {
+      if (projectData.foreignKeys[j].referenced_table_name) {
+              linkDataArray.push({
+                from: projectData.foreignKeys[j].table_name,
+        fromPort: projectData.foreignKeys[j].column_name,
+                  to: projectData.foreignKeys[j].referenced_table_name,
+                  toPort: projectData.foreignKeys[j].referenced_column_name,
+                  toText: projectData.foreignKeys[j].constraint_name
 
-                });
-			}
-	    }
+              });
+    }
+    }
 
-	    this.diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+    this.diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
 
-        this.diagram.model.linkFromPortIdProperty = "fromPort";  // necessary to remember portIds
-        this.diagram.model.linkToPortIdProperty = "toPort";		// Allows linking from specific columns
+      this.diagram.model.linkFromPortIdProperty = "fromPort";  // necessary to remember portIds
+      this.diagram.model.linkToPortIdProperty = "toPort";		// Allows linking from specific columns
 	};
 
   this.subscribe = function(event, scope, callback) {

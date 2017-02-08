@@ -1,14 +1,14 @@
-app.controller('schemaController', ['$scope', '$http', '$routeParams', '$location', '$timeout', '$modal', 'goService', 'goTemplates', 'projectService', 'projectApiService',
-    function($scope, $http, $routeParams, $location, $timeout, $modal, goService, tp, projectService, projectApiService) {
+app.controller('schemaController', ['$scope', '$http', '$routeParams', '$location', '$timeout', '$modal', 'goService', 'projectService', 'projectApiService',
+    function($scope, $http, $routeParams, $location, $timeout, $modal, goService, projectService, projectApiService) {
 
         $scope.projectList = projectService.getProjects();
         $scope.currentProject = projectService.getCurrentProject();
 
         $scope.hiddenEntities = [];
 
-        $scope.LAYOUTS = tp().LAYOUTS;
+        //$scope.LAYOUTS = tp().LAYOUTS;
 
-        $scope.currentLayout = tp().LAYOUTS.DIGRAPH;
+        //$scope.currentLayout = tp().LAYOUTS.DIGRAPH;
 
 
 
@@ -105,7 +105,7 @@ app.controller('schemaController', ['$scope', '$http', '$routeParams', '$locatio
             });
         };
 
-        var ModalInstanceCtrl = function($scope) {
+        var ModalInstanceCtrl = function($scope, $modalInstance) {
             $scope.cancelImageRequest = function() {
                 $modalInstance.dismiss("cancel");
             };

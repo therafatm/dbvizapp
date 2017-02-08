@@ -6,9 +6,9 @@
 			<div class="mdl-list hidded-attr-list" id="projectList">
 				<div ng-repeat="item in projectList">
 
-					<div ng-click="changeProject(item.id)" class="mdl-list__item hidden-attr-item">
+					<div ng-click="showEntity({{item.name}})" class="mdl-list__item hidden-attr-item">
 						<span class="mdl-list__item-primary-content">
-					                <span>{{item.name}}</span>
+					  	<span>{{item.name}}</span>
 						</span>
 						<a class="mdl-list__item-secondary-action vis-icon"><i class="material-icons">visibility</i></a>
 					</div>
@@ -18,12 +18,9 @@
 		</div>
 
 		<!-- Conrtol Buttons Starts -->
-		<div class="mdl-card mdl-shadow--8dp control-card">
-			<button ng-click="toggleAttributeVisibility($event)" class="mdl-button mdl-js-button mdl-button--accent attr-show">
-  				Show all attr.
-				</button>
-			<button ng-click="toggleAttributeVisibility($event)" class="mdl-button mdl-js-button mdl-button--accent attr-hide">
-  				Hide all attr.
+		<div class="mdl-card mdl-shadow--6dp control-card">
+			<button ng-click="toggleAttributeVisibility($event)" class="mdl-button mdl-js-button mdl-button--accent attr-show-hide">
+  				Show/hide attributes
 				</button>
 			<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent export-button" download="{{currentProject.name}}-diagram.png" ng-href="{{diagramImage}}" ng-click="getDiagramImage()" id="imgExport">
   			Export
@@ -37,16 +34,16 @@
 			<h5>Layouts</h5>
 		</div>
 		<div class="mdl-card layout-card">
-			<div class="mdl-card__actions layout-button layout-button-toggled">
+			<div class="mdl-card__actions layout-button" ng-class="{'layout-button-toggled': layoutGrid === true}" ng-click="toggleLayoutButton(1)">
 				<i class="material-icons">view_module</i>
 			</div>
-			<div class="mdl-card__actions layout-button border-left">
+			<div class="mdl-card__actions layout-button border-left" ng-class="{'layout-button-toggled': layoutForced === true}" ng-click="toggleLayoutButton(2)">
 				<i class="material-icons">swap_horiz</i>
 			</div>
-			<div class="mdl-card__actions layout-button border-top">
+			<div class="mdl-card__actions layout-button border-top" ng-class="{'layout-button-toggled': layoutCircular === true}" ng-click="toggleLayoutButton(3)">
 				<i class="material-icons">toll</i>
 			</div>
-			<div class="mdl-card__actions layout-button border-top-left">
+			<div class="mdl-card__actions layout-button border-top-left" ng-class="{'layout-button-toggled': layoutLayered === true}" ng-click="toggleLayoutButton(4)">
 				<i class="material-icons">view_headline</i>
 			</div>
 		</div>

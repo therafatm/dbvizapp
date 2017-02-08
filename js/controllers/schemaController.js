@@ -107,5 +107,28 @@ app.controller('schemaController', ['$scope', '$http', '$routeParams', '$locatio
                 }
             })
         }
+
+        $scope.layoutGrid;
+        $scope.layoutForced;
+        $scope.layoutCircular;
+        $scope.layoutLayered;
+
+        $scope.toggleLayoutButton = function(toggle) {
+            $scope.layoutGrid = false;
+            $scope.layoutForced = false;
+            $scope.layoutCircular = false;
+            $scope.layoutLayered = false;
+
+            if (toggle == 1) {
+                $scope.layoutGrid = true;
+            } else if (toggle == 2) {
+                $scope.layoutForced = true;
+            } else if (toggle == 3) {
+                $scope.layoutCircular = true;
+            } else {
+                $scope.layoutLayered = true;
+            }
+        }
+
     }
 ]);

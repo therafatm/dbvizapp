@@ -4,13 +4,13 @@
 	<div class="mdl-card mdl-shadow--2dp mdl-cell mdl-cell--3-col mdl-cell--stretch panel">
 		<div class="mdl-card hidden-attr-card">
 			<div class="mdl-list hidded-attr-list" id="projectList">
-				<div ng-repeat="item in projectList">
+				<div ng-repeat="item in hiddenEntities">
 
-					<div ng-click="showEntity({{item.name}})" class="mdl-list__item hidden-attr-item">
+					<div class="mdl-list__item hidden-attr-item">
 						<span class="mdl-list__item-primary-content">
-					  	<span>{{item.name}}</span>
+					  	<span>{{item}}</span>
 						</span>
-						<a class="mdl-list__item-secondary-action vis-icon"><i class="material-icons">visibility</i></a>
+						<a class="mdl-list__item-secondary-action vis-icon" ng-click="showEntity(item)"><i class="material-icons">visibility</i></a>
 					</div>
 
 				</div>
@@ -22,39 +22,11 @@
 			<button ng-click="toggleAttributeVisibility($event)" class="mdl-button mdl-js-button mdl-button--accent attr-show-hide">
   				Show/hide attributes
 				</button>
-			<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent export-button" download="{{currentProject.name}}-diagram.png" ng-href="{{diagramImage}}" ng-click="getDiagramImage()" id="imgExport">
+			<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent export-button" ng-click="openImageModal()">
   			Export
 			</button>
 		</div>
 		<!-- Conrtol Buttons Ends -->
-<<<<<<< HEAD
-=======
-=======
-		<div>
-			<div class="mdl-card__actions layout-title mdl-shadow--2dp">
-				<h5>Hidden Entities</h5>
-			</div>
-			<div ng-click="openImageModal()"><a class="btn">Export Diagram</a></div>
-			<!--<div id="imgExport">-->
-				<!--<a download="{{currentProject.name}}-diagram.png" ng-href="{{diagramImage}}" ng-click="getDiagramImage()" class="btn btn-primary" data-toggle="button" aria-pressed="false">-->
-					<!--Export Image-->
-				<!--</a>-->
-			<!--</div>-->
-			<div id="databaseActions">
-				<button type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off" ng-click="toggleAttributeVisibility($event)">
-					Show / Hide All Attributes
-				</button>
-			</div>
-			<table class="table table-striped table-hover ">
-				<tbody>
-					<tr ng-repeat="item in hiddenEntities">
-					<td class="col-sm-8">{{item}} </td>
-					<td class="col-sm-1"><div ng-click="showEntity(item)"><a class="btn btn-warning">Show</a></div></td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
->>>>>>> origin/master
 
 
 		<!-- Layouts Card Starts-->
@@ -62,29 +34,16 @@
 			<h5>Layouts</h5>
 		</div>
 		<div class="mdl-card layout-card">
-<<<<<<< HEAD
-			<div class="mdl-card__actions layout-button" ng-class="{'layout-button-toggled': layoutGrid === true}" ng-click="toggleLayoutButton(1)">
+			<div class="mdl-card__actions layout-button" ng-class="{'layout-button-toggled': layoutGrid === true}" ng-click="toggleLayoutButton(1); updateLayout(LAYOUTS.GRID)">
 				<i class="material-icons">view_module</i>
 			</div>
-			<div class="mdl-card__actions layout-button border-left" ng-class="{'layout-button-toggled': layoutForced === true}" ng-click="toggleLayoutButton(2)">
+			<div class="mdl-card__actions layout-button border-left" ng-class="{'layout-button-toggled': layoutForced === true}" ng-click="toggleLayoutButton(2); updateLayout(LAYOUTS.FORCEDIRECTED)">
 				<i class="material-icons">swap_horiz</i>
 			</div>
-			<div class="mdl-card__actions layout-button border-top" ng-class="{'layout-button-toggled': layoutCircular === true}" ng-click="toggleLayoutButton(3)">
+			<div class="mdl-card__actions layout-button border-top" ng-class="{'layout-button-toggled': layoutCircular === true}" ng-click="toggleLayoutButton(3); updateLayout(LAYOUTS.CIRCULAR)">
 				<i class="material-icons">toll</i>
 			</div>
-			<div class="mdl-card__actions layout-button border-top-left" ng-class="{'layout-button-toggled': layoutLayered === true}" ng-click="toggleLayoutButton(4)">
-=======
-			<div class="mdl-card__actions layout-button layout-button-toggled" ng-click="updateLayout(LAYOUTS.GRID)">
-				<i class="material-icons">view_module</i>
-			</div>
-			<div class="mdl-card__actions layout-button border-left" ng-click="updateLayout(LAYOUTS.FORCEDIRECTED)">
-				<i class="material-icons">swap_horiz</i>
-			</div>
-			<div class="mdl-card__actions layout-button border-top" ng-click="updateLayout(LAYOUTS.CIRCULAR)">
-				<i class="material-icons">toll</i>
-			</div>
-			<div class="mdl-card__actions layout-button border-top-left" ng-click="updateLayout(LAYOUTS.DIGRAPH)">
->>>>>>> origin/master
+			<div class="mdl-card__actions layout-button border-top-left" ng-class="{'layout-button-toggled': layoutLayered === true}" ng-click="toggleLayoutButton(4); updateLayout(LAYOUTS.DIGRAPH)">
 				<i class="material-icons">view_headline</i>
 			</div>
 		</div>

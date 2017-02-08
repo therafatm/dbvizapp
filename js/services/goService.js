@@ -135,9 +135,8 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
 
     var button = /** @type {Panel} */ (
       GO("Button",
-        GO(go.Shape, "NinePointedBurst",
-                            { desiredSize: new go.Size(10, 10),
-                              margin: new go.Margin(5)}
+        GO(go.Shape, "ThickCross",
+                            { desiredSize: new go.Size(10, 10) }
         )
       )
     );

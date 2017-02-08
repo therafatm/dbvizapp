@@ -24,7 +24,7 @@ app.service('projectService', function() {
 
     var getProjectById = function(id) {
         return _.findWhere(projectList, {id: id});
-    }
+    };
 
     return {
         addProject: addProject,

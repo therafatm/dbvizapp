@@ -9,7 +9,7 @@ app.service('projectApiService', ['$http', '$q', function($http, $q){
 		 });
 
 		return deferred.promise;	
-	}
+	};
 
 	this.deleteProject = function(id){
 		var deferred = $q.defer();		
@@ -23,12 +23,13 @@ app.service('projectApiService', ['$http', '$q', function($http, $q){
 		});
 
 		return deferred.promise;
-	}
+	};
 
 	this.updateProject = function(project){
 		var deferred = $q.defer();
         // Modifying to use url for mysql instead.
         if(typeof(project.name) == 'string' && project.name.length > 0 &&
+            typeof(project.schema) == 'string' && project.schema.length > 0 &&
             typeof(project.host) == 'string' && project.host.length > 0 &&
             typeof(project.username) == 'string' && project.username.length > 0 &&
             typeof(project.password) == 'string' && project.password.length > 0 &&
@@ -47,12 +48,13 @@ app.service('projectApiService', ['$http', '$q', function($http, $q){
         }
 
 		return deferred.promise;
-	}
+	};
 
 	this.addProject = function(project){
 		var deferred = $q.defer();
         // Modifying to use url for mysql instead.
         if(typeof(project.name) == 'string' && project.name.length > 0 &&
+            typeof(project.schema) == 'string' && project.schema.length > 0 &&
             typeof(project.host) == 'string' && project.host.length > 0 &&
             typeof(project.username) == 'string' && project.username.length > 0 &&
             typeof(project.password) == 'string' && project.password.length > 0 &&
@@ -71,6 +73,6 @@ app.service('projectApiService', ['$http', '$q', function($http, $q){
         }
 
 		return deferred.promise;
-	}
+	};
 
 }]);

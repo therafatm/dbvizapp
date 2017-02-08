@@ -11,9 +11,9 @@ var keysQuery = 'SELECT table_name, column_name, referenced_table_name, referenc
 
 // middleware that is specific to this router
 router.use(function timeLog (req, res, next) {
-    console.log('Time: ', Date.now())
-    next()
-})
+    console.log('Time: ', Date.now());
+    next();
+});
 
 router.route('/').get(function (req, res, next) {
 
@@ -53,7 +53,7 @@ router.route('/').get(function (req, res, next) {
                             connection.end();
                             return res.json(results);
                         }
-                    })
+                    });
                 }
             });
         }

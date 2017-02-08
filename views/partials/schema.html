@@ -3,74 +3,32 @@
 	<!-- Control Panel Starts-->
 	<div class="mdl-card mdl-shadow--2dp mdl-cell mdl-cell--3-col mdl-cell--stretch panel">
 		<div class="mdl-card hidden-attr-card">
-			<div class="mdl-list hidded-attr-list">
+			<div class="mdl-list hidded-attr-list" id="projectList">
+				<div ng-repeat="item in projectList">
 
-<<<<<<< HEAD
-				<div class="mdl-list__item hidden-attr-item">
-					<span class="mdl-list__item-primary-content">
-					<span>Patients</span>
-					</span>
-					<a class="mdl-list__item-secondary-action"><i class="material-icons">visibility</i></a>
+					<div ng-click="showEntity({{item.name}})" class="mdl-list__item hidden-attr-item">
+						<span class="mdl-list__item-primary-content">
+					  	<span>{{item.name}}</span>
+						</span>
+						<a class="mdl-list__item-secondary-action vis-icon"><i class="material-icons">visibility</i></a>
+					</div>
+
 				</div>
-
-				<div class="mdl-list__item hidden-attr-item">
-					<span class="mdl-list__item-primary-content">
-					<span>Drugs</span>
-					</span>
-					<a class="mdl-list__item-secondary-action"><i class="material-icons">visibility</i></a>
-				</div>
-
-				<div class="mdl-list__item hidden-attr-item">
-					<span class="mdl-list__item-primary-content">
-					<span>Prescritions</span>
-					</span>
-					<a class="mdl-list__item-secondary-action"><i class="material-icons">visibility</i></a>
-				</div>
-
-				<div class="mdl-list__item hidden-attr-item">
-					<span class="mdl-list__item-primary-content">
-					<span>Doctors</span>
-					</span>
-					<a class="mdl-list__item-secondary-action"><i class="material-icons">visibility</i></a>
-				</div>
-
-				<div class="mdl-list__item hidden-attr-item">
-					<span class="mdl-list__item-primary-content">
-					<span>Hosptials</span>
-					</span>
-					<a class="mdl-list__item-secondary-action"><i class="material-icons">visibility</i></a>
-				</div>
-
-				<div class="mdl-list__item hidden-attr-item">
-					<span class="mdl-list__item-primary-content">
-					<span>MOARR DRUGS</span>
-					</span>
-					<a class="mdl-list__item-secondary-action"><i class="material-icons">visibility</i></a>
-				</div>
-
-				<div class="mdl-list__item hidden-attr-item">
-					<span class="mdl-list__item-primary-content">
-					<span>Kids</span>
-					</span>
-					<a class="mdl-list__item-secondary-action"><i class="material-icons">visibility</i></a>
-				</div>
-
 			</div>
 		</div>
 
 		<!-- Conrtol Buttons Starts -->
-		<div class="mdl-card mdl-shadow--8dp control-card">
-			<button class="mdl-button mdl-js-button mdl-button--accent attr-show">
-  				Show all attr.
+		<div class="mdl-card mdl-shadow--6dp control-card">
+			<button ng-click="toggleAttributeVisibility($event)" class="mdl-button mdl-js-button mdl-button--accent attr-show-hide">
+  				Show/hide attributes
 				</button>
-			<button class="mdl-button mdl-js-button mdl-button--accent attr-hide">
-  				Hide all attr.
-				</button>
-			<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent export-button">
+			<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent export-button" download="{{currentProject.name}}-diagram.png" ng-href="{{diagramImage}}" ng-click="getDiagramImage()" id="imgExport">
   			Export
 			</button>
 		</div>
 		<!-- Conrtol Buttons Ends -->
+<<<<<<< HEAD
+=======
 =======
 		<div>
 			<div class="mdl-card__actions layout-title mdl-shadow--2dp">
@@ -96,19 +54,26 @@
 				</tbody>
 			</table>
 		</div>
+>>>>>>> origin/master
 
-		<div id="projectList">
-			<div ng-repeat="item in projectList">
-				<div ng-click="changeProject(item.id)" style="color: white; font-size: 16pt;">{{item.name}}</div>
-			</div>
-		</div>
->>>>>>> 1529c305d83567422ec35f2bc8601ceef35809d6
 
 		<!-- Layouts Card Starts-->
 		<div class="mdl-card__actions layout-title mdl-shadow--2dp">
 			<h5>Layouts</h5>
 		</div>
 		<div class="mdl-card layout-card">
+<<<<<<< HEAD
+			<div class="mdl-card__actions layout-button" ng-class="{'layout-button-toggled': layoutGrid === true}" ng-click="toggleLayoutButton(1)">
+				<i class="material-icons">view_module</i>
+			</div>
+			<div class="mdl-card__actions layout-button border-left" ng-class="{'layout-button-toggled': layoutForced === true}" ng-click="toggleLayoutButton(2)">
+				<i class="material-icons">swap_horiz</i>
+			</div>
+			<div class="mdl-card__actions layout-button border-top" ng-class="{'layout-button-toggled': layoutCircular === true}" ng-click="toggleLayoutButton(3)">
+				<i class="material-icons">toll</i>
+			</div>
+			<div class="mdl-card__actions layout-button border-top-left" ng-class="{'layout-button-toggled': layoutLayered === true}" ng-click="toggleLayoutButton(4)">
+=======
 			<div class="mdl-card__actions layout-button layout-button-toggled" ng-click="updateLayout(LAYOUTS.GRID)">
 				<i class="material-icons">view_module</i>
 			</div>
@@ -119,6 +84,7 @@
 				<i class="material-icons">toll</i>
 			</div>
 			<div class="mdl-card__actions layout-button border-top-left" ng-click="updateLayout(LAYOUTS.DIGRAPH)">
+>>>>>>> origin/master
 				<i class="material-icons">view_headline</i>
 			</div>
 		</div>

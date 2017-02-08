@@ -4,3 +4,7 @@ node_modules/
 .DS_Store
 
 npm-debug.log
+
+*.swp
+
+views/partials/tempschema.html

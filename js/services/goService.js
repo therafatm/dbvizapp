@@ -196,7 +196,7 @@ app.service('goService', ['$rootScope', function($rootScope) {
         // the collapse/expand button
         GO("PanelExpanderButton", "ATTRIBUTES",  // the name of the element whose visibility this button toggles
           { row: 0, alignment: go.Spot.TopRight }),
-        GO("ToggleEntityVisibilityButton", "ENTITY",  // the name of the element whose visibility this button toggles
+        GO("ToggleEntityVisibilityButton",  // the name of the element whose visibility this button toggles
           { row: 0, alignment: go.Spot.TopLeft }),
         GO(go.Panel, "Vertical",
           {
@@ -210,7 +210,7 @@ app.service('goService', ['$rootScope', function($rootScope) {
           },
           new go.Binding("itemArray", "items"))
       ),
-        GO("ExpandEntityButton", "ENTITY",  // the name of the element whose visibility this button toggles
+        GO("ExpandEntityButton", // the name of the element whose visibility this button toggles
             { row: 0, alignment: go.Spot.BottomRight })
         // end Table Panel
     );  // end Node

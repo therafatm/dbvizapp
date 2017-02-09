@@ -1,6 +1,6 @@
 app.controller('projectController', ['$scope', '$location', 'goService', 'projectApiService', 'projectService', '$modal', function($scope, $location, goService, projectApiService, projectService, $modal, goTemplates){
 
-	$scope.currentProjects = {};
+	$scope.currentProjects = [];
 	$scope.projectToAdd = {};
 	$scope.projectToEdit = {};
  	$scope.gojs = goService.drawSchema;
@@ -12,14 +12,18 @@ app.controller('projectController', ['$scope', '$location', 'goService', 'projec
     };
 
 	$scope.init = function(){
-		projectApiService.getAllProjects()
-			.then(
-				function(projects){
-					$scope.updateCurrentProjects(projects);
-				}, function(error){
-					alert(error.error);
-				}
-		);
+		if($scope.currentProjects.length == 0){
+			projectApiService.getAllProjects()
+				.then(
+					function(projects){
+						$scope.updateCurrentProjects(projects);
+					}, function(error){
+						alert(error.error);
+					}
+			);
+		}
+		$scope.projectToAdd = {};
+		$scope.projectToEdit = {};
 	};
 
 	$scope.deleteProjectFromDB = function(id){
@@ -38,33 +42,35 @@ app.controller('projectController', ['$scope', '$location', 'goService', 'projec
 	var ModalInstanceCtrl = function ($scope, $modalInstance) {
 	  $scope.submitEditRequest = function (id) {
 	  	$scope.editProjectInDB(id, $modalInstance);
-		$modalInstance.close("ok");
 	  };
 	  $scope.cancelEditRequest = function () {
 	    $modalInstance.dismiss("cancel");
+	    $scope.projectToEdit = {}
 	  };
 	};
 
 	$scope.openEditModal = function(projectId){
-		$scope.projectToEdit = projectService.getProjectById(projectId);
+		$scope.projectToEdit = angular.copy(projectService.getProjectById(projectId));
 	    $modal.open({
-	      templateUrl: '/views/partials/editModal2.html',
+	      templateUrl: '/views/partials/editModal.html',
 	      controller: ModalInstanceCtrl,
 	      scope: $scope
 	    });
 	};
 
-	$scope.editProjectInDB = function(id){
+	$scope.editProjectInDB = function(id, modalInstance){
 		projectApiService.updateProject(id)
 			.then(
 				function(projects){
 					projectService.setProjects(projects);
-					$scope.currentProjects = projects;
+					$scope.currentProjects = projects;					
 					alert("This project has been successfully updated!");
-
+					modalInstance.close("ok");
+				 	$scope.projectToEdit = {};
 				},
 				function(error){
 					alert(error.error);
+
 				}
 			);
 	};
@@ -81,7 +87,9 @@ app.controller('projectController', ['$scope', '$location', 'goService', 'projec
 					projectService.setProjects(projects);
 					$scope.currentProjects = projects;
 					$scope.projectToAdd = {};
+					alert("Project has been added succesfully!");					
 				}, function(error){
+					$scope.projectToAdd = {};	
 					alert(error.error);
 				}
 			);

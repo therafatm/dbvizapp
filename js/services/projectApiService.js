@@ -29,7 +29,7 @@ app.service('projectApiService', ['$http', '$q', function($http, $q){
 		var deferred = $q.defer();
         // Modifying to use url for mysql instead.
         if(typeof(project.name) == 'string' && project.name.length > 0 &&
-            typeof(project.schema) == 'string' && project.schema.length > 0 &&
+            typeof(project.database) == 'string' && project.database.length > 0 &&
             typeof(project.host) == 'string' && project.host.length > 0 &&
             typeof(project.username) == 'string' && project.username.length > 0 &&
             typeof(project.password) == 'string' && project.password.length > 0 &&
@@ -42,9 +42,9 @@ app.service('projectApiService', ['$http', '$q', function($http, $q){
                     return deferred.reject({error: "Error" + err});
                 });
         } else {
-            console.log(project);
-            alert("Invalid form information.");
-            return deferred.resolve({error: "Invalid form information!", data: {}});
+            //console.log(project);
+            deferred.reject({error: "Invalid form information!", data: {}});
+            return deferred.promise;
         }
 
 		return deferred.promise;
@@ -54,7 +54,7 @@ app.service('projectApiService', ['$http', '$q', function($http, $q){
 		var deferred = $q.defer();
         // Modifying to use url for mysql instead.
         if(typeof(project.name) == 'string' && project.name.length > 0 &&
-            typeof(project.schema) == 'string' && project.schema.length > 0 &&
+            typeof(project.database) == 'string' && project.database.length > 0 &&
             typeof(project.host) == 'string' && project.host.length > 0 &&
             typeof(project.username) == 'string' && project.username.length > 0 &&
             typeof(project.password) == 'string' && project.password.length > 0 &&
@@ -64,12 +64,12 @@ app.service('projectApiService', ['$http', '$q', function($http, $q){
                     return deferred.resolve(data);
                 })
                 .error((err) => {
-                    return deferred.reject({error: "Error" + err});
+                    deferred.reject({error: "Error" + err});
                 });
         } else {
-            console.log(project);
-            alert("Invalid form information.");
-            return deferred.resolve({error: "Invalid form information!", data: {}});
+            //console.log(project);
+            deferred.reject({error: "Invalid form information!", data: {}});
+            return deferred.promise;
         }
 
 		return deferred.promise;

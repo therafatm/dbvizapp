@@ -10,7 +10,7 @@
 						<span class="mdl-list__item-primary-content">
 					  	<span>{{item}}</span>
 						</span>
-						<a class="mdl-list__item-secondary-action vis-icon" ng-click="showEntity(item)"><i class="material-icons">visibility</i></a>
+						<a class="mdl-list__item-secondary-action vis-icon" ng-click="showEntity(item)"><i class="material-icons">exit_to_app</i></a>
 					</div>
 
 				</div>
@@ -37,7 +37,7 @@
 			<h5>Layouts</h5>
 		</div>
 		<div class="mdl-card layout-card">
-			<div class="mdl-card__actions layout-button" ng-class="{'layout-button-toggled': layoutGrid === true}" ng-click="toggleLayoutButton(1); updateLayout(LAYOUTS.GRID);">
+			<div class="layout-button" ng-class="{'layout-button-toggled': layoutGrid === true}" ng-click="toggleLayoutButton(1); updateLayout(LAYOUTS.GRID);">
 				<i class="material-icons">view_module</i>
 			</div>
 			<div class="mdl-card__actions layout-button border-left" ng-class="{'layout-button-toggled': layoutForced === true}" ng-click="toggleLayoutButton(2); updateLayout(LAYOUTS.FORCEDIRECTED)">

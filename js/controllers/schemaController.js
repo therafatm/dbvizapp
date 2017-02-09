@@ -38,7 +38,7 @@ app.controller('schemaController', ['$scope', '$http', '$routeParams', '$locatio
                     goService.drawSchema(schemaInfo);
                 })
                 .error((error) => {
-                    la("Error - " + error.message);
+                    alert("Error - " + error.message);
                 });
         };
 

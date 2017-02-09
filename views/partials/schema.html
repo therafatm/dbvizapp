@@ -1,7 +1,10 @@
 <div class="page-content mdl-grid" id="schemaManager" ng-controller="schemaController" ng-init="init()">
 
 	<!-- Control Panel Starts-->
-	<div class="mdl-card mdl-shadow--2dp mdl-cell mdl-cell--3-col mdl-cell--stretch panel">
+	<div style="color:white" class="mdl-card mdl-shadow--2dp mdl-cell mdl-cell--3-col mdl-cell--stretch panel">
+		<div class="mdl-card__actions layout-title mdl-shadow--2dp">
+			<h5>Hidden Tables</h5>
+		</div>
 		<!-- Hidden Entity List Starts-->
 		<div class="mdl-card hidden-attr-card">
 			<div class="mdl-list hidded-attr-list" id="projectList">
@@ -37,16 +40,16 @@
 			<h5>Layouts</h5>
 		</div>
 		<div class="mdl-card layout-card">
-			<div class="layout-button" ng-class="{'layout-button-toggled': layoutGrid === true}" ng-click="toggleLayoutButton(1); updateLayout(LAYOUTS.GRID);">
+			<div title="Grid" class="mdl-card__actions layout-button" ng-class="{'layout-button-toggled': layoutGrid === true}" ng-click="toggleLayoutButton(1); updateLayout(LAYOUTS.GRID);">
 				<i class="material-icons">view_module</i>
 			</div>
-			<div class="mdl-card__actions layout-button border-left" ng-class="{'layout-button-toggled': layoutForced === true}" ng-click="toggleLayoutButton(2); updateLayout(LAYOUTS.FORCEDIRECTED)">
+			<div title="Force Directed" class="mdl-card__actions layout-button border-left" ng-class="{'layout-button-toggled': layoutForced === true}" ng-click="toggleLayoutButton(2); updateLayout(LAYOUTS.FORCEDIRECTED)">
 				<i class="material-icons">swap_horiz</i>
 			</div>
-			<div class="mdl-card__actions layout-button border-top" ng-class="{'layout-button-toggled': layoutCircular === true}" ng-click="toggleLayoutButton(3); updateLayout(LAYOUTS.CIRCULAR)">
+			<div title="Circular" class="mdl-card__actions layout-button border-top" ng-class="{'layout-button-toggled': layoutCircular === true}" ng-click="toggleLayoutButton(3); updateLayout(LAYOUTS.CIRCULAR)">
 				<i class="material-icons">toll</i>
 			</div>
-			<div class="mdl-card__actions layout-button border-top-left" ng-class="{'layout-button-toggled': layoutLayered === true}" ng-click="toggleLayoutButton(4); updateLayout(LAYOUTS.DIGRAPH)">
+			<div title="Layered Digraph" class="mdl-card__actions layout-button border-top-left" ng-class="{'layout-button-toggled': layoutLayered === true}" ng-click="toggleLayoutButton(4); updateLayout(LAYOUTS.DIGRAPH)">
 				<i class="material-icons">view_headline</i>
 			</div>
 		</div>

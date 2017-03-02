@@ -1,15 +1,21 @@
 app.constant("goTemplates", function(){
   var GO = go.GraphObject.make;
 
-  var tp = {};
-	 // define several shared Brushes for drawing go elements
-  tp.bluegrad = GO(go.Brush, "Linear", { 0: "rgb(150, 150, 250)", 0.5: "rgb(86, 86, 186)", 1: "rgb(86, 86, 186)" });
-  tp.greengrad = GO(go.Brush, "Linear", { 0: "rgb(158, 209, 159)", 1: "rgb(67, 101, 56)" });
-  tp.redgrad = GO(go.Brush, "Linear", { 0: "rgb(206, 106, 100)", 1: "rgb(180, 56, 50)" });
-  tp.yellowgrad = GO(go.Brush, "Linear", { 0: "rgb(254, 221, 50)", 1: "rgb(254, 182, 50)" });
-  tp.lightgrad = GO(go.Brush, "Linear", { 1: "#E6E6FA", 0: "#FFFAF0" });
+  var templates = {
+    tableTemplate: {},
+    abstractTemplate: {}
+  }
 
-  tp.LAYOUTS = {
+  // define the template for displaying tables and their relationships
+  var tableTemplate = {};
+	 // define several shared Brushes for drawing go elements
+  tableTemplate.bluegrad = GO(go.Brush, "Linear", { 0: "rgb(150, 150, 250)", 0.5: "rgb(86, 86, 186)", 1: "rgb(86, 86, 186)" });
+  tableTemplate.greengrad = GO(go.Brush, "Linear", { 0: "rgb(158, 209, 159)", 1: "rgb(67, 101, 56)" });
+  tableTemplate.redgrad = GO(go.Brush, "Linear", { 0: "rgb(206, 106, 100)", 1: "rgb(180, 56, 50)" });
+  tableTemplate.yellowgrad = GO(go.Brush, "Linear", { 0: "rgb(254, 221, 50)", 1: "rgb(254, 182, 50)" });
+  tableTemplate.lightgrad = GO(go.Brush, "Linear", { 1: "#E6E6FA", 0: "#FFFAF0" });
+
+  tableTemplate.LAYOUTS = {
     GRID:0,
     FORCEDIRECTED:1,
     CIRCULAR:2,
@@ -17,7 +23,7 @@ app.constant("goTemplates", function(){
   }
 
 	// the template for each attribute in a node's array of item data
-  tp.attributeTemplate =
+  tableTemplate.attributeTemplate =
     GO(go.Panel, "Horizontal",
         { fromSpot: go.Spot.Right, toSpot: go.Spot.Left},
       GO(go.Shape,
@@ -32,7 +38,7 @@ app.constant("goTemplates", function(){
     );
 
   // define the Node template, representing an entity
-  tp.tableTemplate =
+  tableTemplate.tableTemplate =
     GO(go.Node, "Auto",  // the whole node panel
       {
         name: "ENTITY",
@@ -47,7 +53,7 @@ app.constant("goTemplates", function(){
       new go.Binding("location", "location").makeTwoWay(),
       // define the node's outer shape, which will surround the Table
       GO(go.Shape, "Rectangle",
-        { fill: tp.lightgrad, stroke: "#756875", strokeWidth: 3 }),
+        { fill: tableTemplate.lightgrad, stroke: "#756875", strokeWidth: 3 }),
       GO(go.Panel, "Table",
           { margin: 8, stretch: go.GraphObject.Fill },
           GO(go.RowColumnDefinition, { row: 0, background: "#1199ff", sizing: go.RowColumnDefinition.None}),
@@ -85,7 +91,7 @@ app.constant("goTemplates", function(){
             alignment: go.Spot.TopLeft,
             defaultAlignment: go.Spot.Left,
             stretch: go.GraphObject.Horizontal,
-            itemTemplate: tp.attributeTemplate
+            itemTemplate: tableTemplate.attributeTemplate
           },
           new go.Binding("itemArray", "items")),
           GO(go.Panel, "Vertical", // spacer to prevent entity button from overlapping name.
@@ -108,7 +114,7 @@ app.constant("goTemplates", function(){
     );  // end Node
 
   // define the Link template, representing a relationship
-  tp.relationshipTemplate =
+  tableTemplate.relationshipTemplate =
 
 		  GO(go.Link,  // the whole link panel
 			{
@@ -123,5 +129,11 @@ app.constant("goTemplates", function(){
 				{ stroke: "#303B45", strokeWidth: 2.5 })
 		);
 
-  return tp;
+  templates.tableTemplate = tableTemplate;
+
+  var abstractTemplate = {};
+
+  templates.abstractTemplate = abstractTemplate;
+
+  return templates;
 });

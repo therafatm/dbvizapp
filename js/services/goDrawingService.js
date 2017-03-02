@@ -1,4 +1,4 @@
-app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
+app.service('goDrawingService', ['$rootScope','goTemplates', function($rootScope, tp) {
 
   var GO = go.GraphObject.make;
 
@@ -61,17 +61,17 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
   }
 
   this.updateLayout = (layout) => {
-    if(layout == tp().LAYOUTS.GRID){
+    if(layout == tp().tableTemplate.LAYOUTS.GRID){
       this.diagram.layout = new go.GridLayout();
     }
-    if(layout == tp().LAYOUTS.CIRCULAR){
+    if(layout == tp().tableTemplate.LAYOUTS.CIRCULAR){
       this.diagram.layout = new go.CircularLayout();
     }
 
-    if(layout == tp().LAYOUTS.FORCEDIRECTED){
+    if(layout == tp().tableTemplate.LAYOUTS.FORCEDIRECTED){
       this.diagram.layout = new go.ForceDirectedLayout();
     }
-    if(layout == tp().LAYOUTS.DIGRAPH){
+    if(layout == tp().tableTemplate.LAYOUTS.DIGRAPH){
       this.diagram.layout = new go.LayeredDigraphLayout();
     }
   }
@@ -182,8 +182,8 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
 	                layout: GO(go.LayeredDigraphLayout)
 	            });
 
-      this.diagram.nodeTemplate = tp().tableTemplate;
-      this.diagram.linkTemplate = tp().relationshipTemplate;
+      this.diagram.nodeTemplate = tp().tableTemplate.tableTemplate;
+      this.diagram.linkTemplate = tp().tableTemplate.relationshipTemplate;
 
 	    // Visualize a database; based on http://gojs.net/latest/samples/entityRelationship.html
 
@@ -264,8 +264,11 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
 
 	    this.diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
 
-        this.diagram.model.linkFromPortIdProperty = "fromPort";  // necessary to remember portIds
-        this.diagram.model.linkToPortIdProperty = "toPort";		// Allows linking from specific columns
+      this.diagram.model.linkFromPortIdProperty = "fromPort";  // necessary to remember portIds
+      this.diagram.model.linkToPortIdProperty = "toPort";		// Allows linking from specific columns
+
+      // call this.diagram.model.toJson() to save the model
+      // call this.diagram.model = go.Model.fromJson() to load the diagram
 	};
 
   this.subscribe = function(event, scope, callback) {

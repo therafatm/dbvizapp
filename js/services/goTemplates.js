@@ -135,5 +135,100 @@ app.constant("goTemplates", function(){
 
   templates.abstractTemplate = abstractTemplate;
 
+
+  // DEFINE SOME FAKE DATA
+
+  templates.fakeData.fakeAbstractEntityGraph = {
+    abstractEntities : [
+      {
+        name: "AE1",
+        primaryKeys: [
+          {
+            table: "Table 1",
+            primaryKey: ["hello", "my", "name", "is"]
+          },
+          {
+            table: "Table 2",
+            primaryKey: ["hello","is","it","me"]
+          }
+        ]
+      },
+      {
+        name: "AE2",
+        primaryKeys: [
+          {
+            table: "Table 3",
+            primaryKey: ["Dont", "come"]
+          },
+          {
+            table: "Table 4",
+            primaryKey: ["Dont"]
+          },
+          {
+            table: "Table 5",
+            primaryKey: ["Dont", "you", "even"]
+          }
+        ]
+      },
+      {
+        name: "AE3",
+        primaryKeys: [
+          {
+            table: "Table 6",
+            primaryKey: ["Baby"]
+          },
+        ]
+      },
+      {
+        name: "AE4",
+        primaryKeys: [
+          {
+            table: "Table 7",
+            primaryKey: ["Maybe"]
+          }
+        ]
+      }
+    ],
+    abstractRelationships : [
+      {
+        name : "AR1",
+        primaryKeys: [
+          {
+            table: "Table 8",
+            primaryKey: ["a", "b", "c", "d"]
+          },
+          {
+            table: "Table 9",
+            primaryKey: ["b", "c", "d"]
+          },
+          {
+            table: "Table 10",
+            primaryKey: ["c", "d"]
+          },
+          {
+            table: "Table 11",
+            primaryKey: ["a", "c"]
+          },
+        ],
+        endpoints: ["AE1", "AE2", "AE3"]
+      },
+      {
+        name : "AR1",
+        primaryKeys: [
+          {
+            table: "Table 12",
+            primaryKey: ["dogs", "cats", "birds"]
+          },
+          {
+            table: "Table 13",
+            primaryKey: ["bags","chairs"]
+          }
+        ],
+        endpoints: ["AE3", "AE4"]
+      },
+
+    ]
+  }
+
   return templates;
 });

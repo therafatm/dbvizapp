@@ -27,38 +27,58 @@ app.controller('schemaController', ['$scope', '$http', '$routeParams', '$locatio
 
         var projectId = parseInt($routeParams.id);
 
-        $scope.displayCurrentProjectAbstracted = function(){
-                if($scope.isAbstracted){
-                    $scope.isAbstracted = false;
-                }
-                else{
-                    $scope.isAbstracted = true;
-                }
+        $scope.toggleProjectAbtraction = function(){
+            if($scope.isAbstracted){
+                $scope.isAbstracted = false;
+            }
+            else{
+                $scope.isAbstracted = true;
+            }
+            $scope.displayCurrentProject();
         }
 
         // This is called by init() and when we switch projects.
         $scope.displayCurrentProject = function() {
             // Get schema information from database.
-            $http.get('/api/schema/', {
-                    params: $scope.currentProject
-                })
-                .success((schemaInfo) => {
-                    $scope.schema = schemaInfo;
-                    // Hacky
 
-                    // Fake Data is loaded for testing purposes
+            getSchemaInfo().then( (schemaInfo) => {
+                if($scope.isAbstracted){
+
+                // Fake Data is loaded for testing purposes
                     schemaInfo.abstractEntities = tp().fakeData.fakeAbstractEntityGraph.abstractEntities;
                     schemaInfo.abstractRelationships = tp().fakeData.fakeAbstractEntityGraph.abstractRelationships;
                     
                     goService.drawSchema(schemaInfo, goService.diagramTypes.ABSTRACT);
+                }
+                else{
+                    goService.drawSchema(schemaInfo, goService.diagramTypes.CONCRETE);
+                }
+            })
 
-                    // TODO - change the default database drawn to the abstract DB
-                    // goService.drawSchema(schemaInfo, goService.diagramTypes.CONCRETE);
-                })
-                .error((error) => {
-                    alert("Error - " + error.message);
-                });
+            
+
         };
+
+        function getSchemaInfo(){
+            return new Promise((resolve,reject) => {
+                if(!!$scope.schema){
+                    return resolve($scope.schema);
+                }
+
+                $http.get('/api/schema/', {
+                        params: $scope.currentProject
+                    })
+                    .success((schemaInfo) => {
+                        $scope.schema = schemaInfo;
+                        // Hacky
+                        return resolve($scope.schema);
+                    })
+                    .error((error) => {
+                        alert("Error - " + error.message);
+                        return reject();
+                    });
+            }) 
+        }
 
         // Called when we first navigate to /schema/:id
         $scope.init = function() {

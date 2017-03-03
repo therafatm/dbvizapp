@@ -305,6 +305,7 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
   }
 
 	this.drawSchema = (projectData, modelType, modelId) => {
+    if( this.diagram == null){
 	    this.diagram =
 	        GO(go.Diagram, "databaseDiagram",
 	            {
@@ -314,34 +315,17 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
 	                allowCopy: false,
 	                layout: GO(go.LayeredDigraphLayout)
 	            });
+    }
 
-      if( modelType == this.diagramTypes.CONCRETE){
+    if( modelType == this.diagramTypes.CONCRETE){
 
-        if(modelId == null || modelId == undefined){
-          // loading the full database view
-          this.diagram.nodeTemplate = tp().tableTemplate.tableTemplate;
-          this.diagram.linkTemplate = tp().tableTemplate.relationshipTemplate;
-
-
-          var result = convertConcreteGraph(projectData.tablesAndCols, projectData.foreignKeys)
-
-          this.diagram.model = new go.GraphLinksModel(result.nodeDataArray, result.linkDataArray);
-
-          this.diagram.model.linkFromPortIdProperty = "fromPort";  // necessary to remember portIds
-          this.diagram.model.linkToPortIdProperty = "toPort";		// Allows linking from specific columns
-
-        } else {
-          // load part of the data view, defined by the modelID. Pull all the tables from the abstract entity associated with the modelID, and display these
-
-          // TODO
-        }
-      } else if( modelType == this.diagramTypes.ABSTRACT){
-        // load the full abstract view of the database
-        
+      if(modelId == null || modelId == undefined){
+        // loading the full database view
         this.diagram.nodeTemplate = tp().tableTemplate.tableTemplate;
         this.diagram.linkTemplate = tp().tableTemplate.relationshipTemplate;
 
-        var result = convertAbstractGraph(projectData.abstractEntities, projectData.abstractRelationships);
+
+        var result = convertConcreteGraph(projectData.tablesAndCols, projectData.foreignKeys)
 
         this.diagram.model = new go.GraphLinksModel(result.nodeDataArray, result.linkDataArray);
 
@@ -349,8 +333,26 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
         this.diagram.model.linkToPortIdProperty = "toPort";		// Allows linking from specific columns
 
       } else {
-        console.error(`Invalid model type "${modelType}" given`);
+        // load part of the data view, defined by the modelID. Pull all the tables from the abstract entity associated with the modelID, and display these
+
+        // TODO
       }
+    } else if( modelType == this.diagramTypes.ABSTRACT){
+      // load the full abstract view of the database
+      
+      this.diagram.nodeTemplate = tp().tableTemplate.tableTemplate;
+      this.diagram.linkTemplate = tp().tableTemplate.relationshipTemplate;
+
+      var result = convertAbstractGraph(projectData.abstractEntities, projectData.abstractRelationships);
+
+      this.diagram.model = new go.GraphLinksModel(result.nodeDataArray, result.linkDataArray);
+
+      this.diagram.model.linkFromPortIdProperty = "fromPort";  // necessary to remember portIds
+      this.diagram.model.linkToPortIdProperty = "toPort";		// Allows linking from specific columns
+
+    } else {
+      console.error(`Invalid model type "${modelType}" given`);
+    }
 
 
 	};

@@ -2,6 +2,11 @@
 
 	<!-- Control Panel Starts-->
 	<div style="color:white" class="mdl-card mdl-shadow--2dp mdl-cell mdl-cell--3-col mdl-cell--stretch panel">
+		
+		<div class="mdl-card__actions mdl-shadow--2dp">
+			<center><button class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent export-button" ng-click="displayCurrentProjectAbstracted()">Abstractify</button></center>
+		</div>		
+
 		<div class="mdl-card__actions layout-title mdl-shadow--2dp">
 			<h5>Hidden Tables</h5>
 		</div>
@@ -59,6 +64,9 @@
 
 	<!-- Main Content Starts-->
 	<div class="er-container">
-		<div class="er-content" id="databaseDiagram"></div>
+		<div class="er-content-abstracted" ng-hide="!isAbstracted">
+			<h1>Hey Guys!</h1>
+		</div>
+		<div class="er-content" ng-hide="isAbstracted" id="databaseDiagram"></div>
 	</div>
 </div>

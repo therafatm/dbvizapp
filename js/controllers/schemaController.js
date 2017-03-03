@@ -1,10 +1,10 @@
-app.controller('schemaController', ['$scope', '$http', '$routeParams', '$location', '$timeout', '$modal', 'goService', 'projectService', 'projectApiService', 'goTemplates',
-    function($scope, $http, $routeParams, $location, $timeout, $modal, goService, projectService, projectApiService, tp) {
+app.controller('schemaController', ['$scope', '$http', '$routeParams', '$location', '$timeout', '$modal', 'goService', 'projectService', 'projectApiService', 'goTemplates', 'abstractionsApiService',
+    function($scope, $http, $routeParams, $location, $timeout, $modal, goService, projectService, projectApiService, tp, abstractionsApiService) {
 
         $scope.projectList = projectService.getProjects();
         $scope.currentProject = projectService.getCurrentProject();
         $scope.isAbstracted = false;
-
+        $scope.currentProjectAbstractions;
         $scope.hiddenEntities = [];
 
         $scope.LAYOUTS = tp().tableTemplate.LAYOUTS;
@@ -27,37 +27,80 @@ app.controller('schemaController', ['$scope', '$http', '$routeParams', '$locatio
 
         var projectId = parseInt($routeParams.id);
 
-        $scope.toggleProjectAbtraction = function(){
+
+        $scope.toggleProjectAbstraction = function(){
             if($scope.isAbstracted){
                 $scope.isAbstracted = false;
             }
             else{
                 $scope.isAbstracted = true;
             }
-            $scope.displayCurrentProject();
-        }
 
+            $scope.displayCurrentProject();
+            //use go service to draw on screen
+        }
         // This is called by init() and when we switch projects.
         $scope.displayCurrentProject = function() {
             // Get schema information from database.
-
             getSchemaInfo().then( (schemaInfo) => {
                 if($scope.isAbstracted){
-
-                // Fake Data is loaded for testing purposes
-                    schemaInfo.abstractEntities = tp().fakeData.fakeAbstractEntityGraph.abstractEntities;
-                    schemaInfo.abstractRelationships = tp().fakeData.fakeAbstractEntityGraph.abstractRelationships;
-                    
+                    // Fake Data is loaded for testing purposes
+                    var abstractions = $scope.getCurrentAbstraction();
+                    schemaInfo.abstractEntities = abstractions[0];
+                    schemaInfo.abstractRelationships = abstractions[1];
+                    // schemaInfo.abstractEntities = tp().fakeData.fakeAbstractEntityGraph.abstractEntities;
+                    // schemaInfo.abstractRelationships = tp().fakeData.fakeAbstractEntityGraph.abstractRelationships;
                     goService.drawSchema(schemaInfo, goService.diagramTypes.ABSTRACT);
                 }
                 else{
                     goService.drawSchema(schemaInfo, goService.diagramTypes.CONCRETE);
                 }
             })
-
-            
-
         };
+
+        $scope.getCurrentAbstraction = function(){
+            //call clustering algorithm on current schema
+            //make DB call to get all abstractions for a project
+            let currentProjectId = $scope.currentProject.id;
+
+            //// check abstractionServiceCache (implement later if time permits)
+            //// $scope.currentProjectAbstractions = abstractionService.getProjectAbstraction(currentProjectId);
+            //// if cache hit
+            //// if($scope.currentProjectAbstractions.length > 0){
+            ////     var abstractionToShow = $scope.currentProjectAbstractions[0];
+            //// }
+            //// if(abstractionToShow){
+            ////     $scope.displayCurrentAbstraction(abstractionToShow);
+            ////    return;
+            //// }
+
+            //if cache miss, check DB
+            // $scope.currentProjectAbstractions = abstractionsApiService.getAllProjectAbstractions(currentProjectId);
+            // if($scope.currentProjectAbstractions.length > 0){ //need to test this line
+            //     var abstractionToShow = $scope.currentProjectAbstractions[0];
+            //     return abstractionToShow;
+            // }
+            // else{
+            //     //call magic algorithm
+            //     var abstractionToShow = abstractionService.computeProjectAbstractions();
+            //     abstractionsApiService.addProjectAbstraction(currentProjectId, abstractionToShow);
+            //         .then(
+            //             function(projects){
+            //                 alert("Abstraction has been saved succesfully!");                   
+            //             }, function(error){
+            //                 alert(error.error);
+            //             }
+            //         );   
+                                 
+            //     return abstractionToShow;
+            // }
+
+            TODO: need to handle saving abstractions when they are renamed.
+            TODO: need to handle drill down
+            
+            //sending mock for now
+            return [ tp().fakeData.fakeAbstractEntityGraph.abstractEntities, tp().fakeData.fakeAbstractEntityGraph.abstractRelationships]          
+        }
 
         function getSchemaInfo(){
             return new Promise((resolve,reject) => {

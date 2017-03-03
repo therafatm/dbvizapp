@@ -28,7 +28,12 @@ app.controller('schemaController', ['$scope', '$http', '$routeParams', '$locatio
         var projectId = parseInt($routeParams.id);
 
         $scope.displayCurrentProjectAbstracted = function(){
-                $scope.isAbstracted = true;
+                if($scope.isAbstracted){
+                    $scope.isAbstracted = false;
+                }
+                else{
+                    $scope.isAbstracted = true;
+                }
         }
 
         // This is called by init() and when we switch projects.

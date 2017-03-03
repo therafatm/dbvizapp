@@ -220,7 +220,7 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
 	        var tbl_name = tablesAndCols[i].table_name;
 	        var existing_tbl = _.where(nodeDataArray, {key: tbl_name});
 
-            let shapeData = getDataTypeMapping(tablesAndCols[i].data_type);
+          let shapeData = getDataTypeMapping(tablesAndCols[i].data_type);
 
 	        if (existing_tbl && existing_tbl.length > 0 && tablesAndCols[i]) {
 	            existing_tbl[0].items.push({name: tablesAndCols[i].column_name,
@@ -252,6 +252,52 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
                 });
 			  }
 	    }
+      return {
+        linkDataArray: linkDataArray,
+        nodeDataArray: nodeDataArray
+      }
+  }
+
+  function convertAbstractGraph(abstractEntities, abstractRelationships){
+  // convert to node data array
+	    var nodeDataArray = [];
+
+	    for (let i = 0; i < abstractEntities.length; i++) {
+	        var tbl_name = abstractEntities[i].name;
+	        var existing_tbl = _.where(nodeDataArray, {key: tbl_name});
+
+          let shapeData = getDataTypeMapping("text");
+
+
+          var new_tbl = {
+            key: tbl_name,
+            items: abstractEntities[i].primaryKeys.map( (key) => {
+              return {
+                name: key.table,
+                isKey: true,
+                color: shapeData.color,
+                figure: shapeData.shape
+              }
+            }) 
+          };
+          
+          nodeDataArray.push(new_tbl);
+      }
+
+	    var linkDataArray = [];
+
+	    // for (let j = 0; j < foreignKeys.length; j++) {
+	    // 	if (foreignKeys[j].referenced_table_name) {
+      //           linkDataArray.push({
+      //           	from: foreignKeys[j].table_name,
+			// 		fromPort: foreignKeys[j].column_name,
+      //               to: foreignKeys[j].referenced_table_name,
+      //               toPort: foreignKeys[j].referenced_column_name,
+      //               toText: foreignKeys[j].constraint_name
+
+      //           });
+			//   }
+	    // }
       return {
         linkDataArray: linkDataArray,
         nodeDataArray: nodeDataArray
@@ -291,8 +337,17 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
         }
       } else if( modelType == this.diagramTypes.ABSTRACT){
         // load the full abstract view of the database
+        
+        this.diagram.nodeTemplate = tp().tableTemplate.tableTemplate;
+        this.diagram.linkTemplate = tp().tableTemplate.relationshipTemplate;
 
-        // TODO
+        var result = convertAbstractGraph(projectData.abstractEntities, projectData.abstractRelationships);
+
+        this.diagram.model = new go.GraphLinksModel(result.nodeDataArray, result.linkDataArray);
+
+        this.diagram.model.linkFromPortIdProperty = "fromPort";  // necessary to remember portIds
+        this.diagram.model.linkToPortIdProperty = "toPort";		// Allows linking from specific columns
+
       } else {
         console.error(`Invalid model type "${modelType}" given`);
       }

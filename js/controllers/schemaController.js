@@ -36,8 +36,14 @@ app.controller('schemaController', ['$scope', '$http', '$routeParams', '$locatio
                     $scope.schema = schemaInfo;
                     // Hacky
 
+                    // Fake Data is loaded for testing purposes
+                    schemaInfo.abstractEntities = tp().fakeData.fakeAbstractEntityGraph.abstractEntities;
+                    schemaInfo.abstractRelationships = tp().fakeData.fakeAbstractEntityGraph.abstractRelationships;
+                    
+                    goService.drawSchema(schemaInfo, goService.diagramTypes.ABSTRACT);
+
                     // TODO - change the default database drawn to the abstract DB
-                    goService.drawSchema(schemaInfo, goService.diagramTypes.CONCRETE);
+                    // goService.drawSchema(schemaInfo, goService.diagramTypes.CONCRETE);
                 })
                 .error((error) => {
                     alert("Error - " + error.message);

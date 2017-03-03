@@ -1,0 +1,9 @@
+{
+  "user": "ymaswrfichcpnv",
+  "database": "deitvncfhkbq6e",
+  "password": "2c09436d0c70aeba07699fd3829051d21320b766362add25b0b4a5b3b72b8f19",
+  "host": "ec2-107-20-141-145.compute-1.amazonaws.com",
+  "port": 5432,
+  "max" : 10,
+  "ssl" : true
+}

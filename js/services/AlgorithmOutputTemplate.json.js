@@ -15,7 +15,6 @@
 {
   primaryKeys: [PK1, PK2, PK3, ...], // the different sets of primary keys in this relationship 
   name: "AbstractRelationshipID",
-  endpoints: { "Id1", "Id2"} // a tuple representing the endpoints of the relationship. Should be two abstract entities
+  endpoints: [ "Id1", "Id2"] // an array representing the endpoints of the relationship.
 }
-
 

@@ -1,5 +1,5 @@
-app.controller('schemaController', ['$scope', '$http', '$routeParams', '$location', '$timeout', '$modal', 'goDrawingService', 'projectService', 'projectApiService', 'goTemplates',
-    function($scope, $http, $routeParams, $location, $timeout, $modal, goDrawingService, projectService, projectApiService, tp) {
+app.controller('schemaController', ['$scope', '$http', '$routeParams', '$location', '$timeout', '$modal', 'goService', 'projectService', 'projectApiService', 'goTemplates',
+    function($scope, $http, $routeParams, $location, $timeout, $modal, goService, projectService, projectApiService, tp) {
 
         $scope.projectList = projectService.getProjects();
         $scope.currentProject = projectService.getCurrentProject();
@@ -21,7 +21,7 @@ app.controller('schemaController', ['$scope', '$http', '$routeParams', '$locatio
         };
 
         $scope.updateLayout = function(layout) {
-            goDrawingService.updateLayout(layout);
+            goService.updateLayout(layout);
         };
 
         var projectId = parseInt($routeParams.id);
@@ -35,7 +35,7 @@ app.controller('schemaController', ['$scope', '$http', '$routeParams', '$locatio
                 .success((schemaInfo) => {
                     $scope.schema = schemaInfo;
                     // Hacky
-                    goDrawingService.drawSchema(schemaInfo);
+                    goService.drawSchema(schemaInfo);
                 })
                 .error((error) => {
                     alert("Error - " + error.message);
@@ -85,13 +85,13 @@ app.controller('schemaController', ['$scope', '$http', '$routeParams', '$locatio
 
         $scope.toggleAttributeVisibility = function() {
 
-            goDrawingService.toggleAllAttributeVisibility();
+            goService.toggleAllAttributeVisibility();
 
         };
 
         $scope.generateImagePreviews = function() {
-            $scope.diagramCurrentView = goDrawingService.getDiagramCurrentView();
-            $scope.diagramFullView = goDrawingService.getFullDiagram();
+            $scope.diagramCurrentView = goService.getDiagramCurrentView();
+            $scope.diagramFullView = goService.getFullDiagram();
         };
 
 
@@ -109,17 +109,17 @@ app.controller('schemaController', ['$scope', '$http', '$routeParams', '$locatio
             };
         };
 
-        goDrawingService.subscribe("hide-entity", $scope, (name, entityName) => {
+        goService.subscribe("hide-entity", $scope, (name, entityName) => {
             $scope.hiddenEntities.push(entityName);
             $scope.$apply();
         });
 
-        goDrawingService.subscribe("show-entity", $scope, (name, entityName) => {
+        goService.subscribe("show-entity", $scope, (name, entityName) => {
             $scope.showEntity(entityName);
         });
 
         $scope.showEntity = function(entityName) {
-            goDrawingService.showEntity(entityName);
+            goService.showEntity(entityName);
             $scope.hiddenEntities.forEach((val, index, arr) => {
                 if (val == entityName) {
                     $timeout(function() {

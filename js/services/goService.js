@@ -1,4 +1,4 @@
-app.service('goDrawingService', ['$rootScope','goTemplates', function($rootScope, tp) {
+app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
 
   var GO = go.GraphObject.make;
 

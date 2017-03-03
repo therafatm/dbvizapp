@@ -17,3 +17,4 @@
   name: "AbstractRelationshipID",
   endpoints: [ "Id1", "Id2"] // an array representing the endpoints of the relationship.
 }
+

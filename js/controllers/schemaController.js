@@ -7,9 +7,9 @@ app.controller('schemaController', ['$scope', '$http', '$routeParams', '$locatio
 
         $scope.hiddenEntities = [];
 
-        $scope.LAYOUTS = tp().LAYOUTS;
+        $scope.LAYOUTS = tp().tableTemplate.LAYOUTS;
 
-        $scope.currentLayout = tp().LAYOUTS.DIGRAPH;
+        $scope.currentLayout = tp().tableTemplate.LAYOUTS.DIGRAPH;
 
         $scope.updateCurrentProject = function(project) {
             $scope.currentProject = project;
@@ -27,30 +27,58 @@ app.controller('schemaController', ['$scope', '$http', '$routeParams', '$locatio
 
         var projectId = parseInt($routeParams.id);
 
-        $scope.displayCurrentProjectAbstracted = function(){
-                if($scope.isAbstracted){
-                    $scope.isAbstracted = false;
-                }
-                else{
-                    $scope.isAbstracted = true;
-                }
+        $scope.toggleProjectAbtraction = function(){
+            if($scope.isAbstracted){
+                $scope.isAbstracted = false;
+            }
+            else{
+                $scope.isAbstracted = true;
+            }
+            $scope.displayCurrentProject();
         }
 
         // This is called by init() and when we switch projects.
         $scope.displayCurrentProject = function() {
             // Get schema information from database.
-            $http.get('/api/schema/', {
-                    params: $scope.currentProject
-                })
-                .success((schemaInfo) => {
-                    $scope.schema = schemaInfo;
-                    // Hacky
-                    goService.drawSchema(schemaInfo);
-                })
-                .error((error) => {
-                    alert("Error - " + error.message);
-                });
+
+            getSchemaInfo().then( (schemaInfo) => {
+                if($scope.isAbstracted){
+
+                // Fake Data is loaded for testing purposes
+                    schemaInfo.abstractEntities = tp().fakeData.fakeAbstractEntityGraph.abstractEntities;
+                    schemaInfo.abstractRelationships = tp().fakeData.fakeAbstractEntityGraph.abstractRelationships;
+                    
+                    goService.drawSchema(schemaInfo, goService.diagramTypes.ABSTRACT);
+                }
+                else{
+                    goService.drawSchema(schemaInfo, goService.diagramTypes.CONCRETE);
+                }
+            })
+
+            
+
         };
+
+        function getSchemaInfo(){
+            return new Promise((resolve,reject) => {
+                if(!!$scope.schema){
+                    return resolve($scope.schema);
+                }
+
+                $http.get('/api/schema/', {
+                        params: $scope.currentProject
+                    })
+                    .success((schemaInfo) => {
+                        $scope.schema = schemaInfo;
+                        // Hacky
+                        return resolve($scope.schema);
+                    })
+                    .error((error) => {
+                        alert("Error - " + error.message);
+                        return reject();
+                    });
+            }) 
+        }
 
         // Called when we first navigate to /schema/:id
         $scope.init = function() {

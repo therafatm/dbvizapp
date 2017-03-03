@@ -35,7 +35,9 @@ app.controller('schemaController', ['$scope', '$http', '$routeParams', '$locatio
                 .success((schemaInfo) => {
                     $scope.schema = schemaInfo;
                     // Hacky
-                    goService.drawSchema(schemaInfo);
+
+                    // TODO - change the default database drawn to the abstract DB
+                    goService.drawSchema(schemaInfo, goService.diagramTypes.CONCRETE);
                 })
                 .error((error) => {
                     alert("Error - " + error.message);

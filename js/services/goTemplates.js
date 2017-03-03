@@ -138,6 +138,7 @@ app.constant("goTemplates", function(){
 
   // DEFINE SOME FAKE DATA
 
+  templates.fakeData = {};
   templates.fakeData.fakeAbstractEntityGraph = {
     abstractEntities : [
       {
@@ -176,7 +177,7 @@ app.constant("goTemplates", function(){
           {
             table: "Table 6",
             primaryKey: ["Baby"]
-          },
+          }
         ]
       },
       {
@@ -208,7 +209,7 @@ app.constant("goTemplates", function(){
           {
             table: "Table 11",
             primaryKey: ["a", "c"]
-          },
+          }
         ],
         endpoints: ["AE1", "AE2", "AE3"]
       },
@@ -220,12 +221,12 @@ app.constant("goTemplates", function(){
             primaryKey: ["dogs", "cats", "birds"]
           },
           {
-            table: "Table 13",
+            table: "Table 13"  ,
             primaryKey: ["bags","chairs"]
           }
         ],
         endpoints: ["AE3", "AE4"]
-      },
+      }
 
     ]
   }

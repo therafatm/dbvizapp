@@ -4,6 +4,31 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
 
   this.diagram = null;
 
+  this.diagramTypes = {
+    ABSTRACT: "ABSTRACT",
+    CONCRETE: "CONCRETE"
+  }
+
+  // Maps SQL data types to shapes for columns.
+  var dataTypeMapping = {
+    numerical: {
+      shape: "Square",
+      color: "blue"
+    },
+    string: {
+      shape: "Circle",
+      color: "purple"
+    },
+    date: {
+      shape: "TriangleUp",
+      color: "green"
+    },
+    enumeration: {
+      shape: "Pentagon",
+      color: "yellow"
+    }
+  };
+
   this.toggleAllAttributeVisibility = () => {
 
         if (this.diagram === null) return;
@@ -170,8 +195,70 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
 
     return button;
   });
+  
 
-	this.drawSchema = (projectData) => {
+
+  var getDataTypeMapping = function(type) {
+    if (type.includes("char") || type.includes("varchar") || type.includes("text")) {
+      return dataTypeMapping.string;
+    } else if (type.includes("int") || type.includes("float") || type.includes("double") || type.includes("decimal")) {
+      return dataTypeMapping.numerical;
+    } else if (type.includes("date") || type.includes("time")) {
+      return dataTypeMapping.date;
+    } else if (type.includes("enum") || type.includes("set")) {
+      return dataTypeMapping.enumeration;
+    } else {
+      return {shape: "ThinX", color: "red"}
+    }
+  }
+
+  function convertConcreteGraph(tablesAndCols, foreignKeys){
+	    // convert to node data array
+	    var nodeDataArray = [];
+
+	    for (let i = 0; i < tablesAndCols.length; i++) {
+	        var tbl_name = tablesAndCols[i].table_name;
+	        var existing_tbl = _.where(nodeDataArray, {key: tbl_name});
+
+            let shapeData = getDataTypeMapping(tablesAndCols[i].data_type);
+
+	        if (existing_tbl && existing_tbl.length > 0 && tablesAndCols[i]) {
+	            existing_tbl[0].items.push({name: tablesAndCols[i].column_name,
+					isKey: (tablesAndCols[i].column_key == "PRI"),
+					color: shapeData.color,
+					figure: shapeData.shape
+	            });
+	        } else {
+	            var new_tbl = {key: tbl_name, items: [ {name: tablesAndCols[i].column_name,
+					isKey: (tablesAndCols[i].column_key == "PRI"),
+                    color: shapeData.color,
+                    figure: shapeData.shape
+	            }]};
+	            nodeDataArray.push(new_tbl);
+	        }
+	    }
+
+	    var linkDataArray = [];
+
+	    for (let j = 0; j < foreignKeys.length; j++) {
+	    	if (foreignKeys[j].referenced_table_name) {
+                linkDataArray.push({
+                	from: foreignKeys[j].table_name,
+					fromPort: foreignKeys[j].column_name,
+                    to: foreignKeys[j].referenced_table_name,
+                    toPort: foreignKeys[j].referenced_column_name,
+                    toText: foreignKeys[j].constraint_name
+
+                });
+			  }
+	    }
+      return {
+        linkDataArray: linkDataArray,
+        nodeDataArray: nodeDataArray
+      }
+  }
+
+	this.drawSchema = (projectData, modelType, modelId) => {
 	    this.diagram =
 	        GO(go.Diagram, "databaseDiagram",
 	            {
@@ -182,93 +269,35 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
 	                layout: GO(go.LayeredDigraphLayout)
 	            });
 
-      this.diagram.nodeTemplate = tp().tableTemplate.tableTemplate;
-      this.diagram.linkTemplate = tp().tableTemplate.relationshipTemplate;
+      if( modelType == this.diagramTypes.CONCRETE){
 
-	    // Visualize a database; based on http://gojs.net/latest/samples/entityRelationship.html
+        if(modelId == null || modelId == undefined){
+          // loading the full database view
+          this.diagram.nodeTemplate = tp().tableTemplate.tableTemplate;
+          this.diagram.linkTemplate = tp().tableTemplate.relationshipTemplate;
 
-		// Maps SQL data types to shapes for columns.
-		var dataTypeMapping = {
-			numerical: {
-				shape: "Square",
-				color: "blue"
-			},
-			string: {
-				shape: "Circle",
-				color: "purple"
-			},
-			date: {
-				shape: "TriangleUp",
-				color: "green"
-			},
-			enumeration: {
-				shape: "Pentagon",
-				color: "yellow"
-			}
-		};
 
-		var getDataTypeMapping = function(type) {
-			if (type.includes("char") || type.includes("varchar") || type.includes("text")) {
-				return dataTypeMapping.string;
-			} else if (type.includes("int") || type.includes("float") || type.includes("double") || type.includes("decimal")) {
-				return dataTypeMapping.numerical;
-			} else if (type.includes("date") || type.includes("time")) {
-				return dataTypeMapping.date;
-			} else if (type.includes("enum") || type.includes("set")) {
-				return dataTypeMapping.enumeration;
-			} else {
-				return {shape: "ThinX", color: "red"}
-			}
-		}
+          var result = convertConcreteGraph(projectData.tablesAndCols, projectData.foreignKeys)
 
-	    //diagram.nodeTemplate = tableTempl;
-	    // convert to node data array
-	    var nodeDataArray = [];
+          this.diagram.model = new go.GraphLinksModel(result.nodeDataArray, result.linkDataArray);
 
-	    for (let i = 0; i < projectData.tablesAndCols.length; i++) {
-	        var tbl_name = projectData.tablesAndCols[i].table_name;
-	        var existing_tbl = _.where(nodeDataArray, {key: tbl_name});
+          this.diagram.model.linkFromPortIdProperty = "fromPort";  // necessary to remember portIds
+          this.diagram.model.linkToPortIdProperty = "toPort";		// Allows linking from specific columns
 
-            let shapeData = getDataTypeMapping(projectData.tablesAndCols[i].data_type);
+        } else {
+          // load part of the data view, defined by the modelID. Pull all the tables from the abstract entity associated with the modelID, and display these
 
-	        if (existing_tbl && existing_tbl.length > 0 && projectData.tablesAndCols[i]) {
-	            existing_tbl[0].items.push({name: projectData.tablesAndCols[i].column_name,
-					isKey: (projectData.tablesAndCols[i].column_key == "PRI"),
-					color: shapeData.color,
-					figure: shapeData.shape
-	            });
-	        } else {
-	            var new_tbl = {key: tbl_name, items: [ {name: projectData.tablesAndCols[i].column_name,
-					isKey: (projectData.tablesAndCols[i].column_key == "PRI"),
-                    color: shapeData.color,
-                    figure: shapeData.shape
-	            }]};
-	            nodeDataArray.push(new_tbl);
-	        }
-	    }
+          // TODO
+        }
+      } else if( modelType == this.diagramTypes.ABSTRACT){
+        // load the full abstract view of the database
 
-	    var linkDataArray = [];
+        // TODO
+      } else {
+        console.error(`Invalid model type "${modelType}" given`);
+      }
 
-	    for (let j = 0; j < projectData.foreignKeys.length; j++) {
-	    	if (projectData.foreignKeys[j].referenced_table_name) {
-                linkDataArray.push({
-                	from: projectData.foreignKeys[j].table_name,
-					fromPort: projectData.foreignKeys[j].column_name,
-                    to: projectData.foreignKeys[j].referenced_table_name,
-                    toPort: projectData.foreignKeys[j].referenced_column_name,
-                    toText: projectData.foreignKeys[j].constraint_name
 
-                });
-			}
-	    }
-
-	    this.diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
-
-      this.diagram.model.linkFromPortIdProperty = "fromPort";  // necessary to remember portIds
-      this.diagram.model.linkToPortIdProperty = "toPort";		// Allows linking from specific columns
-
-      // call this.diagram.model.toJson() to save the model
-      // call this.diagram.model = go.Model.fromJson() to load the diagram
 	};
 
   this.subscribe = function(event, scope, callback) {

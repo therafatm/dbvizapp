@@ -3,6 +3,7 @@ app.controller('schemaController', ['$scope', '$http', '$routeParams', '$locatio
 
         $scope.projectList = projectService.getProjects();
         $scope.currentProject = projectService.getCurrentProject();
+        $scope.isAbstracted = false;
 
         $scope.hiddenEntities = [];
 
@@ -25,6 +26,10 @@ app.controller('schemaController', ['$scope', '$http', '$routeParams', '$locatio
         };
 
         var projectId = parseInt($routeParams.id);
+
+        $scope.displayCurrentProjectAbstracted = function(){
+                $scope.isAbstracted = true;
+        }
 
         // This is called by init() and when we switch projects.
         $scope.displayCurrentProject = function() {

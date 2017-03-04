@@ -7,9 +7,9 @@ app.controller('schemaController', ['$scope', '$http', '$routeParams', '$locatio
 
         $scope.hiddenEntities = [];
 
-        $scope.LAYOUTS = tp().tableTemplate.LAYOUTS;
+        $scope.LAYOUTS = tp().LAYOUTS;
 
-        $scope.currentLayout = tp().tableTemplate.LAYOUTS.DIGRAPH;
+        $scope.currentLayout = tp().LAYOUTS.DIGRAPH;
 
         $scope.updateCurrentProject = function(project) {
             $scope.currentProject = project;

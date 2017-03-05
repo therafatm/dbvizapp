@@ -95,8 +95,8 @@ app.controller('schemaController', ['$scope', '$http', '$routeParams', '$locatio
             //     return abstractionToShow;
             // }
 
-            TODO: need to handle saving abstractions when they are renamed.
-            TODO: need to handle drill down
+            // TODO: need to handle saving abstractions when they are renamed.
+            // TODO: need to handle drill down
             
             //sending mock for now
             return [ tp().fakeData.fakeAbstractEntityGraph.abstractEntities, tp().fakeData.fakeAbstractEntityGraph.abstractRelationships]          

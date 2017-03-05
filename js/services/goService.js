@@ -8,6 +8,7 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
     ABSTRACT: "ABSTRACT",
     CONCRETE: "CONCRETE"
   }
+  
 
   // Maps SQL data types to shapes for columns.
   var dataTypeMapping = {
@@ -217,7 +218,8 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
       var diagram = button.diagram;
       diagram.startTransaction("Drill Into Entity");
 
-      console.info("Drill into diagram");
+      // pass the id of the object clicked
+      $rootScope.$broadcast('drill-in-clicked', button.panel.findObject("TABLENAME").text );
 
       diagram.commitTransaction("Drill Into Entity");
     }
@@ -288,7 +290,7 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
   }
 
   function convertAbstractGraph(abstractEntities, abstractRelationships){
-  // convert to node data array
+      // convert to node data array
 	    var nodeDataArray = [];
 	    var linkDataArray = [];
 
@@ -358,6 +360,10 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
       }
   }
 
+  function extractAbstractTables(abstractObject, projectData){
+    
+  }
+
 	this.drawSchema = (projectData, modelType, modelId) => {
 
     if( this.diagram == null){
@@ -376,6 +382,8 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
     if( modelType == this.diagramTypes.CONCRETE){
 
       if(modelId == null || modelId == undefined){
+
+        // TODO - load the layout from the id
         // loading the full database view
         this.diagram.nodeTemplate = tp().concreteTableTemplate.tableTemplate;
         this.diagram.linkTemplate = tp().concreteTableTemplate.relationshipTemplate;
@@ -391,10 +399,11 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
       } else {
         // load part of the data view, defined by the modelID. Pull all the tables from the abstract entity associated with the modelID, and display these
 
-        // TODO
+        // TODO load the layout from the id
       }
     } else if( modelType == this.diagramTypes.ABSTRACT){
       // load the full abstract view of the database
+      // TODO load the layout from the id
       
       this.diagram.nodeTemplateMap = tp().abstractEntityTemplate.tableTemplateMap;
       this.diagram.linkTemplate = tp().abstractEntityTemplate.relationshipTemplate;

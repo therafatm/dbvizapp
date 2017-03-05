@@ -4,8 +4,18 @@ app.service('abstractionService', function() {
         //magic algorithm
     }
 
+    function extractTablesFromObject(tables, projectData){
+        var filteredData = projectData;
+        filteredData.tablesAndCols = projectData.tablesAndCols.filter( (table) => {
+            return tables.filter( (tblName) => table.table_name == tblName).length > 0;
+        })
+        return filteredData;
+    }
+
+
     return {
-        getAbstraction
+        computeProjectAbstractions: computeProjectAbstractions,
+        extractTablesFromObject: extractTablesFromObject,
     };
 
 });

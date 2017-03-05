@@ -403,19 +403,19 @@ app.constant("goTemplates", function(){
         name : "AR1",
         primaryKeys: [
           {
-            table: "Table 8",
+            table: "programs",
             primaryKey: ["a", "b", "c", "d"]
           },
           {
-            table: "Table 9",
+            table: "schools",
             primaryKey: ["b", "c", "d"]
           },
           {
-            table: "Table 10",
+            table: "teachers",
             primaryKey: ["c", "d"]
           },
           {
-            table: "Table 11",
+            table: "students",
             primaryKey: ["a", "c"]
           }
         ],

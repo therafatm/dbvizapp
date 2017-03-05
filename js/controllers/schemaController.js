@@ -1,5 +1,5 @@
-app.controller('schemaController', ['$scope', '$http', '$routeParams', '$location', '$timeout', '$modal', 'goService', 'projectService', 'projectApiService', 'goTemplates', 'abstractionsApiService',
-    function($scope, $http, $routeParams, $location, $timeout, $modal, goService, projectService, projectApiService, tp, abstractionsApiService) {
+app.controller('schemaController', ['$scope', '$http', '$routeParams', '$location', '$timeout', '$modal', 'goService', 'projectService', 'projectApiService', 'goTemplates', 'abstractionsApiService','abstractionService',
+    function($scope, $http, $routeParams, $location, $timeout, $modal, goService, projectService, projectApiService, tp, abstractionsApiService,abstractionService) {
 
         $scope.projectList = projectService.getProjects();
         $scope.currentProject = projectService.getCurrentProject();
@@ -198,6 +198,33 @@ app.controller('schemaController', ['$scope', '$http', '$routeParams', '$locatio
         goService.subscribe("show-entity", $scope, (name, entityName) => {
             $scope.showEntity(entityName);
         });
+
+        $scope.$on('drill-in-clicked', (event,abstractObjectName) => {
+            getSchemaInfo().then( (info) => {
+                //TODO
+                // get the current abstraction using the cache
+
+
+                // create an array of all possible entity objects
+                var possibleEntities = tp().fakeData.fakeAbstractEntityGraph.abstractEntities.concat( 
+                                            tp().fakeData.fakeAbstractEntityGraph.abstractRelationships
+                )
+
+                // find the correct entity object
+                var targetEntities = possibleEntities.filter( (object) => object.name == abstractObjectName);
+                
+                // extract the tables from the entity object
+                var tables = targetEntities.reduce( (allTables, object) => {
+                    return allTables.concat( object.primaryKeys.map( (key) => key.table) );
+                }, [])
+
+                // get the reduced table schema of the tables in tht entity object
+                var filteredSchema = abstractionService.extractTablesFromObject(tables, info);
+
+                // display the reduced schema
+                goService.drawSchema(filteredSchema, goService.diagramTypes.CONCRETE);
+            })
+        })
 
         $scope.showEntity = function(entityName) {
             goService.showEntity(entityName);

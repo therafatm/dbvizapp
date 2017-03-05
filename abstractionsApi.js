@@ -35,6 +35,37 @@ router.route('/:projectid')
     });
   })
 
+
+    .delete(function(req, res){
+
+    const results = [];
+    // Grab data from the URL parameters
+    const id = req.params.projectid;
+    // Get a Postgres client from the connection pool
+    console.log(id);
+    pg.connect(config, (err, client, done) => {
+      // Handle connection errors
+        if(err) {
+          done();
+          console.log(err);
+          return res.status(500).json({success: false, data: err});
+        }
+        console.log("Connected to db");
+        // SQL Query > Delete Data
+        client.query('DELETE FROM abstractions WHERE projectid = ' + id);
+        var query = client.query('SELECT * FROM abstractions ORDER BY aid ASC');
+        // Stream results back one row at a time
+        query.on('row', (row) => {
+          results.push(row);
+        });
+        // After all data is returned, close connection and return results
+        query.on('end', () => {
+          done();
+          return res.json(results);
+        });
+      });
+    })
+
   //Add an abstraction for a particular project
   .post(function(req, res, next){
     const results = [];

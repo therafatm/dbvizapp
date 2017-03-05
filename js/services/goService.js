@@ -8,6 +8,7 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
     ABSTRACT: "ABSTRACT",
     CONCRETE: "CONCRETE"
   }
+  
 
   // Maps SQL data types to shapes for columns.
   var dataTypeMapping = {
@@ -86,17 +87,17 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
   }
 
   this.updateLayout = (layout) => {
-    if(layout == tp().tableTemplate.LAYOUTS.GRID){
+    if(layout == tp().LAYOUTS.GRID){
       this.diagram.layout = new go.GridLayout();
     }
-    if(layout == tp().tableTemplate.LAYOUTS.CIRCULAR){
+    if(layout == tp().LAYOUTS.CIRCULAR){
       this.diagram.layout = new go.CircularLayout();
     }
 
-    if(layout == tp().tableTemplate.LAYOUTS.FORCEDIRECTED){
+    if(layout == tp().LAYOUTS.FORCEDIRECTED){
       this.diagram.layout = new go.ForceDirectedLayout();
     }
-    if(layout == tp().tableTemplate.LAYOUTS.DIGRAPH){
+    if(layout == tp().LAYOUTS.DIGRAPH){
       this.diagram.layout = new go.LayeredDigraphLayout();
     }
   }
@@ -196,6 +197,36 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
     return button;
   });
   
+  go.GraphObject.defineBuilder("DrillIntoButton", function(args) {
+    var eltname = /** @type {string} */ (go.GraphObject.takeBuilderArgument(args, "COLLAPSIBLE"));
+
+    var button = /** @type {Panel} */ (
+      GO("Button",
+        GO(go.Shape, "Ethernet",
+                            { desiredSize: new go.Size(13, 13) }
+        )
+      )
+    );
+
+    var border = button.findObject("ButtonBorder");
+    if (border instanceof go.Shape) {
+      border.stroke = null;
+      border.fill = "transparent";
+    }
+
+    button.click = function(e, button) {
+      var diagram = button.diagram;
+      diagram.startTransaction("Drill Into Entity");
+
+      // pass the id of the object clicked
+      $rootScope.$broadcast('drill-in-clicked', button.panel.findObject("TABLENAME").text );
+
+      diagram.commitTransaction("Drill Into Entity");
+    }
+
+    return button;
+  });
+  
 
 
   var getDataTypeMapping = function(type) {
@@ -259,9 +290,11 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
   }
 
   function convertAbstractGraph(abstractEntities, abstractRelationships){
-  // convert to node data array
+      // convert to node data array
 	    var nodeDataArray = [];
+	    var linkDataArray = [];
 
+      // set up the abstract entities
 	    for (let i = 0; i < abstractEntities.length; i++) {
 	        var tbl_name = abstractEntities[i].name;
 	        var existing_tbl = _.where(nodeDataArray, {key: tbl_name});
@@ -271,6 +304,7 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
 
           var new_tbl = {
             key: tbl_name,
+            category: "entity",
             items: abstractEntities[i].primaryKeys.map( (key) => {
               return {
                 name: key.table,
@@ -283,28 +317,55 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
           
           nodeDataArray.push(new_tbl);
       }
+      
+      // set up the abstract relationships
+	    for (let i = 0; i < abstractRelationships.length; i++) {
+	        var tbl_name = abstractRelationships[i].name;
+	        var existing_tbl = _.where(nodeDataArray, {key: tbl_name});
 
-	    var linkDataArray = [];
+          let shapeData = getDataTypeMapping("text");
 
-	    // for (let j = 0; j < foreignKeys.length; j++) {
-	    // 	if (foreignKeys[j].referenced_table_name) {
-      //           linkDataArray.push({
-      //           	from: foreignKeys[j].table_name,
-			// 		fromPort: foreignKeys[j].column_name,
-      //               to: foreignKeys[j].referenced_table_name,
-      //               toPort: foreignKeys[j].referenced_column_name,
-      //               toText: foreignKeys[j].constraint_name
 
-      //           });
-			//   }
-	    // }
+          var new_tbl = {
+            key: tbl_name,
+            category: "relationship",
+            items: abstractRelationships[i].primaryKeys.map( (key) => {
+              return {
+                name: key.table,
+                isKey: true,
+                color: shapeData.color,
+                figure: shapeData.shape
+              }
+            }) 
+          };
+          
+          nodeDataArray.push(new_tbl);
+
+          for(let j =0; j<abstractRelationships[i].endpoints.length; j++){
+            var endpoint = abstractRelationships[i].endpoints[j];
+
+            linkDataArray.push({
+              from: abstractRelationships[i].name,
+              fromPort: abstractRelationships[i].name,
+              to: endpoint,
+              toPort: endpoint,
+              toText: ""
+            })
+          }
+      }
+
       return {
         linkDataArray: linkDataArray,
         nodeDataArray: nodeDataArray
       }
   }
 
+  function extractAbstractTables(abstractObject, projectData){
+    
+  }
+
 	this.drawSchema = (projectData, modelType, modelId) => {
+
     if( this.diagram == null){
 	    this.diagram =
 	        GO(go.Diagram, "databaseDiagram",
@@ -317,12 +378,15 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
 	            });
     }
 
+
     if( modelType == this.diagramTypes.CONCRETE){
 
       if(modelId == null || modelId == undefined){
+
+        // TODO - load the layout from the id
         // loading the full database view
-        this.diagram.nodeTemplate = tp().tableTemplate.tableTemplate;
-        this.diagram.linkTemplate = tp().tableTemplate.relationshipTemplate;
+        this.diagram.nodeTemplate = tp().concreteTableTemplate.tableTemplate;
+        this.diagram.linkTemplate = tp().concreteTableTemplate.relationshipTemplate;
 
 
         var result = convertConcreteGraph(projectData.tablesAndCols, projectData.foreignKeys)
@@ -335,13 +399,14 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
       } else {
         // load part of the data view, defined by the modelID. Pull all the tables from the abstract entity associated with the modelID, and display these
 
-        // TODO
+        // TODO load the layout from the id
       }
     } else if( modelType == this.diagramTypes.ABSTRACT){
       // load the full abstract view of the database
+      // TODO load the layout from the id
       
-      this.diagram.nodeTemplate = tp().tableTemplate.tableTemplate;
-      this.diagram.linkTemplate = tp().tableTemplate.relationshipTemplate;
+      this.diagram.nodeTemplateMap = tp().abstractEntityTemplate.tableTemplateMap;
+      this.diagram.linkTemplate = tp().abstractEntityTemplate.relationshipTemplate;
 
       var result = convertAbstractGraph(projectData.abstractEntities, projectData.abstractRelationships);
 
@@ -353,7 +418,6 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
     } else {
       console.error(`Invalid model type "${modelType}" given`);
     }
-
 
 	};
 

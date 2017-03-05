@@ -1,9 +1,8 @@
-app.controller('projectController', ['$scope', '$location', 'goService', 'projectApiService', 'projectService', '$modal', function($scope, $location, goService, projectApiService, projectService, $modal, goTemplates){
+app.controller('projectController', ['$scope', '$location', 'projectApiService', 'projectService', '$modal', function($scope, $location, projectApiService, projectService, $modal){
 
 	$scope.currentProjects = [];
 	$scope.projectToAdd = {};
 	$scope.projectToEdit = {};
- 	$scope.gojs = goService.drawSchema;
 	$scope.msg = "Pikachu!!";
 
 	$scope.updateCurrentProjects = function(projects) {

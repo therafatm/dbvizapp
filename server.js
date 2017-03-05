@@ -6,6 +6,7 @@ var path = require('path');
 var app = express();
 var projectAPI = require('./projectAPI');
 var schemaAPI = require('./schemaAPI');
+var abstractionsAPI = require('./abstractionsAPI');
 
 app.use('/views', express.static(__dirname + '/views'));
 app.use('/css', express.static(__dirname + '/css'));
@@ -32,6 +33,8 @@ app.get('/', function(req, res){
 // set up the project REST endpoint
 app.use('/api/project', projectAPI);
 app.use('/api/schema', schemaAPI);
+app.use('/api/abstractions', abstractionsAPI);
+
 
 app.listen(port, function(){
 	console.log("Server listening on port " + port + " !");

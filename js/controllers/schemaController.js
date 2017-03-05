@@ -1,5 +1,7 @@
-app.controller('schemaController', ['$scope', '$http', '$routeParams', '$location', '$timeout', '$modal', 'goService', 'projectService', 'projectApiService', 'goTemplates',
-    function($scope, $http, $routeParams, $location, $timeout, $modal, goService, projectService, projectApiService, tp) {
+app.controller('schemaController', ['$scope', '$http', '$routeParams', '$location', '$timeout', '$modal', 'goService',
+    'projectService', 'projectApiService', 'goTemplates', 'algorithmService',
+    function($scope, $http, $routeParams, $location, $timeout, $modal, goService,
+             projectService, projectApiService, tp, algorithmService) {
 
         $scope.projectList = projectService.getProjects();
         $scope.currentProject = projectService.getCurrentProject();
@@ -25,6 +27,33 @@ app.controller('schemaController', ['$scope', '$http', '$routeParams', '$locatio
         };
 
         var projectId = parseInt($routeParams.id);
+
+        $scope.getTables = function() {
+            var tables = [];
+            for (let i = 0; i < $scope.schema.tablesAndCols.length; i++) {
+                var tableName = $scope.schema.tablesAndCols[i].table_name;
+                var existingTables = _.where(tables, {table_name: tableName});
+
+                if (existingTables && existingTables.length > 0 && $scope.schema.tablesAndCols[i]) {
+                    existingTables[0].cols.push({col_name: $scope.schema.tablesAndCols[i].column_name,
+                        PK: ($scope.schema.tablesAndCols[i].column_key == "PRI"),
+                    });
+                } else {
+                    var newTable = {table_name: tableName, cols: [ {col_name: $scope.schema.tablesAndCols[i].column_name,
+                        PK: ($scope.schema.tablesAndCols[i].column_key == "PRI"),
+                    }]};
+                    tables.push(newTable);
+                }
+            }
+
+            return tables;
+        };
+
+        $scope.clusterCurrentProject = function() {
+            // Extract "tables" from schema (rowsAndCols)
+            var tables = $scope.getTables();
+            algorithmService.clusterRelations(tables);
+        };
 
         // This is called by init() and when we switch projects.
         $scope.displayCurrentProject = function() {

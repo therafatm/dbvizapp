@@ -413,10 +413,6 @@ app.constant("goTemplates", function(){
           {
             table: "teachers",
             primaryKey: ["c", "d"]
-          },
-          {
-            table: "students",
-            primaryKey: ["a", "c"]
           }
         ],
         endpoints: ["AE1", "AE2", "AE3"]

@@ -1,5 +1,7 @@
-app.controller('schemaController', ['$scope', '$http', '$routeParams', '$location', '$timeout', '$modal', 'goService', 'projectService', 'projectApiService', 'goTemplates', 'abstractionsApiService','abstractionService',
-    function($scope, $http, $routeParams, $location, $timeout, $modal, goService, projectService, projectApiService, tp, abstractionsApiService,abstractionService) {
+app.controller('schemaController', ['$scope', '$http', '$routeParams', '$location', '$timeout', '$modal', 'goService',
+    'projectService', 'projectApiService', 'goTemplates', 'abstractionsApiService','abstractionService', 'algorithmService',
+    function($scope, $http, $routeParams, $location, $timeout, $modal, goService, projectService, projectApiService, tp,
+             abstractionsApiService, abstractionService, algorithmService) {
 
         $scope.projectList = projectService.getProjects();
         $scope.currentProject = projectService.getCurrentProject();
@@ -27,8 +29,34 @@ app.controller('schemaController', ['$scope', '$http', '$routeParams', '$locatio
 
         var projectId = parseInt($routeParams.id);
 
+        $scope.getTables = function() {
+            var tables = [];
+            for (let i = 0; i < $scope.schema.tablesAndCols.length; i++) {
+                var tableName = $scope.schema.tablesAndCols[i].table_name;
+                var existingTables = _.where(tables, {table_name: tableName});
 
-        $scope.toggleProjectAbstraction = function(){
+                if (existingTables && existingTables.length > 0 && $scope.schema.tablesAndCols[i]) {
+                    existingTables[0].cols.push({col_name: $scope.schema.tablesAndCols[i].column_name,
+                        primaryKey: ($scope.schema.tablesAndCols[i].column_key == "PRI"),
+                    });
+                } else {
+                    var newTable = {table_name: tableName, cols: [ {col_name: $scope.schema.tablesAndCols[i].column_name,
+                        primaryKey: ($scope.schema.tablesAndCols[i].column_key == "PRI"),
+                    }]};
+                    tables.push(newTable);
+                }
+            }
+
+            return tables;
+        };
+
+        $scope.clusterCurrentProject = function() {
+            // Extract "tables" from schema (rowsAndCols)
+            var tables = $scope.getTables();
+            return algorithmService.clusterRelations(tables);
+        };
+
+        $scope.toggleProjectAbstraction = function() {
             if($scope.isAbstracted){
                 $scope.isAbstracted = false;
             }
@@ -39,6 +67,7 @@ app.controller('schemaController', ['$scope', '$http', '$routeParams', '$locatio
             $scope.displayCurrentProject();
             //use go service to draw on screen
         }
+
         // This is called by init() and when we switch projects.
         $scope.displayCurrentProject = function() {
             // Get schema information from database.
@@ -46,8 +75,8 @@ app.controller('schemaController', ['$scope', '$http', '$routeParams', '$locatio
                 if($scope.isAbstracted){
                     // Fake Data is loaded for testing purposes
                     var abstractions = $scope.getCurrentAbstraction();
-                    schemaInfo.abstractEntities = abstractions[0];
-                    schemaInfo.abstractRelationships = abstractions[1];
+                    schemaInfo.abstractEntities = abstractions.entities;
+                    schemaInfo.abstractRelationships = abstractions.relationships;
                     // schemaInfo.abstractEntities = tp().fakeData.fakeAbstractEntityGraph.abstractEntities;
                     // schemaInfo.abstractRelationships = tp().fakeData.fakeAbstractEntityGraph.abstractRelationships;
                     goService.drawSchema(schemaInfo, goService.diagramTypes.ABSTRACT);
@@ -99,7 +128,8 @@ app.controller('schemaController', ['$scope', '$http', '$routeParams', '$locatio
             // TODO: need to handle drill down
             
             //sending mock for now
-            return [ tp().fakeData.fakeAbstractEntityGraph.abstractEntities, tp().fakeData.fakeAbstractEntityGraph.abstractRelationships]          
+            return $scope.clusterCurrentProject();
+            //return [ tp().fakeData.fakeAbstractEntityGraph.abstractEntities, tp().fakeData.fakeAbstractEntityGraph.abstractRelationships]
         }
 
         function getSchemaInfo(){
@@ -203,22 +233,21 @@ app.controller('schemaController', ['$scope', '$http', '$routeParams', '$locatio
             getSchemaInfo().then( (info) => {
                 //TODO
                 // get the current abstraction using the cache
-
+                var currentAbstraction = $scope.clusterCurrentProject();
 
                 // create an array of all possible entity objects
-                var possibleEntities = tp().fakeData.fakeAbstractEntityGraph.abstractEntities.concat( 
-                                            tp().fakeData.fakeAbstractEntityGraph.abstractRelationships
-                )
+                var possibleEntities = currentAbstraction.entities.concat(currentAbstraction.relationships);
 
                 // find the correct entity object
                 var targetEntities = possibleEntities.filter( (object) => object.name == abstractObjectName);
                 
                 // extract the tables from the entity object
-                var tables = targetEntities.reduce( (allTables, object) => {
-                    return allTables.concat( object.primaryKeys.map( (key) => key.table) );
-                }, [])
+                var tables = [];
+                _.each(targetEntities, function(entity) {
+                   tables.concat(entity.table_names);
+                });
 
-                // get the reduced table schema of the tables in tht entity object
+                // get the reduced table schema of the tables in that entity object
                 var filteredSchema = abstractionService.extractTablesFromObject(tables, info);
 
                 // display the reduced schema

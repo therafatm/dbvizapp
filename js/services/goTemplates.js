@@ -277,8 +277,7 @@ app.constant("goTemplates", function(){
             margin: new go.Margin(0, 75, 0, 75),  // leave room for Button
             font: "bold 16px sans-serif"
           },
-          new go.Binding("text", "key")),
-        // the collapse/expand button
+          new go.Binding("text", "key")),        // the collapse/expand button
         GO("PanelExpanderButton", "ATTRIBUTES",  // the name of the element whose visibility this button toggles
           { row: 0, alignment: new go.Spot(1,0),
               toolTip:  // define a tooltip for each node that displays the color as text
@@ -351,7 +350,7 @@ app.constant("goTemplates", function(){
     abstractEntities : [
       {
         name: "AE1",
-        primaryKeys: [
+        table_names: [
           {
             table: "Table 1",
             primaryKey: ["hello", "my", "name", "is"]
@@ -364,7 +363,7 @@ app.constant("goTemplates", function(){
       },
       {
         name: "AE2",
-        primaryKeys: [
+        table_names: [
           {
             table: "Table 3",
             primaryKey: ["Dont", "come"]
@@ -381,7 +380,7 @@ app.constant("goTemplates", function(){
       },
       {
         name: "AE3",
-        primaryKeys: [
+        table_names: [
           {
             table: "Table 6",
             primaryKey: ["Baby"]
@@ -390,7 +389,7 @@ app.constant("goTemplates", function(){
       },
       {
         name: "AE4",
-        primaryKeys: [
+        table_names: [
           {
             table: "Table 7",
             primaryKey: ["Maybe"]
@@ -401,7 +400,7 @@ app.constant("goTemplates", function(){
     abstractRelationships : [
       {
         name : "AR1",
-        primaryKeys: [
+        table_names: [
           {
             table: "programs",
             primaryKey: ["a", "b", "c", "d"]
@@ -419,7 +418,7 @@ app.constant("goTemplates", function(){
       },
       {
         name : "AR2",
-        primaryKeys: [
+        table_names: [
           {
             table: "Table 12",
             primaryKey: ["dogs", "cats", "birds"]

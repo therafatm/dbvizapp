@@ -353,49 +353,28 @@ app.constant("goTemplates", function(){
       {
         name: "AE1",
         table_names: [
-          {
-            table: "Table 1",
-            primaryKey: ["hello", "my", "name", "is"]
-          },
-          {
-            table: "Table 2",
-            primaryKey: ["hello","is","it","me"]
-          }
+            "Table 1",
+            "Table 2"
         ]
       },
       {
         name: "AE2",
         table_names: [
-          {
-            table: "Table 3",
-            primaryKey: ["Dont", "come"]
-          },
-          {
-            table: "Table 4",
-            primaryKey: ["Dont"]
-          },
-          {
-            table: "Table 5",
-            primaryKey: ["Dont", "you", "even"]
-          }
+            "Table 3",
+            "Table 4",
+            "Table 5"
         ]
       },
       {
         name: "AE3",
         table_names: [
-          {
-            table: "Table 6",
-            primaryKey: ["Baby"]
-          }
+          "Table 6"
         ]
       },
       {
         name: "AE4",
         table_names: [
-          {
-            table: "Table 7",
-            primaryKey: ["Maybe"]
-          }
+            "Table 7"
         ]
       }
     ],
@@ -403,32 +382,17 @@ app.constant("goTemplates", function(){
       {
         name : "AR1",
         table_names: [
-          {
-            table: "programs",
-            primaryKey: ["a", "b", "c", "d"]
-          },
-          {
-            table: "schools",
-            primaryKey: ["b", "c", "d"]
-          },
-          {
-            table: "teachers",
-            primaryKey: ["c", "d"]
-          }
+          "programs",
+          "schools",
+          "teachers"
         ],
         endpoints: ["AE1", "AE2", "AE3"]
       },
       {
         name : "AR2",
         table_names: [
-          {
-            table: "Table 12",
-            primaryKey: ["dogs", "cats", "birds"]
-          },
-          {
-            table: "Table 13"  ,
-            primaryKey: ["bags","chairs"]
-          }
+            "Table 12",
+            "Table 13" 
         ],
         endpoints: ["AE3", "AE4"]
       }

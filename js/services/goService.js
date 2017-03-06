@@ -301,13 +301,12 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
 
           let shapeData = getDataTypeMapping("text");
 
-
           var new_tbl = {
             key: tbl_name,
             category: "entity",
-            items: abstractEntities[i].primaryKeys.map( (key) => {
+            items: abstractEntities[i].table_names.map( (tableName) => {
               return {
-                name: key.table,
+                name: tableName,
                 isKey: true,
                 color: shapeData.color,
                 figure: shapeData.shape
@@ -329,9 +328,9 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
           var new_tbl = {
             key: tbl_name,
             category: "relationship",
-            items: abstractRelationships[i].primaryKeys.map( (key) => {
+            items: abstractRelationships[i].table_names.map( (tableName) => {
               return {
-                name: key.table,
+                name: tableName,
                 isKey: true,
                 color: shapeData.color,
                 figure: shapeData.shape

@@ -3,7 +3,7 @@ app.service('algorithmService', function() {
     this.getPK = function (table) {
         // Filer: return elements that meet a condition
         var PKCols = _.filter(table.cols, function (col) {
-            return (col.PK == true);
+            return (col.primaryKey == true);
         });
 
         // pluck: extract a property from the list.
@@ -72,8 +72,8 @@ app.service('algorithmService', function() {
         var tablePK = this.getPK(table);
 
         for (let i = 0; i < tablePK.length; i++) {
-            if (abstractEntity.PK.indexOf(tablePK[i]) === -1) {
-                abstractEntity.PK.push(tablePK[i]);
+            if (abstractEntity.primaryKey.indexOf(tablePK[i]) === -1) {
+                abstractEntity.primaryKey.push(tablePK[i]);
             }
         }
 
@@ -104,18 +104,19 @@ app.service('algorithmService', function() {
         // add the first relation to the abstract entities array.
         var firstEntity = {
             name: "AE0",
-            PK: [],
+            primaryKey: [],
             table_names: []
         };
 
+        // abstractEntities' primary key is the union of all pks of tables in it.
+        // This combination is done in 'addTable'.
         this.addTable(firstEntity, relations[0]);
         abstractEntities.push(firstEntity);
-
-        // abstractEntities' primary key is the union of all pks of tables in it.
 
         // relations is the set on which we iterate.
         // Remove processed tables from remainingRels.
         var remainingRels = relations.slice();
+        remainingRels.splice(0, 1);
         var numAEs = 1;
         for (let i = 1; i < relations.length; i++) {
             if (this.areSetsEqual(this.getPK(relations[i]), this.getPK(relations[i - 1]))) {
@@ -129,7 +130,7 @@ app.service('algorithmService', function() {
                 // Check if this is disjoint with respect to existing abstract entities.
                 for (let j = 0; j < abstractEntities.length; j++) {
                     // disjoint: primary keys share no attributes.
-                    if (!this.areSetsDisjoint(abstractEntities[j].PK, this.getPK(relations[i]))) {
+                    if (!this.areSetsDisjoint(abstractEntities[j].primaryKey, this.getPK(relations[i]))) {
                         disjoint = false;
                     }
                 }
@@ -138,7 +139,7 @@ app.service('algorithmService', function() {
                 if (disjoint == true) {
                     var newEntity = {
                         name: "AE" + numAEs,
-                        PK: [],
+                        primaryKey: [],
                         table_names: []
                     };
                     this.addTable(newEntity, relations[i]);
@@ -156,7 +157,7 @@ app.service('algorithmService', function() {
             var hasCommonAttr = [];
 
             for (let j = 0; j < abstractEntities.length; j++) {
-                if (!this.areSetsDisjoint(abstractEntities[j].PK, this.getPK(relations[i]))) {
+                if (!this.areSetsDisjoint(abstractEntities[j].primaryKey, this.getPK(relations[i]))) {
                     hasCommonAttr.push(abstractEntities[j]);
                 }
             }
@@ -179,7 +180,7 @@ app.service('algorithmService', function() {
 
             // for each abstract entity
             for (let j = 0; j < abstractEntities.length; j++) {
-                if (!this.areSetsDisjoint(abstractEntities[j].PK, this.getPK(relations[i]))) {
+                if (!this.areSetsDisjoint(abstractEntities[j].primaryKey, this.getPK(relations[i]))) {
                     intersections.push(abstractEntities[j]);
                 }
             }
@@ -188,8 +189,8 @@ app.service('algorithmService', function() {
                 // indicate relationships
                 var abstractRel = {
                     name: "AR0",
-                    abstract_entities: intersections,
-                    PK: [],
+                    endpoints: _.pluck(intersections, 'name'),
+                    primaryKey: [],
                     table_names: []
                 }
                 numRels = 1;
@@ -214,8 +215,8 @@ app.service('algorithmService', function() {
                     // indicate relationships
                     abstractRel = {
                         name: "AR" + numRels,
-                        abstract_entities: intersections,
-                        PK: [],
+                        endpoints: _.pluck(intersections, 'name'),
+                        primaryKey: [],
                         table_names: []
                     }
 

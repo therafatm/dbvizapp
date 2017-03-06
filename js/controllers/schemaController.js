@@ -1,6 +1,6 @@
-app.controller('schemaController', ['$scope', '$http', '$routeParams', '$location', '$timeout', '$modal', 'goService',
+app.controller('schemaController', ['$scope', '$rootScope','$http', '$routeParams', '$location', '$timeout', '$modal', 'goService',
     'projectService', 'projectApiService', 'goTemplates', 'abstractionsApiService','abstractionService', 'algorithmService',
-    function($scope, $http, $routeParams, $location, $timeout, $modal, goService, projectService, projectApiService, tp,
+    function($scope, $rootScope, $http, $routeParams, $location, $timeout, $modal, goService, projectService, projectApiService, tp,
              abstractionsApiService, abstractionService, algorithmService) {
 
         $scope.projectList = projectService.getProjects();
@@ -253,6 +253,10 @@ app.controller('schemaController', ['$scope', '$http', '$routeParams', '$locatio
                 // display the reduced schema
                 goService.drawSchema(filteredSchema, goService.diagramTypes.CONCRETE);
             })
+        })
+
+        $rootScope.$on('entity-renamed', (event, args) => {
+            console.log('TODO renaming entity in model');
         })
 
         $scope.showEntity = function(entityName) {

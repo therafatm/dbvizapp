@@ -191,7 +191,8 @@ app.constant("goTemplates", function(){
             name: "TABLENAME",
             row: 0, alignment: go.Spot.Center,
             margin: new go.Margin(0, 75, 0, 75),  // leave room for Button
-            font: "bold 16px sans-serif"
+            font: "bold 16px sans-serif",
+            editable: true
           },
           new go.Binding("text", "key")),
         // the collapse/expand button
@@ -275,7 +276,8 @@ app.constant("goTemplates", function(){
             name: "TABLENAME",
             row: 0, alignment: go.Spot.Center,
             margin: new go.Margin(0, 75, 0, 75),  // leave room for Button
-            font: "bold 16px sans-serif"
+            font: "bold 16px sans-serif",
+            editable: true
           },
           new go.Binding("text", "key")),        // the collapse/expand button
         GO("PanelExpanderButton", "ATTRIBUTES",  // the name of the element whose visibility this button toggles

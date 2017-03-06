@@ -359,10 +359,6 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
       }
   }
 
-  function extractAbstractTables(abstractObject, projectData){
-    
-  }
-
 	this.drawSchema = (projectData, modelType, modelId) => {
 
     if( this.diagram == null){
@@ -376,6 +372,8 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
 	                layout: GO(go.LayeredDigraphLayout)
 	            });
     }
+
+    this.registerDiagramEventListeners(this.diagram);
 
 
     if( modelType == this.diagramTypes.CONCRETE){
@@ -424,4 +422,17 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
       var handler = $rootScope.$on(event, callback);
       scope.$on('$destroy', handler);
   }
+
+  this.registerDiagramEventListeners = function (diagram){
+    diagram.addDiagramListener('TextEdited', (event) => {
+      var origName = event.parameter;
+      var newName = event.subject.text;
+      // console.log(`Original string that got edited ${origName}`);
+      $rootScope.$broadcast('entity-renamed', {
+        entityId: origName,
+        newName: newName
+      })
+    })
+  }
+
 }]);

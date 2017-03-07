@@ -69,9 +69,16 @@ app.controller('schemaController', ['$scope', '$rootScope', '$http', '$routePara
         }
 
         $scope.saveRootAbstraction = function(){
-            var body = {modelid: "abstract", model:  goService.currentDiagramJSON} 
-            abstractionsApiService.addProjectAbstraction($scope.currentProject.id, body)
+            var body = {modelid: "abstract", model:  goService.currentDiagramJSON}
+            
+            abstractionsApiService.getParticularProjectAbstraction($scope.currentProject.id, "abstract")
                 .then(
+                    function(project){
+                        return abstractionsApiService.updateProjectAbstraction($scope.currentProject.id, "abstract", goService.currentDiagramJSON)
+                    }, function(err){
+                        return abstractionsApiService.addProjectAbstraction($scope.currentProject.id, body);
+                    }
+                ).then(
                     function(projects){
                         alert("Abstraction has been saved succesfully!");                   
                     }, function(error){
@@ -273,7 +280,9 @@ app.controller('schemaController', ['$scope', '$rootScope', '$http', '$routePara
             console.log('TODO Save Model after rename change');
         })
         $rootScope.$on('layout-changed', (event, args) => {
-            console.log('TODO Save Model after layout change');
+            if( $scope.isAbstracted ){
+                $scope.saveRootAbstraction();
+            }
         })
 
         $scope.showEntity = function(entityName) {

@@ -150,7 +150,7 @@ router.get('/:projectid/:modelid', function (req, res, next){
       return res.status(500).json({success: false, data: err});
     }
     // SQL Query > Select Data
-    const query = client.query('SELECT * FROM abstractions WHERE projectid = $1 and aid = $2',
+    const query = client.query('SELECT * FROM abstractions WHERE projectid = $1 and modelid = $2',
       [pid, modelid]);
 
     // Stream results back one row at a time

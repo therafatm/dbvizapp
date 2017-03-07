@@ -455,12 +455,13 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
       })
     })
 
-    diagram.addDiagramListener('SelectionMoved', (event) => {
+    layoutChangeHandler = (event) => {
+      this.currentDiagramJSON = diagram.model.toJSON();
       $rootScope.$broadcast('layout-changed');
-    })
-    diagram.addDiagramListener('LayoutCompleted', (event) => {
-      $rootScope.$broadcast('layout-changed');
-    })
+    }
+
+    diagram.addDiagramListener('SelectionMoved', layoutChangeHandler)
+    diagram.addDiagramListener('LayoutCompleted', layoutChangeHandler)
   }
 
 }]);

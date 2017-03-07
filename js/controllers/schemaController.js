@@ -111,7 +111,7 @@ app.controller('schemaController', ['$scope', '$http', '$routeParams', '$locatio
                 .then(
                     function(projects){
                         alert("Abstraction has been saved succesfully!");
-                        $scope.currentProjectAbstractions.push(abstractionWrapper.abstraction);
+                        $scope.currentProjectAbstractions.push(body);
 
                     }, function(error){
                         alert(error.error);
@@ -130,7 +130,6 @@ app.controller('schemaController', ['$scope', '$http', '$routeParams', '$locatio
                             function(abstractionWrapper){
                                 //If I have a schema in the DB
                                 if(!abstractionWrapper.toSave){
-                                    $scope.currentProjectAbstractions.push(abstractionWrapper.abstraction);
                                     goService.drawAbstractSchemaFromModel(abstractionWrapper.abstraction, abstractionWrapper.modelid);
                                     return;
                                 }

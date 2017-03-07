@@ -4,7 +4,8 @@
 	<div style="color:white" class="mdl-card mdl-shadow--2dp mdl-cell mdl-cell--3-col mdl-cell--stretch panel">
 		
 		<div class="mdl-card__actions mdl-shadow--2dp">
-			<center><button class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent export-button" ng-click="toggleProjectAbstraction()">Abstractify</button></center>
+			<center ng-hide="!isAbstracted"><button class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent export-button" ng-click="toggleProjectAbstraction()">Summarize DB</button></center>
+			<center ng-hide="isAbstracted"><button class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent export-button" ng-click="toggleProjectAbstraction()">Expand DB</button></center>			
 		</div>		
 
 		<div class="mdl-card__actions layout-title mdl-shadow--2dp">
@@ -35,9 +36,6 @@
 				</button>
 			<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent export-button" ng-click="openImageModal()">
   			Export
-			</button>
-			<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent export-button" ng-click="clusterCurrentProject()">
-				Abstract
 			</button>
 		</div>
 		<!-- Conrtol Buttons Ends -->

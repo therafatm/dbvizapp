@@ -4,6 +4,7 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
 
   this.diagram = null;
   this.currentDiagramJSON = null; 
+  this.currentModelId = null;
 
   this.diagramTypes = {
     ABSTRACT: "ABSTRACT",
@@ -377,6 +378,8 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
     this.diagram.nodeTemplateMap = tp().abstractEntityTemplate.tableTemplateMap;
     this.diagram.linkTemplate = tp().abstractEntityTemplate.relationshipTemplate;
     this.diagram.model = new go.Model.fromJson(savedModel);
+    this.currentModelId = modelId;
+
   }
 
 	this.buildAndDrawSchema = (projectData, modelType, modelId) => {
@@ -429,6 +432,8 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
       this.diagram.model.linkFromPortIdProperty = "fromPort";  // necessary to remember portIds
       this.diagram.model.linkToPortIdProperty = "toPort";		// Allows linking from specific columns
       this.currentDiagramJSON = this.diagram.model.toJSON();
+      this.currentModelId = modelId;
+
     } else {
       console.error(`Invalid model type "${modelType}" given`);
     }

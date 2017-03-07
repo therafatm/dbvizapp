@@ -22,8 +22,10 @@ app.controller('schemaController', ['$scope', '$http', '$routeParams', '$locatio
         }.bind($scope);
 
         $scope.saveLastDrilledScreen = function(){
+            //whenever I close, update latest
+            var currentModelId = goService.currentModelId;
             var currentModel = $scope.currentProjectAbstractions.filter((model)=>{return model.modelid === 'latest'});
-            if(currentModel.length > 0){
+            if(currentModel.length > 0 || currentModelId == 'abstract'){
                 //update old latest in DB
                 var body = {modelid: 'latest', model: goService.currentDiagramJSON}; 
                 abstractionsApiService.updateProjectAbstraction($scope.currentProject.id, 'latest', body)

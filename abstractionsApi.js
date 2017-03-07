@@ -35,44 +35,40 @@ router.route('/:projectid')
     });
   })
 
+  .delete(function(req, res, next){
 
-    .delete(function(req, res){
-
-    const results = [];
-    // Grab data from the URL parameters
-    const id = req.params.projectid;
-    // Get a Postgres client from the connection pool
-    console.log(id);
-    pg.connect(config, (err, client, done) => {
-      // Handle connection errors
-        if(err) {
-          done();
-          console.log(err);
-          return res.status(500).json({success: false, data: err});
-        }
-        console.log("Connected to db");
-        // SQL Query > Delete Data
-        client.query('DELETE FROM abstractions WHERE projectid = ' + id);
-        var query = client.query('SELECT * FROM abstractions ORDER BY aid ASC');
-        // Stream results back one row at a time
-        query.on('row', (row) => {
-          results.push(row);
-        });
-        // After all data is returned, close connection and return results
-        query.on('end', () => {
-          done();
-          return res.json(results);
-        });
+  const results = [];
+  // Grab data from the URL parameters
+  const id = req.params.projectid;
+  // Get a Postgres client from the connection pool
+  console.log(id);
+  pg.connect(config, (err, client, done) => {
+    // Handle connection errors
+      if(err) {
+        done();
+        console.log(err);
+        return res.status(500).json({success: false, data: err});
+      }
+      console.log("Connected to db");
+      // SQL Query > Delete Data
+      client.query('DELETE FROM abstractions WHERE projectid = ' + id);
+      var query = client.query('SELECT * FROM abstractions ORDER BY aid ASC');
+      // Stream results back one row at a time
+      query.on('row', (row) => {
+        results.push(row);
       });
-    })
+      // After all data is returned, close connection and return results
+      query.on('end', () => {
+        done();
+        return res.json(results);
+      });
+    });
+  })
 
   //Add an abstraction for a particular project
-  .post(function(req, res, next){
+  .post(function(req, res){
     const results = [];
     const id = req.params.projectid;    
-
-    const modelString = JSON.stringify(req.body.model);
-    console.log(modelString);
 
     // Grab data from http request
     // Get a Postgres client from the connection pool
@@ -86,7 +82,7 @@ router.route('/:projectid')
 
         // SQL Query > Insert Data
         client.query('INSERT INTO abstractions (modelid, model, projectid) VALUES ($1, $2, $3)',
-          [req.body.modelid, modelString, req.body.projectid]);        
+          [req.body.modelid, req.body.model, id]);        
         // SQL Query > Select Data
         const query = client.query('SELECT * FROM abstractions ORDER BY aid ASC');
         // Stream results back one row at a time

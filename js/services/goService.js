@@ -3,6 +3,7 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
   var GO = go.GraphObject.make;
 
   this.diagram = null;
+  this.currentDiagramJSON = null; 
 
   this.diagramTypes = {
     ABSTRACT: "ABSTRACT",
@@ -359,7 +360,28 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
       }
   }
 
-	this.drawSchema = (projectData, modelType, modelId) => {
+  this.drawAbstractSchemaFromModel = (savedModel) => {
+
+    if( this.diagram == null){
+      this.diagram =
+          GO(go.Diagram, "databaseDiagram",
+              {
+                  initialContentAlignment: go.Spot.Center, // center Diagram contents
+                  "undoManager.isEnabled": true, // enable Ctrl-Z to undo and Ctrl-Y to redo
+                  allowDelete: false,
+                  allowCopy: false,
+                  layout: GO(go.LayeredDigraphLayout)
+              });
+    }
+    this.registerDiagramEventListeners(this.diagram);
+
+    this.diagram.nodeTemplateMap = tp().abstractEntityTemplate.tableTemplateMap;
+    this.diagram.linkTemplate = tp().abstractEntityTemplate.relationshipTemplate;
+    this.diagram.model = new go.Model.fromJson(savedModel);
+
+  }
+
+	this.buildAndDrawSchema = (projectData, modelType, modelId) => {
 
     if( this.diagram == null){
 	    this.diagram =
@@ -372,9 +394,7 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
 	                layout: GO(go.LayeredDigraphLayout)
 	            });
     }
-
     this.registerDiagramEventListeners(this.diagram);
-
 
     if( modelType == this.diagramTypes.CONCRETE){
 
@@ -411,6 +431,7 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
 
       this.diagram.model.linkFromPortIdProperty = "fromPort";  // necessary to remember portIds
       this.diagram.model.linkToPortIdProperty = "toPort";		// Allows linking from specific columns
+      this.currentDiagramJSON = this.diagram.model.toJSON();
 
     } else {
       console.error(`Invalid model type "${modelType}" given`);

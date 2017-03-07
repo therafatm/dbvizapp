@@ -433,6 +433,13 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
         newName: newName
       })
     })
+
+    diagram.addDiagramListener('SelectionMoved', (event) => {
+      $rootScope.$broadcast('layout-changed');
+    })
+    diagram.addDiagramListener('LayoutCompleted', (event) => {
+      $rootScope.$broadcast('layout-changed');
+    })
   }
 
 }]);

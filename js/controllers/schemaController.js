@@ -257,6 +257,10 @@ app.controller('schemaController', ['$scope', '$rootScope','$http', '$routeParam
 
         $rootScope.$on('entity-renamed', (event, args) => {
             console.log('TODO renaming entity in model');
+            console.log('TODO Save Model after rename change');
+        })
+        $rootScope.$on('layout-changed', (event, args) => {
+            console.log('TODO Save Model after layout change');
         })
 
         $scope.showEntity = function(entityName) {

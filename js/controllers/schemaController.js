@@ -24,11 +24,12 @@ app.controller('schemaController', ['$scope', '$rootScope', '$http', '$routePara
         $scope.saveLastDrilledScreen = function(){
             //whenever I close, update latest
             var currentModelId = goService.currentModelId;
+            //check if backend has a latest saved
             var currentModel = $scope.currentProjectAbstractions.filter((model)=>{return model.modelid === 'latest'});
             if(currentModel.length > 0 || currentModelId == 'abstract'){
                 //update old latest in DB
-                var body = {modelid: 'latest', model: goService.currentDiagramJSON}; 
-                abstractionsApiService.updateProjectAbstraction($scope.currentProject.id, 'latest', body)
+                var body = {modelid: currentModelId, model: goService.currentDiagramJSON}; 
+                var promise = abstractionsApiService.updateProjectAbstraction($scope.currentProject.id, currentModelId, body)
                     .then(
                         function(projects){
                             console.info("New latest abstraction has been updated succesfully!");
@@ -36,6 +37,8 @@ app.controller('schemaController', ['$scope', '$rootScope', '$http', '$routePara
                             console.error(error.error);
                         }
                     ); 
+
+                return promise;
             } 
             else{
                 //add new latest abstraction
@@ -98,6 +101,7 @@ app.controller('schemaController', ['$scope', '$rootScope', '$http', '$routePara
         $scope.toggleProjectAbstraction = function() {
             if($scope.isAbstracted){
                 $scope.isAbstracted = false;
+                $scope.saveLastDrilledScreen();
             }
             else{
                 $scope.isAbstracted = true;
@@ -323,11 +327,6 @@ app.controller('schemaController', ['$scope', '$rootScope', '$http', '$routePara
             })
         })
 
-        // $rootScope.$on('entity-renamed', (event, args) => {
-        //     console.log('TODO renaming entity in model');
-        //     console.log('TODO Save Model after rename change');
-        // })
-
         $scope.showEntity = function(entityName) {
             goService.showEntity(entityName);
             $scope.hiddenEntities.forEach((val, index, arr) => {
@@ -340,7 +339,8 @@ app.controller('schemaController', ['$scope', '$rootScope', '$http', '$routePara
         };
 
         $scope.goHome = function(id) {
-          $location.path("/");
+            $scope.saveLastDrilledScreen();
+            $location.path("/");
         };
 
         $scope.layoutGrid;

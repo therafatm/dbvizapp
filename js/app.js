@@ -10,7 +10,8 @@ app.config(function($routeProvider, $compileProvider) {
       //      templateUrl: '/views/partials/main.html'
       //  })
         .when('/schema/:id', {
-            templateUrl: '/views/partials/schema.html'
+            templateUrl: '/views/partials/schema.html',
+            controller: "schemaController" 
         })
         .when('/', {
             templateUrl: '/views/partials/material-main.html'

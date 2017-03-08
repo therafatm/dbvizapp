@@ -378,6 +378,7 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
 
     this.updateDiagramToAbstractTemplates();
     this.diagram.model = new go.Model.fromJson(savedModel);
+    this.currentDiagramJSON = this.diagram.model.toJSON();
     this.currentModelId = modelId;
 
   }

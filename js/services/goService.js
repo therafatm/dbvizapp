@@ -10,7 +10,6 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
     ABSTRACT: "ABSTRACT",
     CONCRETE: "CONCRETE"
   }
-  
 
   // Maps SQL data types to shapes for columns.
   var dataTypeMapping = {
@@ -31,6 +30,14 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
       color: "yellow"
     }
   };
+
+
+  this.reset = function(){
+    var GO = go.GraphObject.make;
+    this.diagram = null;
+    this.currentDiagramJSON = null; 
+    this.currentModelId = null;
+  }
 
   this.toggleAllAttributeVisibility = () => {
 
@@ -380,7 +387,6 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
     }
 
     this.updateDiagramToAbstractTemplates();
-
     this.diagram.model = new go.Model.fromJson(savedModel);
     this.updateDiagramJSON();
     this.currentModelId = modelId;

@@ -21,6 +21,10 @@ app.controller('schemaController', ['$scope', '$rootScope', '$http', '$routePara
             }
         }.bind($scope);
 
+        $scope.reset = function(){
+            goService.reset();
+        }
+
         $scope.saveLastDrilledScreen = function(){
 
             goService.updateDiagramJSON();
@@ -128,12 +132,13 @@ app.controller('schemaController', ['$scope', '$rootScope', '$http', '$routePara
         }
 
         // This is called by init() and when we switch projects.
-        $scope.displayCurrentProject = function() {
+        $scope.displayCurrentProject = function(justDraw) {
             // Get schema information from database.
+
             getSchemaInfo().then( (schemaInfo) => {
                 if($scope.isAbstracted){
                     // Check DB for base abstraction
-                    var abstractionWrapper = $scope.getCurrentAbstraction()
+                    var abstractionWrapper = $scope.getCurrentAbstraction(justDraw)
                         .then( 
                             function(abstractionWrapper){
                                 //If I have a schema in the DB
@@ -165,14 +170,14 @@ app.controller('schemaController', ['$scope', '$rootScope', '$http', '$routePara
             })
         };
 
-        $scope.getCurrentAbstraction = function(){
+        $scope.getCurrentAbstraction = function(reset){
             //call clustering algorithm on current schema
             //make DB call to get all abstractions for a project
             let currentProjectId = $scope.currentProject.id;
             var toReturn = abstractionsApiService.getAllProjectAbstractions(currentProjectId)
                         .then(  function(projectAbstractions){
                                     $scope.currentProjectAbstractions = projectAbstractions;
-                                    if($scope.currentProjectAbstractions.length > 0){
+                                    if($scope.currentProjectAbstractions.length > 0 && !reset){
                                         //If DB has a schema for the current project
                                         var abstractionToShow = $scope.currentProjectAbstractions.filter(function(x){return x["modelid"] === "latest"});
                                         if(abstractionToShow.length <= 0 || !abstractionToShow[0].model ){

@@ -3,9 +3,12 @@
 	<!-- Control Panel Starts-->
 	<div style="color:white" class="mdl-card mdl-shadow--2dp mdl-cell mdl-cell--3-col mdl-cell--stretch panel">
 		
-		<div class="mdl-card__actions mdl-shadow--2dp">
-			<center ng-hide="isAbstracted"><button class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent export-button" ng-click="toggleProjectAbstraction()">Summarize DB</button></center>
-			<center ng-hide="!isAbstracted"><button class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent export-button" ng-click="toggleProjectAbstraction()">Expand DB</button></center>			
+		<div class="mdl-card__actions mdl-shadow--2dp" style="float:left">
+			<center>
+			<button ng-hide="isAbstracted" class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent export-button" ng-click="toggleProjectAbstraction()">Summarize DB</button>
+			<button  ng-hide="!isAbstracted" class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent export-button" ng-click="toggleProjectAbstraction()">Expand DB</button>
+			<button ng-hide="!isAbstracted" class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent export-button" ng-click="displayCurrentProject(true)">Recompute</button>
+			</center>
 		</div>		
 
 		<div class="mdl-card__actions layout-title mdl-shadow--2dp">
@@ -64,7 +67,7 @@
 	<!-- Layouts Card Ends-->
 
 	<!-- Main Content Starts-->
-	<div class="er-container">
+	<div class="er-container" ng-init="reset()">
 		<div class="er-content" id="databaseDiagram"></div>
 	</div>
 </div>

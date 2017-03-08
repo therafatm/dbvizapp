@@ -451,20 +451,10 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
     diagram.addDiagramListener('TextEdited', (event) => {
       var origName = event.parameter;
       var newName = event.subject.text;
-      // console.log(`Original string that got edited ${origName}`);
-      $rootScope.$broadcast('entity-renamed', {
-        entityId: origName,
-        newName: newName
-      })
-    })
 
-    layoutChangeHandler = (event) => {
+      diagram.model.setKeyForNodeData( diagram.findNodeForKey(event.parameter) , newName);
       this.currentDiagramJSON = diagram.model.toJSON();
-      $rootScope.$broadcast('layout-changed');
-    }
-
-    diagram.addDiagramListener('SelectionMoved', layoutChangeHandler)
-    diagram.addDiagramListener('LayoutCompleted', layoutChangeHandler)
+    })
   }
 
 }]);

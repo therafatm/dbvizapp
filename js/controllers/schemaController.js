@@ -1,7 +1,7 @@
 app.controller('schemaController', ['$scope', '$rootScope', '$http', '$routeParams', '$location', '$timeout', '$modal', 'goService',
-    'projectService', 'projectApiService', 'goTemplates', 'abstractionsApiService', 'algorithmService', '$q',
+    'projectService', 'projectApiService', 'goTemplates', 'abstractionsApiService', 'algorithmService', '$q', '$window',
     function($scope, $rootScope, $http, $routeParams, $location, $timeout, $modal, goService, projectService, projectApiService, tp,
-             abstractionsApiService, algorithmService, $q) {
+             abstractionsApiService, algorithmService, $q, $window) {
 
         this.scope = $scope;
         $scope.projectList = projectService.getProjects();
@@ -312,15 +312,10 @@ app.controller('schemaController', ['$scope', '$rootScope', '$http', '$routePara
             })
         })
 
-        $rootScope.$on('entity-renamed', (event, args) => {
-            console.log('TODO renaming entity in model');
-            console.log('TODO Save Model after rename change');
-        })
-        $rootScope.$on('layout-changed', (event, args) => {
-            if( $scope.isAbstracted ){
-                $scope.saveRootAbstraction();
-            }
-        })
+        // $rootScope.$on('entity-renamed', (event, args) => {
+        //     console.log('TODO renaming entity in model');
+        //     console.log('TODO Save Model after rename change');
+        // })
 
         $scope.showEntity = function(entityName) {
             goService.showEntity(entityName);

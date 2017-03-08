@@ -194,7 +194,7 @@ app.constant("goTemplates", function(){
             font: "bold 16px sans-serif",
             editable: true
           },
-          new go.Binding("text", "key")),
+          new go.Binding("text", "key").makeTwoWay()),
         // the collapse/expand button
         GO("PanelExpanderButton", "ATTRIBUTES",  // the name of the element whose visibility this button toggles
           { row: 0, alignment: new go.Spot(1,0),
@@ -279,7 +279,7 @@ app.constant("goTemplates", function(){
             font: "bold 16px sans-serif",
             editable: true
           },
-          new go.Binding("text", "key")),        // the collapse/expand button
+          new go.Binding("text", "key").makeTwoWay()),        // the collapse/expand button
         GO("PanelExpanderButton", "ATTRIBUTES",  // the name of the element whose visibility this button toggles
           { row: 0, alignment: new go.Spot(1,0),
               toolTip:  // define a tooltip for each node that displays the color as text

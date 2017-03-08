@@ -45,7 +45,7 @@ app.service('abstractionsApiService', ['$http', '$q', function($http, $q){
 
 	this.updateProjectAbstraction = function(projectid, modelid, modelData){
 		var deferred = $q.defer();
-        var config = {method: 'PUT', url: '/api/abstractions/' + projectid + '/' + modelid, model: modelData};
+        var config = {method: 'PUT', url: '/api/abstractions/' + projectid + '/' + modelid, data: modelData};
         $http(config)
             .success((data) => {
                 return deferred.resolve(data);

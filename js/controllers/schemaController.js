@@ -1,17 +1,65 @@
-app.controller('schemaController', ['$scope', '$http', '$routeParams', '$location', '$timeout', '$modal', 'goService',
-    'projectService', 'projectApiService', 'goTemplates', 'abstractionsApiService', 'algorithmService', '$q',
-    function($scope, $http, $routeParams, $location, $timeout, $modal, goService, projectService, projectApiService, tp,
-             abstractionsApiService, algorithmService, $q) {
+app.controller('schemaController', ['$scope', '$rootScope', '$http', '$routeParams', '$location', '$timeout', '$modal', 'goService',
+    'projectService', 'projectApiService', 'goTemplates', 'abstractionsApiService', 'algorithmService', '$q', '$window',
+    function($scope, $rootScope, $http, $routeParams, $location, $timeout, $modal, goService, projectService, projectApiService, tp,
+             abstractionsApiService, algorithmService, $q, $window) {
 
+        this.scope = $scope;
         $scope.projectList = projectService.getProjects();
         $scope.currentProject = projectService.getCurrentProject();
         $scope.isAbstracted = false;
-        $scope.currentProjectAbstractions;
+        $scope.currentProjectAbstractions = [];
         $scope.hiddenEntities = [];
 
         $scope.LAYOUTS = tp().LAYOUTS;
 
         $scope.currentLayout = tp().LAYOUTS.DIGRAPH;
+
+        $window.onbeforeunload = function(){
+            var scope = this;
+            if(scope.isAbstracted){
+                scope.saveLastDrilledScreen();
+            }
+        }.bind($scope);
+
+        $scope.reset = function(){
+            goService.reset();
+        }
+
+        $scope.saveLastDrilledScreen = function(){
+
+            goService.updateDiagramJSON();
+            //whenever I close, update latest
+            var currentModelId = goService.currentModelId;
+            //check if backend has a latest saved
+            var currentModel = $scope.currentProjectAbstractions.filter((model)=>{return model.modelid === 'latest'});
+            if(currentModel.length > 0 || currentModelId == 'abstract'){
+                //update old latest in DB
+                var body = {modelid: currentModelId, model: goService.currentDiagramJSON}; 
+                var promise = abstractionsApiService.updateProjectAbstraction($scope.currentProject.id, currentModelId, body)
+                    .then(
+                        function(projects){
+                            console.info("New latest abstraction has been updated succesfully!");
+                        }, function(error){
+                            console.error(error.error);
+                        }
+                    ); 
+
+                return promise;
+            } 
+            else{
+                //add new latest abstraction
+                var body = {modelid: 'latest', model:  goService.currentDiagramJSON} 
+                abstractionsApiService.addProjectAbstraction($scope.currentProject.id, body)
+                    .then(
+                        function(projects){
+                            console.info("New latest abstraction has been saved succesfully!");
+                            return;
+                        }, function(error){
+                            console.error(error.error);
+                        }
+                    ); 
+            }
+        }
 
         $scope.updateCurrentProject = function(project) {
             $scope.currentProject = project;
@@ -59,6 +107,7 @@ app.controller('schemaController', ['$scope', '$http', '$routeParams', '$locatio
         $scope.toggleProjectAbstraction = function() {
             if($scope.isAbstracted){
                 $scope.isAbstracted = false;
+                $scope.saveLastDrilledScreen();
             }
             else{
                 $scope.isAbstracted = true;
@@ -68,39 +117,46 @@ app.controller('schemaController', ['$scope', '$http', '$routeParams', '$locatio
             //use go service to draw on screen
         }
 
-        $scope.saveRootAbstraction = function(){
+        $scope.saveRootAbstraction = function(abstractionWrapper){
             var body = {modelid: "abstract", model:  goService.currentDiagramJSON} 
             abstractionsApiService.addProjectAbstraction($scope.currentProject.id, body)
                 .then(
                     function(projects){
-                        alert("Abstraction has been saved succesfully!");                   
+                        console.info("Abstraction has been saved succesfully!");
+                        $scope.currentProjectAbstractions.push(body);
+
                     }, function(error){
-                        alert(error.error);
+                        console.error(error.error);
                     }
                 ); 
         }
 
         // This is called by init() and when we switch projects.
-        $scope.displayCurrentProject = function() {
+        $scope.displayCurrentProject = function(justDraw) {
             // Get schema information from database.
+
             getSchemaInfo().then( (schemaInfo) => {
                 if($scope.isAbstracted){
                     // Check DB for base abstraction
-                    var abstractionWrapper = $scope.getCurrentAbstraction()
+                    var abstractionWrapper = $scope.getCurrentAbstraction(justDraw)
                         .then( 
                             function(abstractionWrapper){
                                 //If I have a schema in the DB
                                 if(!abstractionWrapper.toSave){
-                                    goService.drawAbstractSchemaFromModel(abstractionWrapper.abstraction);
-                                    return;
+                                    try {
+                                        goService.drawAbstractSchemaFromModel(abstractionWrapper.abstraction, abstractionWrapper.modelid);
+                                        return
+                                    } catch(e){
+                                        // just continue and try to build the schema the other way
+                                    }
                                 }
 
                                 var abstractions = abstractionWrapper.abstraction;
                                 schemaInfo.abstractEntities = abstractions.entities;
                                 schemaInfo.abstractRelationships = abstractions.relationships;
-                                goService.buildAndDrawSchema(schemaInfo, goService.diagramTypes.ABSTRACT, true);
+                                goService.buildAndDrawSchema(schemaInfo, goService.diagramTypes.ABSTRACT, 'abstract');
                                 if(abstractionWrapper.toSave){
-                                    $scope.saveRootAbstraction();
+                                    $scope.saveRootAbstraction(abstractionWrapper);
                                 }
                             },
                             function(error){
@@ -114,17 +170,20 @@ app.controller('schemaController', ['$scope', '$http', '$routeParams', '$locatio
             })
         };
 
-        $scope.getCurrentAbstraction = function(){
+        $scope.getCurrentAbstraction = function(reset){
             //call clustering algorithm on current schema
             //make DB call to get all abstractions for a project
             let currentProjectId = $scope.currentProject.id;
             var toReturn = abstractionsApiService.getAllProjectAbstractions(currentProjectId)
                         .then(  function(projectAbstractions){
                                     $scope.currentProjectAbstractions = projectAbstractions;
-                                    if($scope.currentProjectAbstractions.length > 0){
+                                    if($scope.currentProjectAbstractions.length > 0 && !reset){
                                         //If DB has a schema for the current project
-                                        var abstractionToShow = $scope.currentProjectAbstractions.filter(function(x){return x["modelid"] === "abstract"});
-                                        return {abstraction: abstractionToShow[0].model, toSave: false};
+                                        var abstractionToShow = $scope.currentProjectAbstractions.filter(function(x){return x["modelid"] === "latest"});
+                                        if(abstractionToShow.length <= 0 || !abstractionToShow[0].model ){
+                                            abstractionToShow = $scope.currentProjectAbstractions.filter(function(x){return x["modelid"] === "abstract"});                                            
+                                        }
+                                        return {abstraction: abstractionToShow[0].model, toSave: false, modelid: abstractionToShow[0].modelid};
                                     }
                                     else{
                                         //DB doesn't have schema and save it
@@ -166,8 +225,19 @@ app.controller('schemaController', ['$scope', '$http', '$routeParams', '$locatio
             }) 
         }
 
+        function extractTablesFromObject(tables, projectData){
+            var filteredData = projectData;
+            filteredData.tablesAndCols = projectData.tablesAndCols.filter( (table) => {
+                return tables.filter( (tblName) => table.table_name == tblName).length > 0;
+            })
+            return filteredData;
+        }
+
+
         // Called when we first navigate to /schema/:id
         $scope.init = function() {
+            $scope.isAbstracted = true;
+
             if ($scope.currentProject && $scope.currentProject.id == projectId) {
                 $scope.displayCurrentProject();
             } else {
@@ -257,11 +327,11 @@ app.controller('schemaController', ['$scope', '$http', '$routeParams', '$locatio
                 // extract the tables from the entity object
                 var tables = [];
                 _.each(targetEntities, function(entity) {
-                   tables.concat(entity.table_names);
+                   tables = tables.concat(entity.table_names);
                 });
 
                 // get the reduced table schema of the tables in that entity object
-                var filteredSchema = abstractionService.extractTablesFromObject(tables, info);
+                var filteredSchema = extractTablesFromObject(tables, info);
 
                 // display the reduced schema
                 goService.buildAndDrawSchema(filteredSchema, goService.diagramTypes.CONCRETE);
@@ -280,7 +350,8 @@ app.controller('schemaController', ['$scope', '$http', '$routeParams', '$locatio
         };
 
         $scope.goHome = function(id) {
-          $location.path("/");
+            $scope.saveLastDrilledScreen();
+            $location.path("/");
         };
 
         $scope.layoutGrid;

@@ -37,7 +37,7 @@ app.service('abstractionsApiService', ['$http', '$q', function($http, $q){
         $http(config)
         .success((data) => { return deferred.resolve(data); })
         .error(() => { 
-            return deferred.reject({error: "Failed to get all projects."});
+            return deferred.reject({error: "Failed to get project."});
          });
 
         return deferred.promise;    
@@ -47,12 +47,10 @@ app.service('abstractionsApiService', ['$http', '$q', function($http, $q){
 		var deferred = $q.defer();
         var config = {method: 'PUT', url: '/api/abstractions/' + projectid + '/' + modelid, data: modelData};
         $http(config)
-            .success((data) => {
-                return deferred.resolve(data);
-            })
-            .error((err) => {
-                return deferred.reject({error: "Error" + err});
-            });
+        .success((data) => { return deferred.resolve(data); })
+        .error((err) => {
+            return deferred.reject({error: "Error" + err});
+        });
 
 		return deferred.promise;
 	};

@@ -191,7 +191,8 @@ app.constant("goTemplates", function(){
             name: "TABLENAME",
             row: 0, alignment: go.Spot.Center,
             margin: new go.Margin(0, 75, 0, 75),  // leave room for Button
-            font: "bold 16px sans-serif"
+            font: "bold 16px sans-serif",
+            editable: true
           },
           new go.Binding("text", "key")),
         // the collapse/expand button
@@ -275,10 +276,10 @@ app.constant("goTemplates", function(){
             name: "TABLENAME",
             row: 0, alignment: go.Spot.Center,
             margin: new go.Margin(0, 75, 0, 75),  // leave room for Button
-            font: "bold 16px sans-serif"
+            font: "bold 16px sans-serif",
+            editable: true
           },
-          new go.Binding("text", "key")),
-        // the collapse/expand button
+          new go.Binding("text", "key")),        // the collapse/expand button
         GO("PanelExpanderButton", "ATTRIBUTES",  // the name of the element whose visibility this button toggles
           { row: 0, alignment: new go.Spot(1,0),
               toolTip:  // define a tooltip for each node that displays the color as text
@@ -351,83 +352,47 @@ app.constant("goTemplates", function(){
     abstractEntities : [
       {
         name: "AE1",
-        primaryKeys: [
-          {
-            table: "Table 1",
-            primaryKey: ["hello", "my", "name", "is"]
-          },
-          {
-            table: "Table 2",
-            primaryKey: ["hello","is","it","me"]
-          }
+        table_names: [
+            "Table 1",
+            "Table 2"
         ]
       },
       {
         name: "AE2",
-        primaryKeys: [
-          {
-            table: "Table 3",
-            primaryKey: ["Dont", "come"]
-          },
-          {
-            table: "Table 4",
-            primaryKey: ["Dont"]
-          },
-          {
-            table: "Table 5",
-            primaryKey: ["Dont", "you", "even"]
-          }
+        table_names: [
+            "Table 3",
+            "Table 4",
+            "Table 5"
         ]
       },
       {
         name: "AE3",
-        primaryKeys: [
-          {
-            table: "Table 6",
-            primaryKey: ["Baby"]
-          }
+        table_names: [
+          "Table 6"
         ]
       },
       {
         name: "AE4",
-        primaryKeys: [
-          {
-            table: "Table 7",
-            primaryKey: ["Maybe"]
-          }
+        table_names: [
+            "Table 7"
         ]
       }
     ],
     abstractRelationships : [
       {
         name : "AR1",
-        primaryKeys: [
-          {
-            table: "programs",
-            primaryKey: ["a", "b", "c", "d"]
-          },
-          {
-            table: "schools",
-            primaryKey: ["b", "c", "d"]
-          },
-          {
-            table: "teachers",
-            primaryKey: ["c", "d"]
-          }
+        table_names: [
+          "programs",
+          "schools",
+          "teachers"
         ],
         endpoints: ["AE1", "AE2", "AE3"]
       },
       {
         name : "AR2",
-        primaryKeys: [
-          {
-            table: "Table 12",
-            primaryKey: ["dogs", "cats", "birds"]
-          },
-          {
-            table: "Table 13"  ,
-            primaryKey: ["bags","chairs"]
-          }
+        table_names: [
+            "Table 12",
+            "Table 13" 
         ],
         endpoints: ["AE3", "AE4"]
       }

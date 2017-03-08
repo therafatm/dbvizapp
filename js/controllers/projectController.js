@@ -1,4 +1,4 @@
-app.controller('projectController', ['$scope', '$location', 'projectApiService', 'projectService', '$modal', function($scope, $location, projectApiService, projectService, $modal){
+app.controller('projectController', ['$scope', '$location', 'projectApiService', 'projectService', '$modal', '$window', function($scope, $location, projectApiService, projectService, $modal, $window){
 
 	$scope.currentProjects = [];
 	$scope.projectToAdd = {};
@@ -100,6 +100,7 @@ app.controller('projectController', ['$scope', '$location', 'projectApiService',
             projectService.setCurrentProject(project);
             // Switch to schema.
             $location.path("/schema/" + project.id);
+			$window.location.reload();
         } else {
             alert("Error: project doesn't exist.");
         }

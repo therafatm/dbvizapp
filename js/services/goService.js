@@ -4,12 +4,12 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
 
   this.diagram = null;
   this.currentDiagramJSON = null; 
+  this.currentModelId = null;
 
   this.diagramTypes = {
     ABSTRACT: "ABSTRACT",
     CONCRETE: "CONCRETE"
   }
-  
 
   // Maps SQL data types to shapes for columns.
   var dataTypeMapping = {
@@ -30,6 +30,14 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
       color: "yellow"
     }
   };
+
+
+  this.reset = function(){
+    var GO = go.GraphObject.make;
+    this.diagram = null;
+    this.currentDiagramJSON = null; 
+    this.currentModelId = null;
+  }
 
   this.toggleAllAttributeVisibility = () => {
 
@@ -360,9 +368,12 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
       }
   }
 
-  this.drawAbstractSchemaFromModel = (savedModel) => {
+  this.drawAbstractSchemaFromModel = (savedModel, modelId) => {
 
     if( this.diagram == null){
+      var layout = GO(go.LayeredDigraphLayout);
+      layout.isInitial = false;
+
       this.diagram =
           GO(go.Diagram, "databaseDiagram",
               {
@@ -370,14 +381,15 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
                   "undoManager.isEnabled": true, // enable Ctrl-Z to undo and Ctrl-Y to redo
                   allowDelete: false,
                   allowCopy: false,
-                  layout: GO(go.LayeredDigraphLayout)
+                  layout: layout
               });
+      this.registerDiagramEventListeners(this.diagram);
     }
 
-    this.diagram.nodeTemplateMap = tp().abstractEntityTemplate.tableTemplateMap;
-    this.diagram.linkTemplate = tp().abstractEntityTemplate.relationshipTemplate;
+    this.updateDiagramToAbstractTemplates();
     this.diagram.model = new go.Model.fromJson(savedModel);
-
+    this.updateDiagramJSON();
+    this.currentModelId = modelId;
   }
 
 	this.buildAndDrawSchema = (projectData, modelType, modelId) => {
@@ -392,16 +404,19 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
 	                allowCopy: false,
 	                layout: GO(go.LayeredDigraphLayout)
 	            });
+      this.registerDiagramEventListeners(this.diagram);
     }
 
-    if( modelType == this.diagramTypes.CONCRETE){
+    if(modelType == this.diagramTypes.CONCRETE){
 
       if(modelId == null || modelId == undefined){
 
         // TODO - load the layout from the id
         // loading the full database view
+        this.diagram.startTransaction('Switch diagram type');
         this.diagram.nodeTemplate = tp().concreteTableTemplate.tableTemplate;
         this.diagram.linkTemplate = tp().concreteTableTemplate.relationshipTemplate;
+        this.diagram.commitTransaction('Switch diagram type');
 
 
         var result = convertConcreteGraph(projectData.tablesAndCols, projectData.foreignKeys)
@@ -420,20 +435,21 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
       // load the full abstract view of the database
       // TODO load the layout from the id
       
-      this.diagram.nodeTemplateMap = tp().abstractEntityTemplate.tableTemplateMap;
-      this.diagram.linkTemplate = tp().abstractEntityTemplate.relationshipTemplate;
+      this.updateDiagramToAbstractTemplates()
 
       var result = convertAbstractGraph(projectData.abstractEntities, projectData.abstractRelationships);
 
       this.diagram.model = new go.GraphLinksModel(result.nodeDataArray, result.linkDataArray);
 
       this.diagram.model.linkFromPortIdProperty = "fromPort";  // necessary to remember portIds
-      this.diagram.model.linkToPortIdProperty = "toPort";		// Allows linking from specific columns
-      this.currentDiagramJSON = this.diagram.model.toJSON();
+      this.diagram.model.linkToPortIdProperty = "toPort";		// Allows linking from specific columns      this.updateDiagramJSON();
+      this.currentModelId = modelId;
 
     } else {
       console.error(`Invalid model type "${modelType}" given`);
     }
+
+    this.diagram.layoutDiagram(true);
 
 	};
 
@@ -441,4 +457,45 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
       var handler = $rootScope.$on(event, callback);
       scope.$on('$destroy', handler);
   }
+
+  this.registerDiagramEventListeners = function (diagram){
+
+    this.renameListener = (event) => {
+      var origName = event.parameter;
+      var newName = event.subject.text;
+
+      if(!!diagram.model.findNodeDataForKey(newName)){
+        alert("Name already in use in diagram. Please use a different name");
+        diagram.startTransaction("Revert Rename");
+        event.subject.text = origName;
+        diagram.commitTransaction("Revert Rename");
+      }
+
+      diagram.model.setKeyForNodeData( diagram.model.findNodeDataForKey(event.parameter) , newName);
+      this.updateDiagramJSON();
+    }
+
+    diagram.addDiagramListener('TextEdited', this.renameListener)
+  }
+
+  this.updateDiagramToAbstractTemplates = function(){
+      this.diagram.startTransaction('Switch diagram type');
+      nodeTemplateMap = tp().abstractEntityTemplate.tableTemplateMap;
+
+      nodeTemplateMap.each( (template) => {
+        template.value.findObject("ATTRIBUTES").doubleClick = (event, obj) => {
+          $rootScope.$broadcast('drill-in-clicked', obj.panel.panel.findObject("TABLENAME").text );
+        }
+      })
+
+      this.diagram.nodeTemplateMap = nodeTemplateMap;
+
+      this.diagram.linkTemplate = tp().abstractEntityTemplate.relationshipTemplate;
+      this.diagram.commitTransaction('Switch diagram type');
+  }
+
+  this.updateDiagramJSON = function(){
+    this.currentDiagramJSON = this.diagram.model.toJSON();
+  }
+
 }]);

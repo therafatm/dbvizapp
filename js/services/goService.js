@@ -443,6 +443,8 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
       console.error(`Invalid model type "${modelType}" given`);
     }
 
+    this.diagram.layoutDiagram(true);
+
 	};
 
   this.subscribe = function(event, scope, callback) {
@@ -487,7 +489,6 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
   }
 
   this.updateDiagramJSON = function(){
-    // this.diagram.layoutDiagram(true);
     this.currentDiagramJSON = this.diagram.model.toJSON();
   }
 

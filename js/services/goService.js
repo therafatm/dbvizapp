@@ -477,8 +477,8 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
       nodeTemplateMap = tp().abstractEntityTemplate.tableTemplateMap;
 
       nodeTemplateMap.each( (template) => {
-        template.value.findObject("ATTRIBUTES").doubleClick = (event, node) => {
-          $rootScope.$broadcast('drill-in-clicked', node.findObject("TABLENAME").text );
+        template.value.findObject("ATTRIBUTES").doubleClick = (event, obj) => {
+          $rootScope.$broadcast('drill-in-clicked', obj.panel.panel.findObject("TABLENAME").text );
         }
       })
 

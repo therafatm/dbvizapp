@@ -1,7 +1,7 @@
 app.controller('schemaController', ['$scope', '$rootScope', '$http', '$routeParams', '$location', '$timeout', '$modal', 'goService',
-    'projectService', 'projectApiService', 'goTemplates', 'abstractionsApiService', 'algorithmService', '$q', '$window', '$route',
+    'projectService', 'projectApiService', 'goTemplates', 'abstractionsApiService', 'algorithmService', '$q', '$window',
     function($scope, $rootScope, $http, $routeParams, $location, $timeout, $modal, goService, projectService, projectApiService, tp,
-             abstractionsApiService, algorithmService, $q, $window, $route) {
+             abstractionsApiService, algorithmService, $q, $window) {
 
         this.scope = $scope;
         $scope.projectList = projectService.getProjects();
@@ -32,9 +32,9 @@ app.controller('schemaController', ['$scope', '$rootScope', '$http', '$routePara
                 var promise = abstractionsApiService.updateProjectAbstraction($scope.currentProject.id, currentModelId, body)
                     .then(
                         function(projects){
-                            // alert("New latest abstraction has been updated succesfully!");
+                            console.info("New latest abstraction has been updated succesfully!");
                         }, function(error){
-                            alert(error.error);
+                            console.error(error.error);
                         }
                     ); 
 
@@ -46,10 +46,10 @@ app.controller('schemaController', ['$scope', '$rootScope', '$http', '$routePara
                 abstractionsApiService.addProjectAbstraction($scope.currentProject.id, body)
                     .then(
                         function(projects){
-                            // alert("New latest abstraction has been saved succesfully!");
+                            console.info("New latest abstraction has been saved succesfully!");
                             return;
                         }, function(error){
-                            alert(error.error);
+                            console.error(error.error);
                         }
                     ); 
             }
@@ -116,11 +116,11 @@ app.controller('schemaController', ['$scope', '$rootScope', '$http', '$routePara
             abstractionsApiService.addProjectAbstraction($scope.currentProject.id, body)
                 .then(
                     function(projects){
-                        alert("Abstraction has been saved succesfully!");
+                        console.info("Abstraction has been saved succesfully!");
                         $scope.currentProjectAbstractions.push(body);
 
                     }, function(error){
-                        alert(error.error);
+                        console.error(error.error);
                     }
                 ); 
         }
@@ -216,6 +216,8 @@ app.controller('schemaController', ['$scope', '$rootScope', '$http', '$routePara
 
         // Called when we first navigate to /schema/:id
         $scope.init = function() {
+            $scope.isAbstracted = true;
+
             if ($scope.currentProject && $scope.currentProject.id == projectId) {
                 $scope.displayCurrentProject();
             } else {

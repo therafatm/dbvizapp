@@ -456,6 +456,9 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
 
       if(!!diagram.model.findNodeDataForKey(newName)){
         alert("Name already in use in diagram. Please use a different name");
+        diagram.startTransaction("Revert Rename");
+        event.subject.text = origName;
+        diagram.commitTransaction("Revert Rename");
       }
 
       diagram.model.setKeyForNodeData( diagram.model.findNodeDataForKey(event.parameter) , newName);

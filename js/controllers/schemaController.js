@@ -22,6 +22,8 @@ app.controller('schemaController', ['$scope', '$rootScope', '$http', '$routePara
         }.bind($scope);
 
         $scope.saveLastDrilledScreen = function(){
+
+            goService.updateDiagramJSON();
             //whenever I close, update latest
             var currentModelId = goService.currentModelId;
             //check if backend has a latest saved
@@ -136,8 +138,12 @@ app.controller('schemaController', ['$scope', '$rootScope', '$http', '$routePara
                             function(abstractionWrapper){
                                 //If I have a schema in the DB
                                 if(!abstractionWrapper.toSave){
-                                    goService.drawAbstractSchemaFromModel(abstractionWrapper.abstraction, abstractionWrapper.modelid);
-                                    return;
+                                    try {
+                                        goService.drawAbstractSchemaFromModel(abstractionWrapper.abstraction, abstractionWrapper.modelid);
+                                        return
+                                    } catch(e){
+                                        // just continue and try to build the schema the other way
+                                    }
                                 }
 
                                 var abstractions = abstractionWrapper.abstraction;
@@ -169,7 +175,7 @@ app.controller('schemaController', ['$scope', '$rootScope', '$http', '$routePara
                                     if($scope.currentProjectAbstractions.length > 0){
                                         //If DB has a schema for the current project
                                         var abstractionToShow = $scope.currentProjectAbstractions.filter(function(x){return x["modelid"] === "latest"});
-                                        if(abstractionToShow.length <= 0){
+                                        if(abstractionToShow.length <= 0 || !abstractionToShow[0].model ){
                                             abstractionToShow = $scope.currentProjectAbstractions.filter(function(x){return x["modelid"] === "abstract"});                                            
                                         }
                                         return {abstraction: abstractionToShow[0].model, toSave: false, modelid: abstractionToShow[0].modelid};
@@ -225,7 +231,7 @@ app.controller('schemaController', ['$scope', '$rootScope', '$http', '$routePara
 
         // Called when we first navigate to /schema/:id
         $scope.init = function() {
-            // $scope.isAbstracted = true;
+            $scope.isAbstracted = true;
 
             if ($scope.currentProject && $scope.currentProject.id == projectId) {
                 $scope.displayCurrentProject();

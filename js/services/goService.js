@@ -380,10 +380,10 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
     }
 
     this.updateDiagramToAbstractTemplates();
-    this.diagram.model = new go.Model.fromJson(savedModel);
-    this.currentDiagramJSON = this.diagram.model.toJSON();
-    this.currentModelId = modelId;
 
+    this.diagram.model = new go.Model.fromJson(savedModel);
+    this.updateDiagramJSON();
+    this.currentModelId = modelId;
   }
 
 	this.buildAndDrawSchema = (projectData, modelType, modelId) => {
@@ -436,8 +436,7 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
       this.diagram.model = new go.GraphLinksModel(result.nodeDataArray, result.linkDataArray);
 
       this.diagram.model.linkFromPortIdProperty = "fromPort";  // necessary to remember portIds
-      this.diagram.model.linkToPortIdProperty = "toPort";		// Allows linking from specific columns
-      this.currentDiagramJSON = this.diagram.model.toJSON();
+      this.diagram.model.linkToPortIdProperty = "toPort";		// Allows linking from specific columns      this.updateDiagramJSON();
       this.currentModelId = modelId;
 
     } else {
@@ -465,7 +464,7 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
       }
 
       diagram.model.setKeyForNodeData( diagram.model.findNodeDataForKey(event.parameter) , newName);
-      this.currentDiagramJSON = diagram.model.toJSON();
+      this.updateDiagramJSON();
     }
 
     diagram.addDiagramListener('TextEdited', this.renameListener)
@@ -485,6 +484,11 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
 
       this.diagram.linkTemplate = tp().abstractEntityTemplate.relationshipTemplate;
       this.diagram.commitTransaction('Switch diagram type');
+  }
+
+  this.updateDiagramJSON = function(){
+    this.diagram.layoutDiagram(true);
+    this.currentDiagramJSON = this.diagram.model.toJSON();
   }
 
 }]);

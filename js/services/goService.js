@@ -448,13 +448,16 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
   }
 
   this.registerDiagramEventListeners = function (diagram){
-    diagram.addDiagramListener('TextEdited', (event) => {
+
+    this.renameListener = (event) => {
       var origName = event.parameter;
       var newName = event.subject.text;
 
-      diagram.model.setKeyForNodeData( diagram.findNodeForKey(event.parameter) , newName);
+      diagram.model.setKeyForNodeData( diagram.model.findNodeDataForKey(event.parameter) , newName);
       this.currentDiagramJSON = diagram.model.toJSON();
-    })
+    }
+
+    diagram.addDiagramListener('TextEdited', this.renameListener)
   }
 
 }]);

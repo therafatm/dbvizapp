@@ -376,8 +376,7 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
       this.registerDiagramEventListeners(this.diagram);
     }
 
-    this.diagram.nodeTemplateMap = tp().abstractEntityTemplate.tableTemplateMap;
-    this.diagram.linkTemplate = tp().abstractEntityTemplate.relationshipTemplate;
+    this.updateDiagramToAbstractTemplates();
     this.diagram.model = new go.Model.fromJson(savedModel);
     this.currentModelId = modelId;
 
@@ -404,8 +403,10 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
 
         // TODO - load the layout from the id
         // loading the full database view
+        this.diagram.startTransaction('Switch diagram type');
         this.diagram.nodeTemplate = tp().concreteTableTemplate.tableTemplate;
         this.diagram.linkTemplate = tp().concreteTableTemplate.relationshipTemplate;
+        this.diagram.commitTransaction('Switch diagram type');
 
 
         var result = convertConcreteGraph(projectData.tablesAndCols, projectData.foreignKeys)
@@ -424,8 +425,7 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
       // load the full abstract view of the database
       // TODO load the layout from the id
       
-      this.diagram.nodeTemplateMap = tp().abstractEntityTemplate.tableTemplateMap;
-      this.diagram.linkTemplate = tp().abstractEntityTemplate.relationshipTemplate;
+      this.updateDiagramToAbstractTemplates()
 
       var result = convertAbstractGraph(projectData.abstractEntities, projectData.abstractRelationships);
 
@@ -465,6 +465,22 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
     }
 
     diagram.addDiagramListener('TextEdited', this.renameListener)
+  }
+
+  this.updateDiagramToAbstractTemplates = function(){
+      this.diagram.startTransaction('Switch diagram type');
+      nodeTemplateMap = tp().abstractEntityTemplate.tableTemplateMap;
+
+      nodeTemplateMap.each( (template) => {
+        template.value.doubleClick = (event, node) => {
+          $rootScope.$broadcast('drill-in-clicked', node.findObject("TABLENAME").text );
+        }
+      })
+
+      this.diagram.nodeTemplateMap = nodeTemplateMap;
+
+      this.diagram.linkTemplate = tp().abstractEntityTemplate.relationshipTemplate;
+      this.diagram.commitTransaction('Switch diagram type');
   }
 
 }]);

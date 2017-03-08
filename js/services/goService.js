@@ -379,6 +379,7 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
     this.diagram.nodeTemplateMap = tp().abstractEntityTemplate.tableTemplateMap;
     this.diagram.linkTemplate = tp().abstractEntityTemplate.relationshipTemplate;
     this.diagram.model = new go.Model.fromJson(savedModel);
+    this.currentDiagramJSON = this.diagram.model.toJSON();
     this.currentModelId = modelId;
 
   }

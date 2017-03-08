@@ -364,6 +364,9 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
   this.drawAbstractSchemaFromModel = (savedModel, modelId) => {
 
     if( this.diagram == null){
+      var layout = GO(go.LayeredDigraphLayout);
+      layout.isInitial = false;
+
       this.diagram =
           GO(go.Diagram, "databaseDiagram",
               {
@@ -371,7 +374,7 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
                   "undoManager.isEnabled": true, // enable Ctrl-Z to undo and Ctrl-Y to redo
                   allowDelete: false,
                   allowCopy: false,
-                  layout: GO(go.LayeredDigraphLayout)
+                  layout: layout
               });
       this.registerDiagramEventListeners(this.diagram);
     }

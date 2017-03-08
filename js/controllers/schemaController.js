@@ -210,6 +210,15 @@ app.controller('schemaController', ['$scope', '$rootScope', '$http', '$routePara
             }) 
         }
 
+        function extractTablesFromObject(tables, projectData){
+            var filteredData = projectData;
+            filteredData.tablesAndCols = projectData.tablesAndCols.filter( (table) => {
+                return tables.filter( (tblName) => table.table_name == tblName).length > 0;
+            })
+            return filteredData;
+        }
+
+
         // Called when we first navigate to /schema/:id
         $scope.init = function() {
             $scope.isAbstracted = true;
@@ -303,11 +312,11 @@ app.controller('schemaController', ['$scope', '$rootScope', '$http', '$routePara
                 // extract the tables from the entity object
                 var tables = [];
                 _.each(targetEntities, function(entity) {
-                   tables.concat(entity.table_names);
+                   tables = tables.concat(entity.table_names);
                 });
 
                 // get the reduced table schema of the tables in that entity object
-                var filteredSchema = abstractionService.extractTablesFromObject(tables, info);
+                var filteredSchema = extractTablesFromObject(tables, info);
 
                 // display the reduced schema
                 goService.buildAndDrawSchema(filteredSchema, goService.diagramTypes.CONCRETE);

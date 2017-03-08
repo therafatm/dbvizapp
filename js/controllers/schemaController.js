@@ -120,8 +120,6 @@ app.controller('schemaController', ['$scope', '$http', '$routeParams', '$locatio
             let currentProjectId = $scope.currentProject.id;
             var toReturn = abstractionsApiService.getAllProjectAbstractions(currentProjectId)
                         .then(  function(projectAbstractions){
-                            // testing: return newly clustered abstraction.
-                                return {abstraction: $scope.clusterCurrentProject(), toSave: true};
                                     $scope.currentProjectAbstractions = projectAbstractions;
                                     if($scope.currentProjectAbstractions.length > 0){
                                         //If DB has a schema for the current project

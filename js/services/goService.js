@@ -373,8 +373,8 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
                   allowCopy: false,
                   layout: GO(go.LayeredDigraphLayout)
               });
+      this.registerDiagramEventListeners(this.diagram);
     }
-    this.registerDiagramEventListeners(this.diagram);
 
     this.diagram.nodeTemplateMap = tp().abstractEntityTemplate.tableTemplateMap;
     this.diagram.linkTemplate = tp().abstractEntityTemplate.relationshipTemplate;
@@ -395,8 +395,8 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
 	                allowCopy: false,
 	                layout: GO(go.LayeredDigraphLayout)
 	            });
+      this.registerDiagramEventListeners(this.diagram);
     }
-    this.registerDiagramEventListeners(this.diagram);
 
     if(modelType == this.diagramTypes.CONCRETE){
 
@@ -452,6 +452,10 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
     this.renameListener = (event) => {
       var origName = event.parameter;
       var newName = event.subject.text;
+
+      if(!!diagram.model.findNodeDataForKey(newName)){
+        alert("Name already in use in diagram. Please use a different name");
+      }
 
       diagram.model.setKeyForNodeData( diagram.model.findNodeDataForKey(event.parameter) , newName);
       this.currentDiagramJSON = diagram.model.toJSON();

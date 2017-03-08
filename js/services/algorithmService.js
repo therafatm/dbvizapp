@@ -142,6 +142,7 @@ app.service('algorithmService', function() {
                         primaryKey: [],
                         table_names: []
                     };
+                    numAEs++;
                     this.addTable(newEntity, relations[i]);
                     abstractEntities.push(newEntity);
                     remainingRels.splice(remainingRels.indexOf(relations[i]), 1);
@@ -186,6 +187,7 @@ app.service('algorithmService', function() {
             }
 
             if (firstRel) {
+                firstRel = false;
                 // indicate relationships
                 var abstractRel = {
                     name: "AR0",
@@ -205,10 +207,11 @@ app.service('algorithmService', function() {
                 var j = 0;
                 while (j < abstractRelationships.length && !found) {
                     // If this relation links the same entities as a previously defined one
-                    if (this.areSetsEqual(abstractRelationships[j].abstract_entities, intersections)) {
+                    if (this.areSetsEqual(abstractRelationships[j].endpoints, _.pluck(intersections, 'name'))) {
                         this.addTable(abstractRelationships[j], relations[i]);
                         remainingRels.splice(remainingRels.indexOf(relations[i]), 1);
                     }
+                    j++;
                 }
 
                 if (!found) {

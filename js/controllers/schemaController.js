@@ -31,9 +31,9 @@ app.controller('schemaController', ['$scope', '$rootScope', '$http', '$routePara
                 abstractionsApiService.updateProjectAbstraction($scope.currentProject.id, 'latest', body)
                     .then(
                         function(projects){
-                            alert("New latest abstraction has been updated succesfully!");
+                            console.info("New latest abstraction has been updated succesfully!");
                         }, function(error){
-                            alert(error.error);
+                            console.error(error.error);
                         }
                     ); 
             } 
@@ -43,10 +43,10 @@ app.controller('schemaController', ['$scope', '$rootScope', '$http', '$routePara
                 abstractionsApiService.addProjectAbstraction($scope.currentProject.id, body)
                     .then(
                         function(projects){
-                            alert("New latest abstraction has been saved succesfully!");
+                            console.info("New latest abstraction has been saved succesfully!");
                             return;
                         }, function(error){
-                            alert(error.error);
+                            console.error(error.error);
                         }
                     ); 
             }
@@ -112,11 +112,11 @@ app.controller('schemaController', ['$scope', '$rootScope', '$http', '$routePara
             abstractionsApiService.addProjectAbstraction($scope.currentProject.id, body)
                 .then(
                     function(projects){
-                        alert("Abstraction has been saved succesfully!");
+                        console.info("Abstraction has been saved succesfully!");
                         $scope.currentProjectAbstractions.push(body);
 
                     }, function(error){
-                        alert(error.error);
+                        console.error(error.error);
                     }
                 ); 
         }

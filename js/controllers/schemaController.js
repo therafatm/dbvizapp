@@ -212,6 +212,8 @@ app.controller('schemaController', ['$scope', '$rootScope', '$http', '$routePara
 
         // Called when we first navigate to /schema/:id
         $scope.init = function() {
+            $scope.isAbstracted = true;
+
             if ($scope.currentProject && $scope.currentProject.id == projectId) {
                 $scope.displayCurrentProject();
             } else {

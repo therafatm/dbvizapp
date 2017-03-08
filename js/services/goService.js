@@ -475,7 +475,7 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
       nodeTemplateMap = tp().abstractEntityTemplate.tableTemplateMap;
 
       nodeTemplateMap.each( (template) => {
-        template.value.doubleClick = (event, node) => {
+        template.value.findObject("ATTRIBUTES").doubleClick = (event, node) => {
           $rootScope.$broadcast('drill-in-clicked', node.findObject("TABLENAME").text );
         }
       })
@@ -487,7 +487,7 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
   }
 
   this.updateDiagramJSON = function(){
-    this.diagram.layoutDiagram(true);
+    // this.diagram.layoutDiagram(true);
     this.currentDiagramJSON = this.diagram.model.toJSON();
   }
 

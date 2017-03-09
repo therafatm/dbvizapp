@@ -341,6 +341,7 @@ app.constant("goTemplates", function(){
   // for each of the node categories, specify which template to use
   templmap.add("entity", abstractEntityTableTemplate);
   templmap.add("relationship", abstractRelationshipTableTemplate);
+  templmap.add("", concreteTableTemplate.tableTemplate);
 
   abstractEntityTemplate.tableTemplateMap = templmap;
 

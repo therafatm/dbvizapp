@@ -226,8 +226,9 @@ app.controller('schemaController', ['$scope', '$rootScope', '$http', '$routePara
         }
 
         function extractTablesFromObject(tables, projectData){
-            var filteredData = projectData;
-            filteredData.tablesAndCols = projectData.tablesAndCols.filter( (table) => {
+            var filteredData = {};
+            angular.copy(projectData, filteredData);
+            filteredData.tablesAndCols = filteredData.tablesAndCols.filter( (table) => {
                 return tables.filter( (tblName) => table.table_name == tblName).length > 0;
             })
             return filteredData;
@@ -236,7 +237,6 @@ app.controller('schemaController', ['$scope', '$rootScope', '$http', '$routePara
 
         // Called when we first navigate to /schema/:id
         $scope.init = function() {
-            $scope.isAbstracted = true;
 
             if ($scope.currentProject && $scope.currentProject.id == projectId) {
                 $scope.displayCurrentProject();

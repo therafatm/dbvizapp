@@ -106,8 +106,8 @@ app.controller('schemaController', ['$scope', '$rootScope', '$http', '$routePara
 
         $scope.toggleProjectAbstraction = function() {
             if($scope.isAbstracted){
+                $scope.saveLastDrilledScreen();                
                 $scope.isAbstracted = false;
-                $scope.saveLastDrilledScreen();
             }
             else{
                 $scope.isAbstracted = true;
@@ -134,7 +134,6 @@ app.controller('schemaController', ['$scope', '$rootScope', '$http', '$routePara
         // This is called by init() and when we switch projects.
         $scope.displayCurrentProject = function(justDraw) {
             // Get schema information from database.
-
             getSchemaInfo().then( (schemaInfo) => {
                 if($scope.isAbstracted){
                     // Check DB for base abstraction
@@ -237,6 +236,8 @@ app.controller('schemaController', ['$scope', '$rootScope', '$http', '$routePara
 
         // Called when we first navigate to /schema/:id
         $scope.init = function() {
+
+            $scope.isAbstracted = true;
 
             if ($scope.currentProject && $scope.currentProject.id == projectId) {
                 $scope.displayCurrentProject();

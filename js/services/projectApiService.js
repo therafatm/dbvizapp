@@ -33,6 +33,7 @@ app.service('projectApiService', ['$http', '$q', function($http, $q){
             typeof(project.host) == 'string' && project.host.length > 0 &&
             typeof(project.username) == 'string' && project.username.length > 0 &&
             typeof(project.password) == 'string' && project.password.length > 0 &&
+            typeof(project.sourceCodeDir) == 'string' && project.sourceCodeDir.length > 0 &&
             (isNaN(parseInt(project.port)) == false)){
             $http.put('/api/project/', project)
                 .success((data) => {
@@ -58,6 +59,7 @@ app.service('projectApiService', ['$http', '$q', function($http, $q){
             typeof(project.host) == 'string' && project.host.length > 0 &&
             typeof(project.username) == 'string' && project.username.length > 0 &&
             typeof(project.password) == 'string' && project.password.length > 0 &&
+            typeof(project.sourceCodeDir) == 'string' && project.sourceCodeDir.length > 0 &&
             (isNaN(parseInt(project.port)) == false)){
             $http.post('/api/project/', project)
                 .success((data) => {

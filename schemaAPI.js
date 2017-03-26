@@ -23,28 +23,35 @@ router.route('/').get(function (req, res, next) {
     console.log("in schemaAPI");
     console.log(req.query);
 
-    if(req.query.sourceCodeDir !== undefined || req.query.sourceCodeDir.trim() != ""){
         // Attempt to parse the java source code from this directory.
 
-        return Promise.resolve().then( (parsedKeys) => {
-            // [
-                /*{
-                    "table_name": <fk1_table_name>,
-                    "column_name": <fk1_column_name>,
-                    "referenced_table_name": <fk1_ref_col_name>,
-                    "referenced_table_name": <fk1_ref_col_name>
-                },
-                {
-                    "table_name": <fk2_table_name>,
-            ...
-            ]*/
+        return Promise.resolve().then( () => {
 
-            result.foreignKeys = [];
-            result.foreignKeys.push( parsedKeys );
+            results.foreignKeys = [
+            ];
 
+            // TODO - unccomment this
+            // if(req.query.sourceCodeDir !== undefined && req.query.sourceCodeDir.trim() !== ""){
+
+
+                // TODO - add identifier for saying they came from the java parsing
+                // placeholder for the function that actually parses keys
+                // FAKE DATA
+                return Promise.resolve([{
+                    "table_name": "sports",
+                    "column_name": "student_id",
+                    "referenced_table_name": "students",
+                    "Referenced_column_name": "student_id"
+                }]);
+            // } else {
+                // return Promise.resolve([]);
+            // }
+        }).then( (parsedKeys) => {
+            results.foreignKeys = results.foreignKeys.concat( parsedKeys );
             return ;
         }, (err) => {
             console.error("Could not parse foreign keys from the given directory " + req.query.sourceCodeDir);
+            console.error(err);
             return ;
         }).then( () => {
 
@@ -76,7 +83,7 @@ router.route('/').get(function (req, res, next) {
                                     console.log('error: ' + err);
                                     connection.end();
                                 } else {
-                                    results.foreignKeys = rows;
+                                    results.foreignKeys = results.foreignKeys.concat(rows);
                                     connection.end();
                                     return res.json(results);
                                 }
@@ -86,7 +93,6 @@ router.route('/').get(function (req, res, next) {
                 }
             });
         })
-    }
 
 });
 

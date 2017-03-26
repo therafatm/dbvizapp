@@ -41,7 +41,8 @@ router.route('/').get(function (req, res, next) {
                     "table_name": "sports",
                     "column_name": "student_id",
                     "referenced_table_name": "students",
-                    "Referenced_column_name": "student_id"
+                    "Referenced_column_name": "student_id",
+                    "parsedForeignKey": true
                 }]);
             // } else {
                 // return Promise.resolve([]);

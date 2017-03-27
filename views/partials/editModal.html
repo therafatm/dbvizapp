@@ -28,6 +28,9 @@
           <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
               <input class="mdl-textfield__input" type="text" id="projectPassword" placeholder="Password" ng-model="projectToEdit.password">
           </div>
+          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+              <input placeholder="Sourcepath" class="mdl-textfield__input" type="text" id="projectDir" ng-model="projectToEdit.sourcepath">
+          </div>
       </form>
 
       <button class="mdl-button mdl-js-button mdl-button--raised edit-button-submit" ng-click="submitEditRequest(projectToEdit)">

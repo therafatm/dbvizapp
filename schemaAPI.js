@@ -18,82 +18,75 @@ router.use(function timeLog (req, res, next) {
 router.route('/').get(function (req, res, next) {
 
     var results = {};
-    
-
     console.log("in schemaAPI");
     console.log(req.query);
 
-        // Attempt to parse the java source code from this directory.
+    // Attempt to parse the java source code from this directory.
+    var callJava = new Promise( (resolve,reject) => {
+        var spawn = require('child_process').spawn;
+        var compile = spawn('javac', ['Count.java']);
 
-        return Promise.resolve().then( () => {
-
-            results.foreignKeys = [
-            ];
-
-            // TODO - unccomment this
-            // if(req.query.sourceCodeDir !== undefined && req.query.sourceCodeDir.trim() !== ""){
-
-
-                // TODO - add identifier for saying they came from the java parsing
-                // placeholder for the function that actually parses keys
-                // FAKE DATA
-                return Promise.resolve([{
-                    "table_name": "sports",
-                    "column_name": "student_id",
-                    "referenced_table_name": "students",
-                    "Referenced_column_name": "student_id",
-                    "parsedForeignKey": true
-                }]);
-            // } else {
-                // return Promise.resolve([]);
-            // }
-        }).then( (parsedKeys) => {
-            results.foreignKeys = results.foreignKeys.concat( parsedKeys );
-            return ;
-        }, (err) => {
-            console.error("Could not parse foreign keys from the given directory " + req.query.sourceCodeDir);
-            console.error(err);
-            return ;
-        }).then( () => {
-
-            var connection = mysql.createConnection({
-                host: req.query.host,
-                user: req.query.username,
-                password: req.query.password,
-                database: 'information_schema',
-                port: req.query.port
+        compile.on('close', ()=>{
+            var run = spawn('java', ['Count']);
+            run.stdout.on("data", (data)=>{
+                console.log(data);
+                resolve(data.toString());
             });
-            
-
-            connection.connect(function(err) {
-                if(err) {
-                    // handle connection errors.
-                    console.error("Error connecting to mysql.");
-                    console.error(err);
-                    res.status(500).json({success: false, data: err, message: "Error connecting to MySQL server. Check your connection parameters."});
-                } else {
-                    console.log("Successfully connected.");
-                    connection.query(columnsQuery, [req.query.database], function(err, rows, fields) {
-                        if (err) {
-                            console.log('error: ' + err);
-                            connection.end();
-                        } else {
-                            results.tablesAndCols = rows;
-                            connection.query(keysQuery, [req.query.database], function(err, rows, fields) {
-                                if (err) {
-                                    console.log('error: ' + err);
-                                    connection.end();
-                                } else {
-                                    results.foreignKeys = results.foreignKeys.concat(rows);
-                                    connection.end();
-                                    return res.json(results);
-                                }
-                            });
-                        }
-                    });
-                }
+            run.on('close', () =>{
+                console.log("Program process " + run.pid + " exited.");
             });
+        });
+
+        compile.on('close', () => {
+            console.log("Compiler process " + compile.pid + " exited.");
         })
+    })
+
+    callJava.then( (parsedKeys) => {
+        results.foreignKeys = JSON.parse(parsedKeys);
+        return;
+    }, (err) => {
+        console.error("Could not parse foreign keys from the given directory " + req.query.sourceCodeDir);
+        console.error(err);
+        return;
+    }).then( () => {
+        var connection = mysql.createConnection({
+            host: req.query.host,
+            user: req.query.username,
+            password: req.query.password,
+            database: 'information_schema',
+            port: req.query.port
+        });
+
+        connection.connect(function(err) {
+            if(err) {
+                // handle connection errors.
+                console.error("Error connecting to mysql.");
+                console.error(err);
+                res.status(500).json({success: false, data: err, message: "Error connecting to MySQL server. Check your connection parameters."});
+            } else {
+                console.log("Successfully connected.");
+                connection.query(columnsQuery, [req.query.database], function(err, rows, fields) {
+                    if (err) {
+                        console.log('error: ' + err);
+                        connection.end();
+                    } else {
+                        results.tablesAndCols = rows;
+                        connection.query(keysQuery, [req.query.database], function(err, rows, fields) {
+                            if (err) {
+                                console.log('error: ' + err);
+                                connection.end();
+                            } else {
+                                results.foreignKeys = results.foreignKeys.concat(rows);
+                                connection.end();
+                                return res.json(results);
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    })
 
 });
 

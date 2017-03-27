@@ -4,15 +4,15 @@ app.service('projectApiService', ['$http', '$q', function($http, $q){
 		var deferred = $q.defer();
 		$http.get('/api/project/')
 		.success((data) => { return deferred.resolve(data); })
-		.error(() => { 
+		.error(() => {
 			return deferred.reject({error: "Failed to get all projects."});
 		 });
 
-		return deferred.promise;	
+		return deferred.promise;
 	};
 
 	this.deleteProject = function(id){
-		var deferred = $q.defer();		
+		var deferred = $q.defer();
 		$http.delete('/api/project/' + id)
 		.success( (data) => {
 				return deferred.resolve(data);

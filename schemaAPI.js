@@ -17,7 +17,7 @@ router.use(function timeLog (req, res, next) {
 
 router.route('/').get(function (req, res, next) {
 
-    var results = {};
+    var results = {foreignKeys: []};
     console.log("in schemaAPI");
     console.log(req.query);
 
@@ -43,7 +43,7 @@ router.route('/').get(function (req, res, next) {
     })
 
     callJava.then( (parsedKeys) => {
-        results.foreignKeys = JSON.parse(parsedKeys);
+        results.foreignKeys = results.foreignKeys.concat(JSON.parse(parsedKeys));
         return;
     }, (err) => {
         console.error("Could not parse foreign keys from the given directory " + req.query.sourceCodeDir);

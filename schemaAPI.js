@@ -24,26 +24,30 @@ router.route('/').get(function (req, res, next) {
     // Attempt to parse the java source code from this directory.
     var callJava = new Promise( (resolve,reject) => {
         var spawn = require('child_process').spawn;
-        var compile = spawn('javac', ['Count.java']);
+        // var compile = spawn('javac', ['Count.java']);
 
-        compile.on('close', ()=>{
-            var run = spawn('java', ['Count']);
+        // compile.on('close', ()=>{
+            var run = spawn('java', ['-jar', 'ForeignKeyParser-1-jar-with-dependencies.jar', 'oscar']);
             run.stdout.on("data", (data)=>{
-                console.log(data);
-                resolve(data.toString());
+                console.log(data.toString());
+                resolve(JSON.parse(data.toString()));
             });
             run.on('close', () =>{
                 console.log("Program process " + run.pid + " exited.");
             });
-        });
+        // });
 
-        compile.on('close', () => {
-            console.log("Compiler process " + compile.pid + " exited.");
-        })
+        // compile.on('close', () => {
+        //     console.log("Compiler process " + compile.pid + " exited.");
+        // })
     })
 
     callJava.then( (parsedKeys) => {
-        results.foreignKeys = results.foreignKeys.concat(JSON.parse(parsedKeys));
+        parsedKeys.forEach( (val) => {
+            val.parsedForeignKey = true;
+        })
+
+        results.foreignKeys = results.foreignKeys.concat(parsedKeys);
         return;
     }, (err) => {
         console.error("Could not parse foreign keys from the given directory " + req.query.sourceCodeDir);

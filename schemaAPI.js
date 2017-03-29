@@ -30,7 +30,8 @@ router.route('/').get(function (req, res, next) {
             var run = spawn('java', ['-jar', 'ForeignKeyParser-1-jar-with-dependencies.jar', 'oscar']);
             run.stdout.on("data", (output)=>{
                 receivedOutput = true;
-                if( output !== ""){
+                console.info("Output from java parser\n" + output);
+                if( output.toString().trim() !== ""){
                     resolve(JSON.parse(output.toString()));
                 } else {
                     reject("Parsing foreign keys produced no results");
@@ -48,6 +49,7 @@ router.route('/').get(function (req, res, next) {
     })
 
     callJava.then( (parsedKeys) => {
+        parsedKeys.forEach( (key) => key.parsedForeignKey = true);
         results.foreignKeys = results.foreignKeys.concat(parsedKeys);
         return;
     }, (err) => {

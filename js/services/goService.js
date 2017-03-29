@@ -261,7 +261,7 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
 	    var nodeDataArray = [];
 
       for(var i = 0; i < foreignKeys.length; i++){
-        if( foreignKeys[i].parsedForeignKey && foreignKeys[i].referenced_table_name){
+        if( foreignKeys[i].parsedForeignKey && foreignKeys[i].referenced_table_name ){
           for(var j =0; j< tablesAndCols.length; j++){
             if( tablesAndCols[j].table_name == foreignKeys[i].table_name && tablesAndCols[j].column_name == foreignKeys[i].column_name){
               tablesAndCols[j].parsedForeignKey = true;

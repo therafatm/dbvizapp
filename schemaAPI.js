@@ -26,14 +26,19 @@ router.route('/').get(function (req, res, next) {
         var spawn = require('child_process').spawn;
         // var compile = spawn('javac', ['Count.java']);
 
-        // compile.on('close', ()=>{
+            var receivedOutput = false;
             var run = spawn('java', ['-jar', 'ForeignKeyParser-1-jar-with-dependencies.jar', 'oscar']);
-            run.stdout.on("data", (data)=>{
-                console.log(data.toString());
-                resolve(JSON.parse(data.toString()));
+            run.stdout.on("data", (output)=>{
+                receivedOutput = true;
+                if( output !== ""){
+                    resolve(JSON.parse(output.toString()));
+                } else {
+                    reject("Parsing foreign keys produced no results");
+                }
             });
             run.on('close', () =>{
                 console.log("Program process " + run.pid + " exited.");
+                if( !receivedOutput ) reject("Parsing foreign keys produced no output");
             });
         // });
 
@@ -43,10 +48,6 @@ router.route('/').get(function (req, res, next) {
     })
 
     callJava.then( (parsedKeys) => {
-        parsedKeys.forEach( (val) => {
-            val.parsedForeignKey = true;
-        })
-
         results.foreignKeys = results.foreignKeys.concat(parsedKeys);
         return;
     }, (err) => {

@@ -307,8 +307,9 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
 					        fromPort: foreignKeys[j].column_name,
                     to: foreignKeys[j].referenced_table_name,
                     toPort: foreignKeys[j].referenced_column_name,
-                    toText: foreignKeys[j].constraint_name
+                    toText: foreignKeys[j].constraint_name,
 
+                    color: foreignKeys[j].parsedForeignKey ? "#FF0000" : "#303B45"
                 });
 
 			  }

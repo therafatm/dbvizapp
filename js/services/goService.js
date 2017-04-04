@@ -28,6 +28,10 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
     enumeration: {
       shape: "Pentagon",
       color: "yellow"
+    },
+    foreignKey: {
+      shape: "FireHazard",
+      color: "red"
     }
   };
 
@@ -256,11 +260,27 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
 	    // convert to node data array
 	    var nodeDataArray = [];
 
+      for(var i = 0; i < foreignKeys.length; i++){
+        if( foreignKeys[i].parsedForeignKey && foreignKeys[i].referenced_table_name ){
+          for(var j =0; j< tablesAndCols.length; j++){
+            if( tablesAndCols[j].table_name == foreignKeys[i].table_name && tablesAndCols[j].column_name == foreignKeys[i].column_name){
+              tablesAndCols[j].parsedForeignKey = true;
+            }
+          }
+        }
+      }
+
 	    for (let i = 0; i < tablesAndCols.length; i++) {
 	        var tbl_name = tablesAndCols[i].table_name;
 	        var existing_tbl = _.where(nodeDataArray, {key: tbl_name});
 
-          let shapeData = getDataTypeMapping(tablesAndCols[i].data_type);
+          var shapeData;
+          if( tablesAndCols[i].parsedForeignKey == true ){
+            shapeData = dataTypeMapping.foreignKey;
+          } else {
+            shapeData = getDataTypeMapping(tablesAndCols[i].data_type);
+          }
+
 
 	        if (existing_tbl && existing_tbl.length > 0 && tablesAndCols[i]) {
 	            existing_tbl[0].items.push({name: tablesAndCols[i].column_name,
@@ -284,12 +304,13 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
 	    	if (foreignKeys[j].referenced_table_name) {
                 linkDataArray.push({
                 	from: foreignKeys[j].table_name,
-					fromPort: foreignKeys[j].column_name,
+					        fromPort: foreignKeys[j].column_name,
                     to: foreignKeys[j].referenced_table_name,
                     toPort: foreignKeys[j].referenced_column_name,
                     toText: foreignKeys[j].constraint_name
 
                 });
+
 			  }
 	    }
       return {

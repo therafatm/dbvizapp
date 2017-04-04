@@ -134,6 +134,7 @@ app.controller('schemaController', ['$scope', '$rootScope', '$http', '$routePara
         // This is called by init() and when we switch projects.
         $scope.displayCurrentProject = function(justDraw) {
             // Get schema information from database.
+            console.log("Source code dir of project" + $scope.currentProject.sourceCodeDir);
             getSchemaInfo().then( (schemaInfo) => {
                 if($scope.isAbstracted){
                     // Check DB for base abstraction

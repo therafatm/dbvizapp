@@ -10,12 +10,12 @@ var keysQuery = 'SELECT table_name, column_name, referenced_table_name, referenc
 // var connection = mysql.createConnection('mysql://user:pass@host/wordpress');
 
 // middleware that is specific to this router
-router.use(function timeLog (req, res, next) {
+router.use(function timeLog(req, res, next) {
     console.log('Time: ', Date.now());
     next();
 });
 
-router.route('/').get(function (req, res, next) {
+router.route('/').get(function(req, res, next) {
 
     var results = {};
 
@@ -31,11 +31,15 @@ router.route('/').get(function (req, res, next) {
     });
 
     connection.connect(function(err) {
-        if(err) {
+        if (err) {
             // handle connection errors.
             console.error("Error connecting to mysql.");
             console.error(err);
-            res.status(500).json({success: false, data: err, message: "Error connecting to MySQL server. Check your connection parameters."});
+            res.status(500).json({
+                success: false,
+                data: err,
+                message: "Error connecting to MySQL server. Check your connection parameters."
+            });
         } else {
             console.log("Successfully connected.");
             connection.query(columnsQuery, [req.query.database], function(err, rows, fields) {

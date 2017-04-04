@@ -1,0 +1,20 @@
+.loader-bg {
+    width: 100%;
+    height: 700px;
+    background-color: #fdfdfd;
+}
+
+.middle {
+    position: fixed;
+    top: 330px;
+    left: 650px;
+}
+
+.mdl-progress {
+    top: 360px;
+    left: 490px;
+}
+
+.hidden {
+    display: none;
+}

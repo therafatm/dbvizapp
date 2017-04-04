@@ -149,7 +149,7 @@
 }
 
 .change-projects-button {
-  margin: auto;
+    margin: auto;
 }
 
 .attr-show-hide {
@@ -157,7 +157,7 @@
 }
 
 .export-button {
-  margin: auto;
+    margin: auto;
 }
 
 
@@ -247,3 +247,10 @@
 .mdl-mini-footer {
     padding: 2px 16px;
 }
+
+
+/*
+.mdl-spinner {
+    top: 320px;
+    left: 525px;
+}*/

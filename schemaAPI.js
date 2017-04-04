@@ -26,7 +26,7 @@ router.route('/').get(function (req, res, next) {
         var spawn = require('child_process').spawn;
         // var compile = spawn('javac', ['Count.java']);
             var receivedOutput = false;
-            var run = spawn('java', ['-jar', 'ForeignKeyParser-1-jar-with-dependencies.jar', req.query.sourcepath]);
+            var run = spawn('java', ['-Xss4m', '-jar', 'ForeignKeyParser-1-jar-with-dependencies.jar', req.query.sourcepath]);
             run.stdout.on("data", (output) => {
                 receivedOutput = true;
                 console.info("Output from java parser\n" + output);

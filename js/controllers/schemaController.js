@@ -152,7 +152,6 @@ app.controller('schemaController', ['$scope', '$rootScope', '$http', '$routePara
             //about to make graph so unhide loader, hide content
             var loader = $(".loader-bg");
             var content = $(".post-loader");
-            console.log(loader);
             content.addClass("hidden");
             loader.removeClass("hidden");
 

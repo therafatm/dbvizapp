@@ -393,7 +393,17 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
   this.drawAbstractSchemaFromModel = (savedModel, modelId) => {
 
     if( this.diagram == null){
-      var layout = GO(go.LayeredDigraphLayout);
+      var layout;
+      if( savedModel.currentLayout !== null && savedModel.currentLayout !== undefined){
+        layout = GO(savedModel.currentLayout);
+      } else {
+        console.info("No Saved Layout found");
+        layout = GO(tp().LAYOUTS.DIGRAPH);
+      }
+
+      // delete this extra property to ensure we don't load it
+      delete savedModel.currentLayout;
+
       layout.isInitial = false;
 
       this.diagram =

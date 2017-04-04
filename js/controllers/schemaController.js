@@ -34,7 +34,9 @@ app.controller('schemaController', ['$scope', '$rootScope', '$http', '$routePara
             var currentModel = $scope.currentProjectAbstractions.filter((model)=>{return model.modelid === 'latest'});
             if(currentModel.length > 0 || currentModelId == 'abstract'){
                 //update old latest in DB
-                var body = {modelid: currentModelId, model: goService.currentDiagramJSON};
+                var modelJson = goService.currentDiagramJSON;
+                modelJson.currentLayout = $scope.currentLayout;                
+                var body = {modelid: currentModelId, model: modelJson}; 
                 var promise = abstractionsApiService.updateProjectAbstraction($scope.currentProject.id, currentModelId, body)
                     .then(
                         function(projects){
@@ -48,7 +50,9 @@ app.controller('schemaController', ['$scope', '$rootScope', '$http', '$routePara
             }
             else{
                 //add new latest abstraction
-                var body = {modelid: 'latest', model:  goService.currentDiagramJSON}
+                 var modelJson = goService.currentDiagramJSON;
+                modelJson.currentLayout = $scope.currentLayout;                
+                var body = {modelid: 'latest', model:  modelJson} 
                 abstractionsApiService.addProjectAbstraction($scope.currentProject.id, body)
                     .then(
                         function(projects){
@@ -73,6 +77,7 @@ app.controller('schemaController', ['$scope', '$rootScope', '$http', '$routePara
 
         $scope.updateLayout = function(layout) {
             goService.updateLayout(layout);
+            $scope.currentLayout = layout;
         };
 
         var projectId = parseInt($routeParams.id);
@@ -118,7 +123,10 @@ app.controller('schemaController', ['$scope', '$rootScope', '$http', '$routePara
         }
 
         $scope.saveRootAbstraction = function(abstractionWrapper){
-            var body = {modelid: "abstract", model:  goService.currentDiagramJSON}
+
+            var modelJson = goService.currentDiagramJSON;
+            modelJson.currentLayout = $scope.currentLayout;
+            var body = {modelid: "abstract", model:  modelJson} 
             abstractionsApiService.addProjectAbstraction($scope.currentProject.id, body)
                 .then(
                     function(projects){
@@ -155,6 +163,7 @@ app.controller('schemaController', ['$scope', '$rootScope', '$http', '$routePara
                                 schemaInfo.abstractEntities = abstractions.entities;
                                 schemaInfo.abstractRelationships = abstractions.relationships;
                                 goService.buildAndDrawSchema(schemaInfo, goService.diagramTypes.ABSTRACT, 'abstract');
+
                                 if(abstractionWrapper.toSave){
                                     $scope.saveRootAbstraction(abstractionWrapper);
                                 }
@@ -190,9 +199,6 @@ app.controller('schemaController', ['$scope', '$rootScope', '$http', '$routePara
                                         //call magic algorithm
                                         return {abstraction: $scope.clusterCurrentProject(), toSave: true};
                                     }
-                                },
-                                function(error){
-                                    return;
                                 }
                             );
 

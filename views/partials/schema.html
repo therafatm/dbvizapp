@@ -2,14 +2,14 @@
 
 	<!-- Control Panel Starts-->
 	<div style="color:white" class="mdl-card mdl-shadow--2dp mdl-cell mdl-cell--3-col mdl-cell--stretch panel">
-		
+
 		<div class="mdl-card__actions mdl-shadow--2dp" style="float:left">
 			<center>
-			<button ng-hide="isAbstracted" class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent export-button" ng-click="toggleProjectAbstraction()">Summarize DB</button>
-			<button  ng-hide="!isAbstracted" class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent export-button" ng-click="toggleProjectAbstraction()">Expand DB</button>
-			<button ng-hide="!isAbstracted" class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent export-button" ng-click="displayCurrentProject(true)">SUMMARY</button>
+				<button ng-hide="isAbstracted" class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent export-button" ng-click="toggleProjectAbstraction()">Summarize DB</button>
+				<button ng-hide="!isAbstracted" class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent export-button" ng-click="toggleProjectAbstraction()">Expand DB</button>
+				<button ng-hide="!isAbstracted" class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent export-button" ng-click="displayCurrentProject(true)">SUMMARY</button>
 			</center>
-		</div>		
+		</div>
 
 		<div class="mdl-card__actions layout-title mdl-shadow--2dp">
 			<h5>Hidden Tables</h5>

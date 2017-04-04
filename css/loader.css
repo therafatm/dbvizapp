@@ -1,0 +1,29 @@
+.loader-bg {
+    width: 100%;
+    height: 700px;
+}
+
+.middle {
+    position: fixed;
+    top: 330px;
+    left: 650px;
+    color: whitesmoke;
+}
+
+.mdl-progress>.bufferbar {
+    background-image: linear-gradient(to right,rgba(255,255,255,.7),rgba(255,255,255,.7)),
+                      linear-gradient(to right,rgb(48, 63, 159),rgb(48, 63, 159));
+}
+
+.mdl-progress.mdl-progress__indeterminate>.bar1 {
+  background-color: #303f9f;
+}
+
+.mdl-progress {
+    top: 360px;
+    left: 490px;
+}
+
+.hidden {
+    display: none;
+}

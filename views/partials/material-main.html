@@ -1,6 +1,6 @@
 <div class="page-content mdl-grid main-center">
 
-    <div class="mdl-card ap-container mdl-shadow--4dp" >
+    <div class="mdl-card ap-container mdl-shadow--4dp">
         <div class="mdl-card__title main-card mdl-color-text--white">
             <h2 class="mdl-card__title-text">Add a New Project!</h2>
         </div>
@@ -9,7 +9,7 @@
             <form action="#">
                 <!-- Textfield with Floating Label -->
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                    <input placeholder="Project"class="mdl-textfield__input" type="text" id="projectName" ng-model="projectToAdd.name">
+                    <input placeholder="Project Name" class="mdl-textfield__input" type="text" id="projectName" ng-model="projectToAdd.name">
                 </div>
 
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
@@ -49,24 +49,24 @@
             <h2 class="mdl-card__title-text">Existing Projects</h2>
         </div>
         <div class="ep-list-container">
-          <ul class="mdl-list ep-list" ng-repeat="item in currentProjects">
+            <ul class="mdl-list ep-list" ng-repeat="item in currentProjects">
 
-            <li class="mdl-list__item mdl-list__item--two-line ep-list-item">
-                <span class="mdl-list__item-primary-content">
+                <li class="mdl-list__item mdl-list__item--two-line ep-list-item">
+                    <span class="mdl-list__item-primary-content">
                   <span>{{item.name}}</span>
-                <span class="mdl-list__item-sub-title">{{item.host}}</span>
-                </span>
-                <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--primary ep-list-button-enter" ng-click="showProject(item.id)">
+                    <span class="mdl-list__item-sub-title">{{item.host}}</span>
+                    </span>
+                    <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--primary ep-list-button-enter" ng-click="showProject(item.id)">
                   Enter
                 </button>
-                <button class="mdl-button mdl-js-button mdl-button--icon mdl-button--colored ep-list-button-edit">
+                    <button class="mdl-button mdl-js-button mdl-button--icon mdl-button--colored ep-list-button-edit">
                   <i class="material-icons" ng-click="openEditModal(item.id)">edit</i>
                 </button>
-                <button class="mdl-button mdl-js-button mdl-button--icon mdl-button--colored ep-list-button-remove">
+                    <button class="mdl-button mdl-js-button mdl-button--icon mdl-button--colored ep-list-button-remove">
                   <i class="material-icons" ng-click="deleteProjectFromDB(item.id)">close</i>
                 </button>
-            </li>
-        </ul>
-      </div>
+                </li>
+            </ul>
+        </div>
     </div>
 </div>

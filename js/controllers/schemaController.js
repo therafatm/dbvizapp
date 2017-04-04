@@ -192,8 +192,8 @@ app.controller('schemaController', ['$scope', '$rootScope', '$http', '$routePara
                     content.removeClass("hidden");
                 }
             })
-            //loader.addClass("hidden");
-            //content.removeClass("hidden");
+            loader.addClass("hidden");
+            content.removeClass("hidden");
         };
 
         $scope.getCurrentAbstraction = function(reset) {

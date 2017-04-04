@@ -6,12 +6,13 @@ app.config(function($routeProvider, $compileProvider) {
     $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|data):/);
 
     $routeProvider
-      //   .when('/', {
-      //      templateUrl: '/views/partials/main.html'
-      //  })
+
         .when('/schema/:id', {
             templateUrl: '/views/partials/schema.html',
-            controller: "schemaController" 
+            controller: "schemaController"
+        })
+        .when('/loader', {
+            templateUrl: '/views/partials/loader.html',
         })
         .when('/', {
             templateUrl: '/views/partials/material-main.html'

@@ -153,7 +153,14 @@ app.controller('schemaController', ['$scope', '$rootScope', '$http', '$routePara
         // This is called by init() and when we switch projects.
         $scope.displayCurrentProject = function(justDraw) {
             // Get schema information from database.
-            //
+
+            //about to make graph so unhide loader, hide content
+            var loader = $(".loader-bg");
+            var content = $(".post-loader");
+            console.log(loader);
+            content.addClass("hidden");
+            loader.removeClass("hidden");
+
             console.log("Source code dir of project" + $scope.currentProject.sourceCodeDir);
             getSchemaInfo().then((schemaInfo) => {
                 if ($scope.isAbstracted) {
@@ -185,8 +192,12 @@ app.controller('schemaController', ['$scope', '$rootScope', '$http', '$routePara
                         )
                 } else {
                     goService.buildAndDrawSchema(schemaInfo, goService.diagramTypes.CONCRETE);
+                    loader.addClass("hidden");
+                    content.removeClass("hidden");
                 }
             })
+            loader.addClass("hidden");
+            content.removeClass("hidden");
         };
 
         $scope.getCurrentAbstraction = function(reset) {

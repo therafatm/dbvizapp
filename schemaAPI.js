@@ -100,7 +100,6 @@ router.route('/').get(function(req, res, next) {
             }
         });
     })
-
 });
 
 module.exports = router;

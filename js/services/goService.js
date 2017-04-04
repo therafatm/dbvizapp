@@ -1,7 +1,6 @@
 app.service('goService', ['$rootScope', 'goTemplates', function($rootScope, tp) {
 
     var GO = go.GraphObject.make;
-
     this.diagram = null;
     this.currentDiagramJSON = null;
     this.currentModelId = null;
@@ -113,30 +112,30 @@ app.service('goService', ['$rootScope', 'goTemplates', function($rootScope, tp) 
         if (layout == tp().LAYOUTS.DIGRAPH) {
             this.diagram.layout = new go.LayeredDigraphLayout();
         }
-    }
+        $rootScope.$broadcast("layout-updated", layout);
+  }
 
-    // Exporting image of diagram.
-    this.getDiagramCurrentView = function() {
-        // Creates an image that is the same size as the viewport.
-        if (this.diagram) {
-            // Returns the image data in the form "data:image/png,<base64 image data>"
-            return this.diagram.makeImageData();
-        } else {
-            return "#"; // returns to homepage currently, but would be good to display error feedback.
-        }
-    }
+  // Exporting image of diagram.
+  this.getDiagramCurrentView = function() {
+      // Creates an image that is the same size as the viewport.
+      if (this.diagram) {
+          // Returns the image data in the form "data:image/png,<base64 image data>"
+          return this.diagram.makeImageData();
+      } else {
+          return "#"; // returns to homepage currently, but would be good to display error feedback.
+      }
+  }
 
-    this.getFullDiagram = function() {
-        // Creates an image containing the whole diagram.
-        if (this.diagram) {
-            // Returns the image data in the form "data:image/png,<base64 image data>"
-            return this.diagram.makeImageData({
-                scale: 1
-            });
-        } else {
-            return "#"; // returns to homepage currently, but would be good to display error feedback.
-        }
-    }
+  this.getFullDiagram = function () {
+      // Creates an image containing the whole diagram.
+      if (this.diagram) {
+          // Returns the image data in the form "data:image/png,<base64 image data>"
+          return this.diagram.makeImageData({scale: 1});
+      } else {
+          return "#"; // returns to homepage currently, but would be good to display error feedback.
+      }
+  }
+
 
     go.GraphObject.defineBuilder("ToggleEntityVisibilityButton", function(args) {
         var eltname = /** @type {string} */ (go.GraphObject.takeBuilderArgument(args, "COLLAPSIBLE"));
@@ -323,14 +322,14 @@ app.service('goService', ['$rootScope', 'goTemplates', function($rootScope, tp) 
 
                     color: foreignKeys[j].parsedForeignKey ? "#FF0000" : "#303B45"
                 });
+			  }
+	    }
+      return {
+        linkDataArray: linkDataArray,
+        nodeDataArray: nodeDataArray
+      }
+  }
 
-            }
-        }
-        return {
-            linkDataArray: linkDataArray,
-            nodeDataArray: nodeDataArray
-        }
-    }
 
     function convertAbstractGraph(abstractEntities, abstractRelationships) {
         // convert to node data array
@@ -406,88 +405,108 @@ app.service('goService', ['$rootScope', 'goTemplates', function($rootScope, tp) 
         }
     }
 
-    this.drawAbstractSchemaFromModel = (savedModel, modelId) => {
+  this.drawAbstractSchemaFromModel = (savedModel, modelId) => {
+    var savedModelJson = JSON.parse(savedModel);
+    if( this.diagram == null){
+      var layout;
+      if( savedModelJson.currentLayout !== null && savedModelJson.currentLayout !== undefined){
+        layout = savedModelJson.currentLayout;
+      } else {
+        console.info("No Saved Layout found");
+        layout = tp().LAYOUTS.DIGRAPH;
+      }
 
-        if (this.diagram == null) {
-            var layout = GO(go.LayeredDigraphLayout);
-            layout.isInitial = false;
 
-            this.diagram =
-                GO(go.Diagram, "databaseDiagram", {
-                    initialContentAlignment: go.Spot.Center, // center Diagram contents
-                    "undoManager.isEnabled": true, // enable Ctrl-Z to undo and Ctrl-Y to redo
-                    allowDelete: false,
-                    allowCopy: false,
-                    layout: layout
-                });
-            this.registerDiagramEventListeners(this.diagram);
-        }
+      layout.isInitial = false;
 
-        this.updateDiagramToAbstractTemplates();
-        this.diagram.model = new go.Model.fromJson(savedModel);
-        this.updateDiagramJSON();
-        this.currentModelId = modelId;
+      this.diagram =
+          GO(go.Diagram, "databaseDiagram",
+              {
+                  initialContentAlignment: go.Spot.Center, // center Diagram contents
+                  "undoManager.isEnabled": true, // enable Ctrl-Z to undo and Ctrl-Y to redo
+                  allowDelete: false,
+                  allowCopy: false,
+                  layout: new go.LayeredDigraphLayout()
+              });
+
+      this.updateLayout(layout);
+      
+      this.registerDiagramEventListeners(this.diagram);
     }
+
+      // delete this extra property to ensure we don't load it
+    if( !!savedModelJson.currentLayout) delete savedModelJson.currentLayout;
+
+    this.updateDiagramToAbstractTemplates();
+    this.diagram.model = new go.Model.fromJson(JSON.stringify(savedModelJson));
+    this.updateDiagramJSON();
+    this.currentModelId = modelId;
+  }
 
     this.buildAndDrawSchema = (projectData, modelType, modelId) => {
 
-        if (this.diagram == null) {
+        if( this.diagram == null){
             this.diagram =
-                GO(go.Diagram, "databaseDiagram", {
-                    initialContentAlignment: go.Spot.Center, // center Diagram contents
-                    "undoManager.isEnabled": true, // enable Ctrl-Z to undo and Ctrl-Y to redo
-                    allowDelete: false,
-                    allowCopy: false,
-                    layout: GO(go.LayeredDigraphLayout)
-                });
-            this.registerDiagramEventListeners(this.diagram);
+                GO(go.Diagram, "databaseDiagram",
+                    {
+                        initialContentAlignment: go.Spot.Center, // center Diagram contents
+                        "undoManager.isEnabled": true, // enable Ctrl-Z to undo and Ctrl-Y to redo
+                        allowDelete: false,
+                        allowCopy: false,
+                        layout: GO(go.LayeredDigraphLayout)
+                    });
+        this.registerDiagramEventListeners(this.diagram);
         }
 
-        if (modelType == this.diagramTypes.CONCRETE) {
+        this.updateLayout( tp().LAYOUTS.DIGRAPH);
 
-            if (modelId == null || modelId == undefined) {
+        if(modelType == this.diagramTypes.CONCRETE){
 
-                // TODO - load the layout from the id
-                // loading the full database view
-                this.diagram.startTransaction('Switch diagram type');
-                this.diagram.nodeTemplate = tp().concreteTableTemplate.tableTemplate;
-                this.diagram.linkTemplate = tp().concreteTableTemplate.relationshipTemplate;
-                this.diagram.commitTransaction('Switch diagram type');
+                if (modelId == null || modelId == undefined) {
+                    
+                    this.updateLayout( projectData.currentLayout );
+
+                    // TODO - load the layout from the id
+                    // loading the full database view
+                    this.diagram.startTransaction('Switch diagram type');
+                    this.diagram.nodeTemplate = tp().concreteTableTemplate.tableTemplate;
+                    this.diagram.linkTemplate = tp().concreteTableTemplate.relationshipTemplate;
+                    this.diagram.commitTransaction('Switch diagram type');
 
 
-                var result = convertConcreteGraph(projectData.tablesAndCols, projectData.foreignKeys)
+                    var result = convertConcreteGraph(projectData.tablesAndCols, projectData.foreignKeys)
+
+                    this.diagram.model = new go.GraphLinksModel(result.nodeDataArray, result.linkDataArray);
+
+                    this.diagram.model.linkFromPortIdProperty = "fromPort"; // necessary to remember portIds
+                    this.diagram.model.linkToPortIdProperty = "toPort"; // Allows linking from specific columns
+
+                } else {
+                    // load part of the data view, defined by the modelID. Pull all the tables from the abstract entity associated with the modelID, and display these
+
+                    // TODO load the layout from the id
+                }
+            } else if (modelType == this.diagramTypes.ABSTRACT) {
+                // load the full abstract view of the database
+                // TODO load the layout from the id
+
+                this.updateDiagramToAbstractTemplates()
+
+                var result = convertAbstractGraph(projectData.abstractEntities, projectData.abstractRelationships);
 
                 this.diagram.model = new go.GraphLinksModel(result.nodeDataArray, result.linkDataArray);
 
                 this.diagram.model.linkFromPortIdProperty = "fromPort"; // necessary to remember portIds
-                this.diagram.model.linkToPortIdProperty = "toPort"; // Allows linking from specific columns
+                this.diagram.model.linkToPortIdProperty = "toPort"; // Allows linking from specific columns      this.updateDiagramJSON();
+                this.currentModelId = modelId;
 
             } else {
-                // load part of the data view, defined by the modelID. Pull all the tables from the abstract entity associated with the modelID, and display these
-
-                // TODO load the layout from the id
+                console.error(`Invalid model type "${modelType}" given`);
             }
-        } else if (modelType == this.diagramTypes.ABSTRACT) {
-            // load the full abstract view of the database
-            // TODO load the layout from the id
 
-            this.updateDiagramToAbstractTemplates()
+            this.diagram.layoutDiagram(true);
 
-            var result = convertAbstractGraph(projectData.abstractEntities, projectData.abstractRelationships);
-
-            this.diagram.model = new go.GraphLinksModel(result.nodeDataArray, result.linkDataArray);
-
-            this.diagram.model.linkFromPortIdProperty = "fromPort"; // necessary to remember portIds
-            this.diagram.model.linkToPortIdProperty = "toPort"; // Allows linking from specific columns      this.updateDiagramJSON();
-            this.currentModelId = modelId;
-
-        } else {
-            console.error(`Invalid model type "${modelType}" given`);
-        }
-
-        this.diagram.layoutDiagram(true);
-
-    };
+    }
 
     this.subscribe = function(event, scope, callback) {
         var handler = $rootScope.$on(event, callback);

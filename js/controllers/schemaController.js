@@ -31,14 +31,12 @@ app.controller('schemaController', ['$scope', '$rootScope', '$http', '$routePara
             //whenever I close, update latest
             var currentModelId = goService.currentModelId;
             //check if backend has a latest saved
-            var currentModel = $scope.currentProjectAbstractions.filter((model) => {
-                return model.modelid === 'latest'
-            });
-            if (currentModel.length > 0 || currentModelId == 'abstract') {
-                //update old latest in DB
-
-                var body = {modelid: currentModelId, model: goService.currentDiagramJSON};
-
+            var currentModel = $scope.currentProjectAbstractions.filter((model)=>{return model.modelid === 'latest'});
+            if(currentModel.length > 0 || currentModelId == 'abstract'){
+                //update old latest in 
+                var modelJson = JSON.parse(goService.currentDiagramJSON);
+                modelJson.currentLayout = $scope.currentLayout;                
+                var body = {modelid: currentModelId, model: JSON.stringify(modelJson)}; 
                 var promise = abstractionsApiService.updateProjectAbstraction($scope.currentProject.id, currentModelId, body)
                     .then(
                         function(projects) {
@@ -53,7 +51,9 @@ app.controller('schemaController', ['$scope', '$rootScope', '$http', '$routePara
             }
             else{
                 //add new latest abstraction
-                var body = {modelid: 'latest', model:  goService.currentDiagramJSON}
+                var modelJson = JSON.parse(goService.currentDiagramJSON);
+                modelJson.currentLayout = $scope.currentLayout;                
+                var body = {modelid: 'latest', model:  JSON.stringify(modelJson)} 
                 abstractionsApiService.addProjectAbstraction($scope.currentProject.id, body)
                     .then(
                         function(projects) {
@@ -79,6 +79,7 @@ app.controller('schemaController', ['$scope', '$rootScope', '$http', '$routePara
 
         $scope.updateLayout = function(layout) {
             goService.updateLayout(layout);
+            $scope.currentLayout = layout;
         };
 
         var projectId = parseInt($routeParams.id);
@@ -131,7 +132,11 @@ app.controller('schemaController', ['$scope', '$rootScope', '$http', '$routePara
 
 
         $scope.saveRootAbstraction = function(abstractionWrapper){
-            var body = {modelid: "abstract", model:  goService.currentDiagramJSON}
+
+            goService.updateDiagramJSON();
+            var modelJson = JSON.parse(goService.currentDiagramJSON);
+            modelJson.currentLayout = $scope.currentLayout;
+            var body = {modelid: "abstract", model:  JSON.stringify(modelJson)} 
             abstractionsApiService.addProjectAbstraction($scope.currentProject.id, body)
                 .then(
                     function(projects) {
@@ -176,6 +181,7 @@ app.controller('schemaController', ['$scope', '$rootScope', '$http', '$routePara
                                 schemaInfo.abstractEntities = abstractions.entities;
                                 schemaInfo.abstractRelationships = abstractions.relationships;
                                 goService.buildAndDrawSchema(schemaInfo, goService.diagramTypes.ABSTRACT, 'abstract');
+
                                 if (abstractionWrapper.toSave) {
                                     $scope.saveRootAbstraction(abstractionWrapper);
                                 }
@@ -216,9 +222,6 @@ app.controller('schemaController', ['$scope', '$rootScope', '$http', '$routePara
                                         //call magic algorithm
                                         return {abstraction: $scope.clusterCurrentProject(), toSave: true};
                                     }
-                                },
-                                function(error){
-                                    return;
                                 }
                             );
 
@@ -359,12 +362,23 @@ app.controller('schemaController', ['$scope', '$rootScope', '$http', '$routePara
                     tables = tables.concat(entity.table_names);
                 });
 
+
                 // get the reduced table schema of the tables in that entity object
                 var filteredSchema = extractTablesFromObject(tables, info);
+
+                if( targetEntities.length > 0 && !!targetEntities[0].currentLayout){
+                    filteredSchema.currentLayout = targetEntities[0].currentLayout;
+                } else {
+                    filteredSchema.currentLayout = tp().LAYOUTS.DIGRAPH;
+                }
 
                 // display the reduced schema
                 goService.buildAndDrawSchema(filteredSchema, goService.diagramTypes.CONCRETE);
             })
+        })
+
+        $rootScope.$on("layout-updated", (event, layout) => {
+            $scope.toggleLayoutButton(layout)
         })
 
         $scope.showEntity = function(entityName) {
@@ -394,11 +408,11 @@ app.controller('schemaController', ['$scope', '$rootScope', '$http', '$routePara
             $scope.layoutCircular = false;
             $scope.layoutLayered = false;
 
-            if (toggle == 1) {
+            if (toggle == 0) {
                 $scope.layoutGrid = true;
-            } else if (toggle == 2) {
+            } else if (toggle == 1) {
                 $scope.layoutForced = true;
-            } else if (toggle == 3) {
+            } else if (toggle == 2) {
                 $scope.layoutCircular = true;
             } else {
                 $scope.layoutLayered = true;

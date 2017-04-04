@@ -59,6 +59,9 @@ app.service('projectApiService', ['$http', '$q', function($http, $q){
             typeof(project.username) == 'string' && project.username.length > 0 &&
             typeof(project.password) == 'string' && project.password.length > 0 &&
             (isNaN(parseInt(project.port)) == false)){
+            if(!project.sourcepath){
+                project.sourcepath = "";
+            }
             $http.post('/api/project/', project)
                 .success((data) => {
                     return deferred.resolve(data);

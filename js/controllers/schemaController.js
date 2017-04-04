@@ -184,7 +184,8 @@ app.controller('schemaController', ['$scope', '$rootScope', '$http', '$routePara
                                 return;
                             }
                         )
-
+                        loader.addClass("hidden");
+                        content.removeClass("hidden");
                 }
                 else{
                     goService.buildAndDrawSchema(schemaInfo, goService.diagramTypes.CONCRETE);
@@ -192,8 +193,6 @@ app.controller('schemaController', ['$scope', '$rootScope', '$http', '$routePara
                     content.removeClass("hidden");
                 }
             })
-            loader.addClass("hidden");
-            content.removeClass("hidden");
         };
 
         $scope.getCurrentAbstraction = function(reset) {

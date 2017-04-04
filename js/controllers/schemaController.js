@@ -339,8 +339,15 @@ app.controller('schemaController', ['$scope', '$rootScope', '$http', '$routePara
                    tables = tables.concat(entity.table_names);
                 });
 
+
                 // get the reduced table schema of the tables in that entity object
                 var filteredSchema = extractTablesFromObject(tables, info);
+
+                if( targetEntities.length > 0 && !!targetEntities[0].currentLayout){
+                    filteredSchema.currentLayout = targetEntities[0].currentLayout;
+                } else {
+                    filteredSchema.currentLayout = tp().LAYOUTS.DIGRAPH;
+                }
 
                 // display the reduced schema
                 goService.buildAndDrawSchema(filteredSchema, goService.diagramTypes.CONCRETE);

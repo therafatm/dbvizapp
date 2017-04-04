@@ -465,6 +465,8 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
         this.diagram.model.linkFromPortIdProperty = "fromPort";  // necessary to remember portIds
         this.diagram.model.linkToPortIdProperty = "toPort";		// Allows linking from specific columns
 
+        this.updateLayout( projectData.currentLayout );
+
       } else {
         // load part of the data view, defined by the modelID. Pull all the tables from the abstract entity associated with the modelID, and display these
 

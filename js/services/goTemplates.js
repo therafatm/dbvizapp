@@ -15,6 +15,7 @@ app.constant("goTemplates", function(){
   templates.colors.redgrad = GO(go.Brush, "Linear", { 0: "rgb(206, 106, 100)", 1: "rgb(180, 56, 50)" });
   templates.colors.yellowgrad = GO(go.Brush, "Linear", { 0: "rgb(254, 221, 50)", 1: "rgb(254, 182, 50)" });
   templates.colors.lightgrad = GO(go.Brush, "Linear", { 1: "#E6E6FA", 0: "#FFFAF0" });
+  templates.colors.fire = GO(go.Brush, "Linear", {0: "#EE9900", 1: "#EE0000"});
 
   templates.LAYOUTS = {
     GRID:0,
@@ -129,7 +130,8 @@ app.constant("goTemplates", function(){
 				curve: go.Link.JumpOver
 			},
 			GO(go.Shape,  // the link shape
-				{ stroke: "#303B45", strokeWidth: 2.5 })
+				{ strokeWidth: 2.5 },
+                new go.Binding("stroke", "color"))
 		);
 
   templates.concreteTableTemplate = concreteTableTemplate;

@@ -10,6 +10,15 @@
     color: whitesmoke;
 }
 
+.mdl-progress>.bufferbar {
+    background-image: linear-gradient(to right,rgba(255,255,255,.7),rgba(255,255,255,.7)),
+                      linear-gradient(to right,rgb(48, 63, 159),rgb(48, 63, 159));
+}
+
+.mdl-progress.mdl-progress__indeterminate>.bar1 {
+  background-color: #303f9f;
+}
+
 .mdl-progress {
     top: 360px;
     left: 490px;

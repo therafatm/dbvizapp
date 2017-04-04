@@ -25,10 +25,9 @@ router.route('/').get(function (req, res, next) {
     var callJava = new Promise( (resolve,reject) => {
         var spawn = require('child_process').spawn;
         // var compile = spawn('javac', ['Count.java']);
-
             var receivedOutput = false;
-            var run = spawn('java', ['-jar', 'ForeignKeyParser-1-jar-with-dependencies.jar', 'oscar']);
-            run.stdout.on("data", (output)=>{
+            var run = spawn('java', ['-jar', 'ForeignKeyParser-1-jar-with-dependencies.jar', req.query.sourcepath]);
+            run.stdout.on("data", (output) => {
                 receivedOutput = true;
                 console.info("Output from java parser\n" + output);
                 if( output.toString().trim() !== ""){
@@ -41,11 +40,6 @@ router.route('/').get(function (req, res, next) {
                 console.log("Program process " + run.pid + " exited.");
                 if( !receivedOutput ) reject("Parsing foreign keys produced no output");
             });
-        // });
-
-        // compile.on('close', () => {
-        //     console.log("Compiler process " + compile.pid + " exited.");
-        // })
     })
 
     callJava.then( (parsedKeys) => {
@@ -53,7 +47,7 @@ router.route('/').get(function (req, res, next) {
         results.foreignKeys = results.foreignKeys.concat(parsedKeys);
         return;
     }, (err) => {
-        console.error("Could not parse foreign keys from the given directory " + req.query.sourceCodeDir);
+        console.error("Could not parse foreign keys from the given directory " + req.query.sourcepath);
         console.error(err);
         return;
     }).then( () => {

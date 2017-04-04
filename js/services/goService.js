@@ -113,6 +113,7 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
     if(layout == tp().LAYOUTS.DIGRAPH){
       this.diagram.layout = new go.LayeredDigraphLayout();
     }
+    $rootScope.$broadcast("layout-updated", layout);
   }
 
   // Exporting image of diagram.
@@ -391,18 +392,16 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
   }
 
   this.drawAbstractSchemaFromModel = (savedModel, modelId) => {
-
+    var savedModelJson = JSON.parse(savedModel);
     if( this.diagram == null){
       var layout;
-      if( savedModel.currentLayout !== null && savedModel.currentLayout !== undefined){
-        layout = GO(savedModel.currentLayout);
+      if( savedModelJson.currentLayout !== null && savedModelJson.currentLayout !== undefined){
+        layout = savedModelJson.currentLayout;
       } else {
         console.info("No Saved Layout found");
-        layout = GO(tp().LAYOUTS.DIGRAPH);
+        layout = tp().LAYOUTS.DIGRAPH;
       }
 
-      // delete this extra property to ensure we don't load it
-      delete savedModel.currentLayout;
 
       layout.isInitial = false;
 
@@ -413,13 +412,19 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
                   "undoManager.isEnabled": true, // enable Ctrl-Z to undo and Ctrl-Y to redo
                   allowDelete: false,
                   allowCopy: false,
-                  layout: layout
+                  layout: new go.LayeredDigraphLayout()
               });
+
+      this.updateLayout(layout);
+      
       this.registerDiagramEventListeners(this.diagram);
     }
 
+      // delete this extra property to ensure we don't load it
+    if( !!savedModelJson.currentLayout) delete savedModelJson.currentLayout;
+
     this.updateDiagramToAbstractTemplates();
-    this.diagram.model = new go.Model.fromJson(savedModel);
+    this.diagram.model = new go.Model.fromJson(JSON.stringify(savedModelJson));
     this.updateDiagramJSON();
     this.currentModelId = modelId;
   }
@@ -438,6 +443,8 @@ app.service('goService', ['$rootScope','goTemplates', function($rootScope, tp) {
 	            });
       this.registerDiagramEventListeners(this.diagram);
     }
+
+    this.updateLayout( tp().LAYOUTS.DIGRAPH);
 
     if(modelType == this.diagramTypes.CONCRETE){
 

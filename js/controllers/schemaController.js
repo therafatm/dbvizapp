@@ -33,10 +33,10 @@ app.controller('schemaController', ['$scope', '$rootScope', '$http', '$routePara
             //check if backend has a latest saved
             var currentModel = $scope.currentProjectAbstractions.filter((model)=>{return model.modelid === 'latest'});
             if(currentModel.length > 0 || currentModelId == 'abstract'){
-                //update old latest in DB
-                var modelJson = goService.currentDiagramJSON;
+                //update old latest in 
+                var modelJson = JSON.parse(goService.currentDiagramJSON);
                 modelJson.currentLayout = $scope.currentLayout;                
-                var body = {modelid: currentModelId, model: modelJson}; 
+                var body = {modelid: currentModelId, model: JSON.stringify(modelJson)}; 
                 var promise = abstractionsApiService.updateProjectAbstraction($scope.currentProject.id, currentModelId, body)
                     .then(
                         function(projects){
@@ -50,9 +50,9 @@ app.controller('schemaController', ['$scope', '$rootScope', '$http', '$routePara
             }
             else{
                 //add new latest abstraction
-                 var modelJson = goService.currentDiagramJSON;
+                var modelJson = JSON.parse(goService.currentDiagramJSON);
                 modelJson.currentLayout = $scope.currentLayout;                
-                var body = {modelid: 'latest', model:  modelJson} 
+                var body = {modelid: 'latest', model:  JSON.stringify(modelJson)} 
                 abstractionsApiService.addProjectAbstraction($scope.currentProject.id, body)
                     .then(
                         function(projects){
@@ -124,9 +124,10 @@ app.controller('schemaController', ['$scope', '$rootScope', '$http', '$routePara
 
         $scope.saveRootAbstraction = function(abstractionWrapper){
 
-            var modelJson = goService.currentDiagramJSON;
+            goService.updateDiagramJSON();
+            var modelJson = JSON.parse(goService.currentDiagramJSON);
             modelJson.currentLayout = $scope.currentLayout;
-            var body = {modelid: "abstract", model:  modelJson} 
+            var body = {modelid: "abstract", model:  JSON.stringify(modelJson)} 
             abstractionsApiService.addProjectAbstraction($scope.currentProject.id, body)
                 .then(
                     function(projects){
@@ -346,6 +347,10 @@ app.controller('schemaController', ['$scope', '$rootScope', '$http', '$routePara
             })
         })
 
+        $rootScope.$on("layout-updated", (event, layout) => {
+            $scope.toggleLayoutButton(layout)
+        })
+
         $scope.showEntity = function(entityName) {
             goService.showEntity(entityName);
             $scope.hiddenEntities.forEach((val, index, arr) => {
@@ -373,11 +378,11 @@ app.controller('schemaController', ['$scope', '$rootScope', '$http', '$routePara
             $scope.layoutCircular = false;
             $scope.layoutLayered = false;
 
-            if (toggle == 1) {
+            if (toggle == 0) {
                 $scope.layoutGrid = true;
-            } else if (toggle == 2) {
+            } else if (toggle == 1) {
                 $scope.layoutForced = true;
-            } else if (toggle == 3) {
+            } else if (toggle == 2) {
                 $scope.layoutCircular = true;
             } else {
                 $scope.layoutLayered = true;

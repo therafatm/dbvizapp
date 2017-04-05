@@ -99,6 +99,7 @@ app.service('goService', ['$rootScope', 'goTemplates', function($rootScope, tp) 
     }
 
     this.updateLayout = (layout) => {
+        this.diagram.startTransaction('Update Layout');
         if (layout == tp().LAYOUTS.GRID) {
             this.diagram.layout = new go.GridLayout();
         }
@@ -112,7 +113,11 @@ app.service('goService', ['$rootScope', 'goTemplates', function($rootScope, tp) 
         if (layout == tp().LAYOUTS.DIGRAPH) {
             this.diagram.layout = new go.LayeredDigraphLayout();
         }
+
         $rootScope.$broadcast("layout-updated", layout);
+// 
+        // this.diagram.layoutDiagram(true);
+        this.diagram.commitTransaction('Update Layout');
   }
 
   // Exporting image of diagram.
@@ -455,7 +460,7 @@ app.service('goService', ['$rootScope', 'goTemplates', function($rootScope, tp) 
                         allowCopy: false,
                         layout: GO(go.LayeredDigraphLayout)
                     });
-        this.registerDiagramEventListeners(this.diagram);
+            this.registerDiagramEventListeners(this.diagram);
         }
 
         this.updateLayout( tp().LAYOUTS.DIGRAPH);
@@ -464,8 +469,8 @@ app.service('goService', ['$rootScope', 'goTemplates', function($rootScope, tp) 
 
                 if (modelId == null || modelId == undefined) {
                     
-                    this.updateLayout( projectData.currentLayout );
 
+                    this.updateLayout( projectData.currentLayout );
                     // TODO - load the layout from the id
                     // loading the full database view
                     this.diagram.startTransaction('Switch diagram type');

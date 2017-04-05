@@ -9,6 +9,7 @@ app.controller('schemaController', ['$scope', '$rootScope', '$http', '$routePara
         $scope.isAbstracted = false;
         $scope.currentProjectAbstractions = [];
         $scope.hiddenEntities = [];
+        $scope.drilledEntity = null;
 
         $scope.LAYOUTS = tp().LAYOUTS;
 
@@ -34,10 +35,11 @@ app.controller('schemaController', ['$scope', '$rootScope', '$http', '$routePara
             var currentModel = $scope.currentProjectAbstractions.filter((model)=>{return model.modelid === 'latest'});
             if(currentModel.length > 0 || currentModelId == 'abstract'){
                 //update old latest in 
-                var modelJson = JSON.parse(goService.currentDiagramJSON);
-                modelJson.currentLayout = $scope.currentLayout;                
-                var body = {modelid: currentModelId, model: JSON.stringify(modelJson)}; 
-                var promise = abstractionsApiService.updateProjectAbstraction($scope.currentProject.id, currentModelId, body)
+                var modelJson = {};
+                modelJson.currentLayout = $scope.currentLayout;     
+                modelJson.drilledEntity = $scope.drilledEntity;           
+                var body = {modelid: 'latest', model: modelJson}; 
+                var promise = abstractionsApiService.updateProjectAbstraction($scope.currentProject.id, 'latest', body)
                     .then(
                         function(projects) {
                             console.info("New latest abstraction has been updated succesfully!");
@@ -51,9 +53,10 @@ app.controller('schemaController', ['$scope', '$rootScope', '$http', '$routePara
             }
             else{
                 //add new latest abstraction
-                var modelJson = JSON.parse(goService.currentDiagramJSON);
+                var modelJson = {};
                 modelJson.currentLayout = $scope.currentLayout;                
-                var body = {modelid: 'latest', model:  JSON.stringify(modelJson)} 
+                modelJson.drilledEntity = $scope.drilledEntity;           
+                var body = {modelid: 'latest', model:  modelJson} 
                 abstractionsApiService.addProjectAbstraction($scope.currentProject.id, body)
                     .then(
                         function(projects) {
@@ -134,9 +137,9 @@ app.controller('schemaController', ['$scope', '$rootScope', '$http', '$routePara
         $scope.saveRootAbstraction = function(abstractionWrapper){
 
             goService.updateDiagramJSON();
-            var modelJson = JSON.parse(goService.currentDiagramJSON);
+            var modelJson = {};
             modelJson.currentLayout = $scope.currentLayout;
-            var body = {modelid: "abstract", model:  JSON.stringify(modelJson)} 
+            var body = {modelid: "latest", model:  modelJson} 
             abstractionsApiService.addProjectAbstraction($scope.currentProject.id, body)
                 .then(
                     function(projects) {
@@ -149,6 +152,7 @@ app.controller('schemaController', ['$scope', '$rootScope', '$http', '$routePara
                     }
                 );
         }
+
 
         // This is called by init() and when we switch projects.
         $scope.displayCurrentProject = function(justDraw) {
@@ -168,23 +172,41 @@ app.controller('schemaController', ['$scope', '$rootScope', '$http', '$routePara
                         .then(
                             function(abstractionWrapper){
                                 //If I have a schema in the DB
-                                if (!abstractionWrapper.toSave) {
-                                    try {
-                                        goService.drawAbstractSchemaFromModel(abstractionWrapper.abstraction, abstractionWrapper.modelid);
-                                        return
-                                    } catch (e) {
-                                        // just continue and try to build the schema the other way
+
+                                $scope.drilledEntity = null;
+
+                                var savedModelJson = abstractionWrapper.abstraction;
+
+                                // try {
+                                //     goService.drawAbstractSchemaFromModel(abstractionWrapper.abstraction, abstractionWrapper.modelid);
+                                //     return
+                                // } catch (e) {
+                                //     // just continue and try to build the schema the other way
+                                // }
+
+                                Promise.resolve().then( () => {
+
+                                    if( !!savedModelJson.drilledEntity ){
+                                        return drillInClicked(null, savedModelJson.drilledEntity);
+                                    } else {
+                                        var abstractions = abstractionWrapper.abstraction;
+                                        schemaInfo.abstractEntities = abstractions.entities;
+                                        schemaInfo.abstractRelationships = abstractions.relationships;
+                                        goService.buildAndDrawSchema(schemaInfo, goService.diagramTypes.ABSTRACT, 'latest');
+                                        return Promise.resolve();
                                     }
-                                }
+                                }).then( () => {
 
-                                var abstractions = abstractionWrapper.abstraction;
-                                schemaInfo.abstractEntities = abstractions.entities;
-                                schemaInfo.abstractRelationships = abstractions.relationships;
-                                goService.buildAndDrawSchema(schemaInfo, goService.diagramTypes.ABSTRACT, 'abstract');
+                                    if( savedModelJson.currentLayout == undefined) savedModelJson.currentLayout = 3;
+                                    
+                                    goService.updateLayout(savedModelJson.currentLayout);
 
-                                if (abstractionWrapper.toSave) {
-                                    $scope.saveRootAbstraction(abstractionWrapper);
-                                }
+                                    if (abstractionWrapper.toSave) {
+                                        $scope.saveRootAbstraction(abstractionWrapper);
+                                    }
+                                })
+
+
                             },
                             function(error) {
                                 return;
@@ -212,10 +234,16 @@ app.controller('schemaController', ['$scope', '$rootScope', '$http', '$routePara
                                     if($scope.currentProjectAbstractions.length > 0 && !reset){
                                         //If DB has a schema for the current project
                                         var abstractionToShow = $scope.currentProjectAbstractions.filter(function(x){return x["modelid"] === "latest"});
-                                        if(abstractionToShow.length <= 0 || !abstractionToShow[0].model ){
-                                            abstractionToShow = $scope.currentProjectAbstractions.filter(function(x){return x["modelid"] === "abstract"});
-                                        }
-                                        return {abstraction: abstractionToShow[0].model, toSave: false, modelid: abstractionToShow[0].modelid};
+                                        // if(abstractionToShow.length <= 0 || !abstractionToShow[0].model ){
+                                        //     abstractionToShow = $scope.currentProjectAbstractions.filter(function(x){return x["modelid"] === "abstract"});
+                                        // }
+                                        var model = abstractionToShow[0].model;
+
+                                        var abstraction = $scope.clusterCurrentProject();
+                                        model.entities = abstraction.entities;
+                                        model.relationships = abstraction.relationships;
+
+                                        return {abstraction: model, toSave: false, modelid: abstractionToShow[0].modelid};
                                     }
                                     else{
                                         //DB doesn't have schema and save it
@@ -343,11 +371,13 @@ app.controller('schemaController', ['$scope', '$rootScope', '$http', '$routePara
             $scope.showEntity(entityName);
         });
 
-        $scope.$on('drill-in-clicked', (event, abstractObjectName) => {
-            getSchemaInfo().then((info) => {
+        var drillInClicked = (event, abstractObjectName) => {
+            return getSchemaInfo().then((info) => {
                 //TODO
                 // get the current abstraction using the cache
                 var currentAbstraction = $scope.clusterCurrentProject();
+
+                $scope.drilledEntity = abstractObjectName;
 
                 // create an array of all possible entity objects
                 var possibleEntities = currentAbstraction.entities.concat(currentAbstraction.relationships);
@@ -374,8 +404,12 @@ app.controller('schemaController', ['$scope', '$rootScope', '$http', '$routePara
 
                 // display the reduced schema
                 goService.buildAndDrawSchema(filteredSchema, goService.diagramTypes.CONCRETE);
+
+                return Promise.resolve();
             })
-        })
+        }
+
+        $scope.$on('drill-in-clicked', drillInClicked)
 
         $rootScope.$on("layout-updated", (event, layout) => {
             $scope.toggleLayoutButton(layout)
